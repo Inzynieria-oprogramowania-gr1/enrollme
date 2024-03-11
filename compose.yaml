@@ -18,7 +18,7 @@ services:
     # If you really want to use MySQL, uncomment the following line
     image: mysql:8.0.19
     environment:
-      - MYSQL_DATABASE=example
+      - MYSQL_DATABASE=mydb
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
     restart: always
     healthcheck:
@@ -26,6 +26,8 @@ services:
       interval: 3s
       retries: 5
       start_period: 30s
+    ports:
+      - 3306:3306
     secrets:
       - db-password
     volumes:
