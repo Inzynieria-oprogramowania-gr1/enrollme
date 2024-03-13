@@ -9,6 +9,11 @@ services:
     networks:
       - react-spring
       - spring-mysql
+    ports:
+      - 8080:8080
+    expose:
+      - 3306
+      - 8080
     depends_on:
       db:
         condition: service_healthy
