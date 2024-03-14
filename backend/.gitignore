@@ -42,9 +42,6 @@ local.properties
 # CDT- autotools
 .autotools
 
-# Java annotation processor (APT)
-.factorypath
-
 # PDT-specific (PHP Development Tools)
 .buildpath
 
@@ -57,8 +54,6 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
-# STS (Spring Tool Suite)
-.springBeans
 
 # Code Recommenders
 .recommenders/
@@ -72,14 +67,10 @@ local.properties
 .worksheet
 
 ### Eclipse Patch ###
-# Eclipse Core
-.project
 
 # JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 # Annotation Processing
-.apt_generated
 
 .sts4-cache/
 
@@ -185,17 +176,11 @@ build/
 .#*
 *#
 *~
-.classpath
-.project
-.settings
 bin
 build
 target
-dependency-reduced-pom.xml
 *.sublime-*
 /scratch
 .gradle
 README.html
-*.iml
-.idea
 .exercism
