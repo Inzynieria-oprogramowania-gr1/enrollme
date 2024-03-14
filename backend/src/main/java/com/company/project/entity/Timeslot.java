@@ -18,8 +18,8 @@ import java.util.Set;
 @Data
 public class Timeslot {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idTimetable;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idTimetable;
 
 
     //    @Temporal(TemporalType.TIME)
@@ -30,6 +30,7 @@ public class Timeslot {
 
     private boolean isSelected;
 
+    @OrderBy
     private String weekDay;
 
 

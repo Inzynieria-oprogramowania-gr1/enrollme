@@ -22,11 +22,11 @@ public class HomeController {
     }
 
     @PostMapping(path = "/add") // Map ONLY POST Requests
-    public @ResponseBody String addNewUser(@RequestParam String email) {
+    public @ResponseBody Student addNewUser(@RequestParam String email) {
 
         Student s = new Student(email);
         studentRepository.save(s);
-        return "Saved";
+        return s;
     }
 
     @GetMapping(path = "/hi")
