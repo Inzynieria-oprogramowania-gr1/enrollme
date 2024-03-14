@@ -1,7 +1,7 @@
 package com.company.project.controllers;
 
 
-import com.company.project.entity.Timeslot;
+import com.company.project.dto.TimetableDto;
 import com.company.project.service.TimetableService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +21,7 @@ public class TimetableController {
     }
 
     @GetMapping
-    public @ResponseBody List<Timeslot> showTimetable() {
-        System.out.println(timetableService.getInitialTimetable());
-        return timetableService.getInitialTimetable();
+    public @ResponseBody List<TimetableDto> showTimetable() {
+        return timetableService.getTimetable();
     }
 }

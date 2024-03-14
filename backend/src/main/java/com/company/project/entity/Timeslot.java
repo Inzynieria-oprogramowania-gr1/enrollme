@@ -1,11 +1,11 @@
 package com.company.project.entity;
 
+import com.company.project.entity.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,26 +19,19 @@ import java.util.Set;
 public class Timeslot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTimetable;
+    @Column(name = "timetable_id", nullable = false, unique = true)
+    private Long id;
 
+    @Enumerated(EnumType.ORDINAL)
+    private Weekday weekday;
 
-    //    @Temporal(TemporalType.TIME)
-    Time start_time;
+    @Temporal(TemporalType.TIME)
+    private Date start_time;
 
     @Temporal(TemporalType.TIME)
     private Date end_time;
 
     private boolean isSelected;
-
-    @Enumerated(EnumType.ORDINAL)
-    private Weekday weekDay;
-
-
-    public Timeslot(Time start_time, Date end_time, Weekday weekDay) {
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.weekDay = weekDay;
-    }
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(

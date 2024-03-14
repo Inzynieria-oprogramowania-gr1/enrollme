@@ -1,10 +1,3 @@
--- INSERT INTO mydb.students(email)
--- VALUES ('zarzitski@student.agh.edu.pl'),
--- ('zolszowka@student.agh.edu.pl'), 
--- ('pkuchta@student.agh.edu.pl'), 
--- ('Asobiesiak@student.agh.edu.pl'),
--- ('amezydlo@student.agh.edu.pl');
-
 INSERT INTO mydb.students(email)
 VALUES ('zarzitski@student.agh.edu.pl'),
        ('zolszowka@student.agh.edu.pl'),
@@ -16,12 +9,12 @@ VALUES ('zarzitski@student.agh.edu.pl'),
 
 
 INSERT
-INTO mydb.timetable(week_day, start_time, end_time, is_selected)
-SELECT w.week_day,
+INTO mydb.timetable(weekday, start_time, end_time, is_selected)
+SELECT w.weekday,
        t.start_time,
        t.end_time,
        false
-FROM (SELECT 0 AS week_day UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) w
+FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) w
          CROSS JOIN
      (SELECT '08:00:00' AS start_time, '09:30:00' AS end_time
       UNION ALL
