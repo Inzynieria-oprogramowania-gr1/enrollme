@@ -30,11 +30,11 @@ public class Timeslot {
 
     private boolean isSelected;
 
-    @OrderBy
-    private String weekDay;
+    @Enumerated(EnumType.ORDINAL)
+    private Weekday weekDay;
 
 
-    public Timeslot(Time start_time, Date end_time, String weekDay) {
+    public Timeslot(Time start_time, Date end_time, Weekday weekDay) {
         this.start_time = start_time;
         this.end_time = end_time;
         this.weekDay = weekDay;
@@ -51,3 +51,5 @@ public class Timeslot {
     @OneToMany(mappedBy = "result")
     private Set<Student> result = new HashSet<>();
 }
+
+
