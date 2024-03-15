@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "fa268e96-8200-425f-b93c-44242010daf6",
+		"name": "Enrollme",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33176807"
+	},
+	"item": [
+		{
+			"name": "Get timetable",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/teacher/timetable",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"timetable"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Put timetable",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"weekday\": \"Monday\",\r\n        \"timeSlots\": [\r\n            {\r\n                \"start_date\": \"08:00:00\",\r\n                \"end_date\": \"09:30:00\",\r\n                \"is_selected\": true\r\n            },\r\n            \r\n            {\r\n                \"start_date\": \"11:30:00\",\r\n                \"end_date\": \"13:00:00\",\r\n                \"is_selected\": true\r\n            },\r\n            {\r\n                \"start_date\": \"13:15:00\",\r\n                \"end_date\": \"14:45:00\",\r\n                \"is_selected\": true\r\n            },\r\n            {\r\n                \"start_date\": \"15:00:00\",\r\n                \"end_date\": \"16:30:00\",\r\n                \"is_selected\": true\r\n            },\r\n            \r\n            {\r\n                \"start_date\": \"18:30:00\",\r\n                \"end_date\": \"20:00:00\",\r\n                \"is_selected\": true\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"weekday\": \"Tuesday\",\r\n        \"timeSlots\": [\r\n            {\r\n                \"start_date\": \"08:00:00\",\r\n                \"end_date\": \"09:30:00\",\r\n                \"is_selected\": true\r\n            },\r\n            {\r\n                \"start_date\": \"09:45:00\",\r\n                \"end_date\": \"11:15:00\",\r\n                \"is_selected\": true\r\n            },\r\n        \r\n            {\r\n                \"start_date\": \"13:15:00\",\r\n                \"end_date\": \"14:45:00\",\r\n                \"is_selected\": true\r\n            },\r\n            {\r\n                \"start_date\": \"15:00:00\",\r\n                \"end_date\": \"16:30:00\",\r\n                \"is_selected\": true\r\n            },\r\n            {\r\n                \"start_date\": \"16:45:00\",\r\n                \"end_date\": \"18:15:00\",\r\n                \"is_selected\": true\r\n            }\r\n          \r\n        ]\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/teacher/timetable",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"timetable"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Share Link",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/teacher/timetable/share",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"timetable",
+						"share"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Share Link",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/teacher/timetable/share",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"timetable",
+						"share"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
