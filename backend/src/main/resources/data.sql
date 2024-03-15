@@ -4,9 +4,8 @@ VALUES ('zarzitski@student.agh.edu.pl'),
        ('pkuchta@student.agh.edu.pl'),
        ('Asobiesiak@student.agh.edu.pl'),
        ('amezydlo@student.agh.edu.pl'),
-       ('test@test.com');
-
-
+       ('test@test.com'),
+       ('test2@test.com');
 
 INSERT
 INTO mydb.timetable(weekday, start_time, end_time, is_selected)
@@ -29,5 +28,3 @@ FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT
       SELECT '16:45:00', '18:15:00'
       UNION ALL
       SELECT '18:30:00', '20:00:00') t;
-
-

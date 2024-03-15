@@ -1,14 +1,11 @@
 package com.company.project.entity;
 
-import com.company.project.entity.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -26,23 +23,23 @@ public class Timeslot {
     private Weekday weekday;
 
     @Temporal(TemporalType.TIME)
-    private Date start_time;
+    private Date startTime;
 
     @Temporal(TemporalType.TIME)
-    private Date end_time;
+    private Date endTime;
 
     private boolean isSelected;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "slot_preference",
-            joinColumns = @JoinColumn(name = "students_id"),
-            inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-    private Set<Student> preferences = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "result")
-    private Set<Student> result = new HashSet<>();
+//    @ManyToMany(cascade = {CascadeType.ALL})
+//    @JoinTable(
+//            name = "slot_preference",
+//            joinColumns = @JoinColumn(name = "students_id"),
+//            inverseJoinColumns = @JoinColumn(name = "timetable_id"))
+//    private Set<Student> preferences = new HashSet<>();
+//
+//
+//    @OneToMany(mappedBy = "result")
+//    private Set<Student> result = new HashSet<>();
 }
 
 

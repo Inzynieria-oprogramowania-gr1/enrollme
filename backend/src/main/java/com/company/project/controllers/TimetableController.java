@@ -2,6 +2,7 @@ package com.company.project.controllers;
 
 
 import com.company.project.dto.TimetableDto;
+import com.company.project.entity.Timeslot;
 import com.company.project.service.TimetableService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,14 +15,15 @@ import java.util.List;
 @RequestMapping("/teacher/timetable")
 public class TimetableController {
 
-    private TimetableService timetableService;
+    private final TimetableService timetableService;
 
     public TimetableController(TimetableService timetableService) {
         this.timetableService = timetableService;
     }
 
     @GetMapping
-    public @ResponseBody List<TimetableDto> showTimetable() {
+    @ResponseBody
+    public List<TimetableDto> showTimetable() {
         return timetableService.getTimetable();
     }
 }
