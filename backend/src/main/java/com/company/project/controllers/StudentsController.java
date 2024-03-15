@@ -24,7 +24,7 @@ public class StudentsController {
 
     private final StudentService studentService;
     
-    @PostMapping(path = "/add")
+    @PostMapping
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails){
         return studentService.createStudent(emails);
     }
