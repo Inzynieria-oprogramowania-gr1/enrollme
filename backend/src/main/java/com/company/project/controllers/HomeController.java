@@ -23,6 +23,7 @@ public class HomeController {
         // this.timeslotRepository = timeslotRepository;
     }
 
+
     @PostMapping(path = "/students/addSingle") // Map ONLY POST Requests
     public @ResponseBody Student addNewUser(@RequestParam String email) {
         return studentService.createStudent(email);

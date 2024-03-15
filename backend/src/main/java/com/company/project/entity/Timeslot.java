@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,35 +17,31 @@ import java.util.Set;
 @Data
 public class Timeslot {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idTimetable;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "timetable_id", nullable = false, unique = true)
+    private Long id;
 
-
-    //    @Temporal(TemporalType.TIME)
-    Time start_time;
+    @Enumerated(EnumType.ORDINAL)
+    private Weekday weekday;
 
     @Temporal(TemporalType.TIME)
-    private Date end_time;
+    private Date startTime;
+
+    @Temporal(TemporalType.TIME)
+    private Date endTime;
 
     private boolean isSelected;
 
-    private String weekDay;
+   @ManyToMany(cascade = {CascadeType.ALL})
+   @JoinTable(
+           name = "slot_preference",
+           joinColumns = @JoinColumn(name = "students_id"),
+           inverseJoinColumns = @JoinColumn(name = "timetable_id"))
+   private Set<Student> preferences = new HashSet<>();
 
 
-    public Timeslot(Time start_time, Date end_time, String weekDay) {
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.weekDay = weekDay;
-    }
-
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "slot_preference",
-            joinColumns = @JoinColumn(name = "students_id"),
-            inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-    private Set<Student> preferences = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "result")
-    private Set<Student> result = new HashSet<>();
+   @OneToMany(mappedBy = "result")
+   private Set<Student> result = new HashSet<>();
 }
+
+
