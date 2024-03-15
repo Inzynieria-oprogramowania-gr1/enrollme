@@ -7,6 +7,7 @@ import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.company.project.dto.StudentDto;
 import com.company.project.entity.Student;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
@@ -20,22 +21,32 @@ public class StudentService {
   private final StudentRepository studentRepository;
   private final TimeslotRepository timeslotRepository;
   
-  public List<Student> getAllStudents(){
-    return Streamable.of(studentRepository.findAll()).toList();
-  }
-
-  public Optional<Student> getStudentByEmail(String email){
-    return studentRepository.findStudentByEmail(email);
-  }
-
-  public Student createStudent(String email){
-    return studentRepository.save(new Student(email));
-  }
-
-  public List<Student> createStudent(List<String> emails){
-    return emails.stream().map
-      ((e)->studentRepository.save(new Student(e)))
+  public List<StudentDto> getAllStudents(){
+    return studentRepository.findAll().stream()
+    .map(
+      (student)->new StudentDto(student.getId(), student.getEmail())
+    )
     .toList();
   }
 
+  public Optional<StudentDto> getStudentByEmail(String email){
+    return studentRepository.findStudentByEmail(email).map(      
+      (student)->new StudentDto(student.getId(), student.getEmail())
+    );
+  }
+
+  public StudentDto createStudent(String email){
+    Student student = studentRepository.save(new Student(email));
+    return new StudentDto(student.getId(), student.getEmail());
+  }
+
+  public List<StudentDto> createStudent(List<String> emails){
+    return emails.stream().map
+      ((e)->{
+        Student student = studentRepository.save(new Student(e));
+        return new StudentDto(student.getId(), student.getEmail());
+      }
+    )
+    .toList();
+  }
 }
