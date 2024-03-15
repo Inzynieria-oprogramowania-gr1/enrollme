@@ -32,18 +32,19 @@ public class StudentsController {
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails){
         return studentService.createStudent(emails);
     }
+    @GetMapping(params = "id")
+    public @ResponseBody StudentDto getStudentById(@RequestParam Long id) {
+        return studentService.getStudentById(id).get();
+    }
+    @GetMapping(params = "email")
+    public @ResponseBody StudentDto getStudentByEmail(@RequestParam String email) {
+        return studentService.getStudentByEmail(email).get();
+    }
     @GetMapping
     public @ResponseBody List<StudentDto> getStudents() {
         return studentService.getAllStudents();
     }
-    // @GetMapping
-    // public @ResponseBody StudentDto getStudentById(@RequestParam Long id) {
-    //     return studentService.getStudentById(id).get();
-    // }
-    // @GetMapping
-    // public @ResponseBody StudentDto getStudentByEmail(@RequestParam String email) {
-    //     return studentService.getStudentByEmail(email).get();
-    // }
+
     @PostMapping(path = "/{id}/preferences")
     public List<StudentPreferencesDto> addStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable){
         return studentService.addPreferences(id, timetable);
