@@ -1,6 +1,6 @@
 package com.company.project.dto;
 
-import java.util.Date;
+import java.time.LocalTime;
 
-public record TimeSLotDto(Date start_date, Date end_date, boolean is_selected) {
+public record TimeSLotDto(LocalTime start_date, LocalTime end_date, boolean is_selected) {
 }
