@@ -23,17 +23,12 @@ import lombok.AllArgsConstructor;
 public class StudentsController {
 
     private final StudentService studentService;
-
-    @PostMapping(path = "/addSingle") // Map ONLY POST Requests
-    public @ResponseBody StudentDto addNewUser(@RequestParam String email) {
-        return studentService.createStudent(email);
-    }
     
-    @PostMapping(path = "/addList")
+    @PostMapping(path = "/add")
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails){
         return studentService.createStudent(emails);
     }
-    @GetMapping(path = "/getAll")
+    @GetMapping
     public @ResponseBody Iterable<StudentDto> getStudents() {
         return studentService.getAllStudents();
     }
