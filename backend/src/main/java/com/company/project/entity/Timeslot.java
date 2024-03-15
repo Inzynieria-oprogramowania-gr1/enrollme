@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -30,16 +32,16 @@ public class Timeslot {
 
     private boolean isSelected;
 
-//    @ManyToMany(cascade = {CascadeType.ALL})
-//    @JoinTable(
-//            name = "slot_preference",
-//            joinColumns = @JoinColumn(name = "students_id"),
-//            inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-//    private Set<Student> preferences = new HashSet<>();
-//
-//
-//    @OneToMany(mappedBy = "result")
-//    private Set<Student> result = new HashSet<>();
+   @ManyToMany(cascade = {CascadeType.ALL})
+   @JoinTable(
+           name = "slot_preference",
+           joinColumns = @JoinColumn(name = "students_id"),
+           inverseJoinColumns = @JoinColumn(name = "timetable_id"))
+   private Set<Student> preferences = new HashSet<>();
+
+
+   @OneToMany(mappedBy = "result")
+   private Set<Student> result = new HashSet<>();
 }
 
 

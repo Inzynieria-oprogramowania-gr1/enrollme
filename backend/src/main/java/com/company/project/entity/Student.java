@@ -28,10 +28,10 @@ public class Student {
     }
 
 
-//    @ManyToMany(mappedBy = "preferences")
-//    private Set<Timeslot> preferences = new HashSet<>();
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "slot_id")
-//    private Timeslot result;
+   @ManyToMany(mappedBy = "preferences")
+   private Set<Timeslot> preferences = new HashSet<>();
+
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "slot_id")
+   private Timeslot result;
 }
