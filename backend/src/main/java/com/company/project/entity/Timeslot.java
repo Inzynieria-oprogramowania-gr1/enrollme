@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,23 +25,32 @@ public class Timeslot {
     private Weekday weekday;
 
     @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
 
     @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
 
     private boolean isSelected;
 
-   @ManyToMany(cascade = {CascadeType.ALL})
-   @JoinTable(
-           name = "slot_preference",
-           joinColumns = @JoinColumn(name = "students_id"),
-           inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-   private Set<Student> preferences = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "slot_preference",
+            joinColumns = @JoinColumn(name = "students_id"),
+            inverseJoinColumns = @JoinColumn(name = "timetable_id"))
+    private Set<Student> preferences = new HashSet<>();
 
 
-   @OneToMany(mappedBy = "result")
-   private Set<Student> result = new HashSet<>();
+    @OneToMany(mappedBy = "result")
+    private Set<Student> result = new HashSet<>();
+
+
+    public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {
+        this.weekday = weekday;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isSelected = isSelected;
+    }
 }
 
 
