@@ -1,14 +1,22 @@
 package com.company.project.service;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.company.project.dto.StudentDto;
+import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.TimeSLotDto;
+import com.company.project.dto.TimetableDto;
 import com.company.project.entity.Student;
+import com.company.project.entity.Timeslot;
+import com.company.project.entity.Weekday;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 
@@ -30,7 +38,12 @@ public class StudentService {
   }
 
   public Optional<StudentDto> getStudentByEmail(String email){
-    return studentRepository.findStudentByEmail(email).map(      
+    return studentRepository.findByEmail(email).map(      
+      (student)->new StudentDto(student.getId(), student.getEmail())
+    );
+  }
+  public Optional<StudentDto> getStudentById(Long id){
+    return studentRepository.findById(id).map(      
       (student)->new StudentDto(student.getId(), student.getEmail())
     );
   }
@@ -48,5 +61,27 @@ public class StudentService {
       }
     )
     .toList();
+  }
+
+  public List<StudentPreferencesDto> addPreferences(Long id, List<TimetableDto> timetable) throws RuntimeException{
+
+    Student student = studentRepository.findById(id).get();
+
+    return timetable.stream().flatMap(singleTimetable->
+      singleTimetable
+      .timeSlots()
+      .stream()
+      .map(
+        (ts)->
+        timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(),ts.start_date(),ts.end_date())
+        )
+    ).map((bSlot)->{
+      Timeslot bSlotReal = bSlot.orElseThrow(()->new RuntimeException("Tu nic nie ma 1d10t0"));
+      bSlotReal.getPreferences().add(student);
+      student.getPreferences().add(bSlotReal);
+      timeslotRepository.save(bSlotReal);
+      studentRepository.save(student);
+      return new StudentPreferencesDto(id, student.getEmail(), timetable);
+    }).toList();
   }
 }

@@ -3,7 +3,9 @@ package com.company.project.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -14,7 +16,8 @@ import java.util.Set;
 @Table(name = "timetable")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Timeslot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
