@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./TimeTable.css";
+import MailInputs from "./MailInputs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface TimeSlot {
@@ -107,6 +108,7 @@ const TimeTable = () => {
         {renderTimeTable()}
       </div>
       <button className="btn btn-primary" onClick={saveTimeTable}>Save</button>
+      <MailInputs></MailInputs>
     </div>
   );
 };
