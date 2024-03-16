@@ -1,0 +1,35 @@
+.timeTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.timeTable-headerRow,
+.timeTable-row {
+    border: 1px solid black;
+    padding: 20px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.timeTable-headerCell,
+.timeTable-headerRow {
+    background-color: lightblue;
+}
+
+.timeTable-headerCell,
+.timeTable-cell {
+    padding: 20px;
+    border: 1px solid black;
+}
+
+.timeTable-cell {
+    padding: 20px;
+    text-align: center;
+    vertical-align: middle;
+    color: gray;
+}
+
+.timeTable-selected {
+    background-color: #85d285;
+    color: black;
+}

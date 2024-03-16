@@ -1,41 +1,48 @@
-import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import React, {useEffect, useState} from "react";
+import {Route, Routes, useNavigate} from "react-router-dom";
+import TimeTable from "./teacher/TimeTable";
+import Results from "./teacher/Results";
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-type Greeting = {
-  id: number;
-  name: string;
-};
+
 
 function App() {
-  const [greeting, setGreeting] = useState<Greeting>();
+
+  const navigate = useNavigate();
+
+  const handleResultsButtonClick = () => {
+    navigate("/results")
+  }
+  const handleMakeTimeTableClick = () => {
+    navigate("/timetable")
+  }
+
+
+  const [greeting, setGreeting] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const [showTimeTable, setShowTimeTable] = useState(false);
   useEffect(() => {
-    fetch("/api")
-      .then(res => res.json())
+    fetch("http://localhost:8080/demo/hi")
+      .then(res => res.text())
       .then(setGreeting)
       .catch(console.error);
   }, [setGreeting]);
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         {greeting ? (
-          <p>Hello from {greeting.name}</p>
+          <p>{greeting}</p>
         ) : (
           <p>Loading...</p>
         )}
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+          <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>MAKE TIMETABLE</button>
+          <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
+      <Routes>
+        <Route path="/results" element={<Results />} />
+        <Route path="/timetable" element={<TimeTable />} />
+      </Routes>
     </div>
   );
 }
