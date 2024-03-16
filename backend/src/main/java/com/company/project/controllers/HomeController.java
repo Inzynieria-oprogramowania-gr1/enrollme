@@ -1,13 +1,8 @@
 package com.company.project.controllers;
 
-import com.company.project.dto.StudentDto;
-import com.company.project.entity.Student;
-import com.company.project.repository.StudentRepository;
+
 import com.company.project.repository.TimeslotRepository;
 import com.company.project.service.StudentService;
-
-import java.util.List;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
