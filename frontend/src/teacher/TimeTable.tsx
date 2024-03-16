@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./TimeTable.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface TimeSlot {
   start_date: string;
@@ -46,6 +47,24 @@ const TimeTable = () => {
     );
   };
 
+  const saveTimeTable = () => {
+    fetch("http://localhost:8080/teacher/timetable", {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(timeTableData),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Could not save the updated timetable")
+        }
+        return response.json();
+      })
+      .then(() => alert('Success: Timetable saved successfully'))
+      .catch((error) => alert(error));
+  };
+
   const renderTimeTable = () => (
     <table className="timeTable">
       <thead>
@@ -82,9 +101,12 @@ const TimeTable = () => {
   );
 
   return (
-    <div>
-      <h1>Time Table</h1>
-      {renderTimeTable()}
+    <div className="container">
+      <h1 className="mb-3">Time Table</h1>
+      <div className="mb-3">
+        {renderTimeTable()}
+      </div>
+      <button className="btn btn-primary" onClick={saveTimeTable}>Save</button>
     </div>
   );
 };
