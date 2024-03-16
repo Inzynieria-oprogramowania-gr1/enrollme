@@ -6,7 +6,10 @@ WORKDIR /code
 COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 
-RUN npm ci
+RUN npm i --package-lock-only
+RUN npm install
+
+RUN npm ci 
 COPY . /code
 
 ENV CI=true
