@@ -1,41 +1,26 @@
-import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import React, {useEffect, useState} from "react";
+import TimeTable from "./teacher/TimeTable";
 import "./App.css";
 
-type Greeting = {
-  id: number;
-  name: string;
-};
 
 function App() {
-  const [greeting, setGreeting] = useState<Greeting>();
+  const [greeting, setGreeting] = useState('');
   useEffect(() => {
-    fetch("/api")
-      .then(res => res.json())
+    fetch("http://localhost:8080/demo/hi")
+      .then(res => res.text())
       .then(setGreeting)
       .catch(console.error);
   }, [setGreeting]);
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         {greeting ? (
-          <p>Hello from {greeting.name}</p>
+          <p>{greeting}</p>
         ) : (
           <p>Loading...</p>
         )}
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
+      <TimeTable />
     </div>
   );
 }
