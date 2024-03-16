@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-// import BrowserRouter from "react-router-dom";
+import BrowserRouter from "react-router-dom";
 import TimeTable from "./teacher/TimeTable";
 import Results from "./teacher/Results";
 import "./App.css";
-
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 
