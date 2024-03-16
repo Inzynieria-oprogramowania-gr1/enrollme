@@ -1,4 +1,4 @@
-package com.company.project.dto;
+package com.company.project.dto.timetable;
 
 import com.company.project.entity.Weekday;
 

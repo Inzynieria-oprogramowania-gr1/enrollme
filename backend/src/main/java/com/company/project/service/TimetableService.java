@@ -1,22 +1,34 @@
 package com.company.project.service;
 
-import com.company.project.dto.TimeSLotDto;
-import com.company.project.dto.TimetableDto;
+import com.company.project.dto.timetable.ShareLinkDto;
+import com.company.project.dto.timetable.TimeSLotDto;
+import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.entity.ShareLink;
 import com.company.project.entity.Timeslot;
+import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.TimeslotRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TimetableService {
     private final TimeslotRepository timeslotRepository;
+    private final ActiveLinkRepository activeLinkRepository;
 
-    public TimetableService(TimeslotRepository timeslotRepository) {
+    public TimetableService(
+            TimeslotRepository timeslotRepository,
+            ActiveLinkRepository activeLinkRepository
+    ) {
         this.timeslotRepository = timeslotRepository;
+        this.activeLinkRepository = activeLinkRepository;
     }
 
 
@@ -80,6 +92,24 @@ public class TimetableService {
 
         timeslotRepository.saveAll(updatedTimeslots);
         return timeSlotListToTimetableList(updatedTimeslots);
+    }
+
+
+    public ShareLinkDto createShareLink(HttpServletRequest request) throws URISyntaxException {
+        String host = request.getRequestURL().toString();
+        String link = host.substring(0, host.lastIndexOf(new URI(host).getPath()));
+
+        ShareLink savedLink = activeLinkRepository.save(new ShareLink(link + "/students/timetable"));
+        return new ShareLinkDto(savedLink.getShareLink());
+    }
+
+    public Optional<ShareLinkDto> getShareLink() {
+        // Change to findByTimetableUUID if sessions are present
+        return activeLinkRepository
+                .findAll()
+                .stream()
+                .findFirst()
+                .map(e -> new ShareLinkDto(e.getShareLink()));
     }
 
 }
