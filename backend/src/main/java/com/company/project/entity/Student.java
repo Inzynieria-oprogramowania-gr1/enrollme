@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

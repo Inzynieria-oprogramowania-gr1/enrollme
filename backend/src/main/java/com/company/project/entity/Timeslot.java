@@ -3,7 +3,11 @@ package com.company.project.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -38,10 +42,14 @@ public class Timeslot {
             name = "slot_preference",
             joinColumns = @JoinColumn(name = "students_id"),
             inverseJoinColumns = @JoinColumn(name = "timetable_id"))
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Student> preferences = new HashSet<>();
 
 
     @OneToMany(mappedBy = "result")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Student> result = new HashSet<>();
 
 
