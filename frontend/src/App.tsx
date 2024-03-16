@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+// import BrowserRouter from "react-router-dom";
 import TimeTable from "./teacher/TimeTable";
 import Results from "./teacher/Results";
 import "./App.css";
@@ -7,13 +8,19 @@ import "./App.css";
 
 
 function App() {
-  const handleButtonClick = () => {
-    setShowResults(!showResults);
+  const handleResultsButtonClick = () => {
+    setShowTimeTable(false);
+    setShowResults(true);
+  }
+  const handleMakeTimeTableClick = () => {
+    setShowResults(false);
+    setShowTimeTable(true);
   }
 
 
   const [greeting, setGreeting] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [showTimeTable, setShowTimeTable] = useState(false);
   useEffect(() => {
     fetch("http://localhost:8080/demo/hi")
       .then(res => res.text())
@@ -28,9 +35,10 @@ function App() {
         ) : (
           <p>Loading...</p>
         )}
-          <button onClick={handleButtonClick}>RESULTS</button>
+          <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>MAKE TIMETABLE</button>
+          <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
-        {showResults ? <Results /> : <TimeTable />}
+        {showResults ? <Results /> : showTimeTable ? <TimeTable /> : null}
     </div>
   );
 }
