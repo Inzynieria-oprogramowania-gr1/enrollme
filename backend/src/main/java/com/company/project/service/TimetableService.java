@@ -26,7 +26,7 @@ public class TimetableService {
         return timeSlotListToTimetableList(timetableEntities);
     }
 
-    private static List<TimetableDto> timeSlotListToTimetableList(List<Timeslot> timetableEntities) {
+    public static List<TimetableDto> timeSlotListToTimetableList(List<Timeslot> timetableEntities) {
         return timetableEntities
                 .stream()
                 .collect(Collectors.groupingBy(Timeslot::getWeekday, Collectors

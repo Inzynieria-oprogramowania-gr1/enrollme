@@ -46,7 +46,11 @@ public class StudentsController {
     }
 
     @PostMapping(path = "/{id}/preferences")
-    public List<StudentPreferencesDto> addStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable){
+    public StudentPreferencesDto addStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable){
+        return studentService.addPreferences(id, timetable);
+    }
+    @GetMapping(path = "/{id}/preferences")
+    public StudentPreferencesDto getStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable){
         return studentService.addPreferences(id, timetable);
     }
 }

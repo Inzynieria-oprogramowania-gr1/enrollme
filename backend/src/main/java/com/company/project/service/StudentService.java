@@ -63,11 +63,11 @@ public class StudentService {
     .toList();
   }
 
-  public List<StudentPreferencesDto> addPreferences(Long id, List<TimetableDto> timetable) throws RuntimeException{
+  public StudentPreferencesDto addPreferences(Long id, List<TimetableDto> timetable) throws RuntimeException{
 
     Student student = studentRepository.findById(id).get();
 
-    return timetable.stream().flatMap(singleTimetable->
+    timetable.stream().flatMap(singleTimetable->
       singleTimetable
       .timeSlots()
       .stream()
@@ -75,13 +75,19 @@ public class StudentService {
         (ts)->
         timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(),ts.start_date(),ts.end_date())
         )
-    ).map((bSlot)->{
+    ).forEach((bSlot)->{
       Timeslot bSlotReal = bSlot.orElseThrow(()->new RuntimeException("Tu nic nie ma 1d10t0"));
       bSlotReal.getPreferences().add(student);
       student.getPreferences().add(bSlotReal);
       timeslotRepository.save(bSlotReal);
       studentRepository.save(student);
-      return new StudentPreferencesDto(id, student.getEmail(), timetable);
-    }).toList();
+    });
+
+    return new StudentPreferencesDto(id, student.getEmail(), timetable);
+  }
+  public StudentPreferencesDto getPreferences(Long id) throws RuntimeException{
+    Student student = studentRepository.findById(id).get();
+    List<TimetableDto> timetables = TimetableService.timeSlotListToTimetableList(student.getPreferences().stream().toList());
+    return new StudentPreferencesDto(student.getId(),student.getEmail(),timetables);
   }
 }
