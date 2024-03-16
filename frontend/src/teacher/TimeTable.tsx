@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./TimeTable.css";
+import MailInputs from "./MailInputs";
 
 interface TimeSlot {
   start_date: string;
@@ -60,6 +61,7 @@ const TimeTable = () => {
         ))}
         </tbody>
       </table>
+      <MailInputs></MailInputs>
     </div>
   );
 };
