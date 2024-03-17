@@ -7,9 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Student;
 import com.company.project.entity.Timeslot;
+import com.company.project.entity.Weekday;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
@@ -86,6 +88,14 @@ public class StudentService {
 
     return studentMapper.mapToStudentPreferencesDto(student);
   }
+
+  public void setStudentResult(StudentDto studentDto, Weekday weekday, TimeSLotDto timeSLotDto){
+    Student s = studentRepository.findById(studentDto.id()).orElseThrow(()->new ResourceNotFoundException("Student not found"));
+    Timeslot ts = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(weekday, timeSLotDto.start_date(), timeSLotDto.end_date()).orElseThrow(()-> new ResourceNotFoundException("Timeslot not found"));
+    s.setResult(ts);
+    studentRepository.save(s);
+  }
+
   public StudentPreferencesDto getPreferences(Long id) throws RuntimeException{
     Student student = studentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
     return studentMapper.mapToStudentPreferencesDto(student);
