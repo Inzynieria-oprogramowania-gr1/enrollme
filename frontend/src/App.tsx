@@ -2,14 +2,14 @@ import React, {useEffect, useState} from "react";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import TimeTable from "./teacher/TimeTable";
 import Results from "./teacher/Results";
+import StudentLogin from "./student/StudentLogin";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-
 
 function App() {
 
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleResultsButtonClick = () => {
     navigate("/results")
@@ -18,6 +18,9 @@ function App() {
     navigate("/timetable")
   }
 
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
   const [greeting, setGreeting] = useState('');
   const [showResults, setShowResults] = useState(false);
@@ -40,6 +43,7 @@ function App() {
           <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
       <Routes>
+        <Route path="/students/timetable" element={isAuthenticated ? <TimeTable/> : <StudentLogin onLogin={handleLogin}/>} />
         <Route path="/results" element={<Results />} />
         <Route path="/timetable" element={<TimeTable />} />
       </Routes>
