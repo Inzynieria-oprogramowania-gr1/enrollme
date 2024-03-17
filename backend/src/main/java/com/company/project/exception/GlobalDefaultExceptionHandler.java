@@ -21,7 +21,9 @@ class GlobalDefaultExceptionHandler {
   @ExceptionHandler(value = Exception.class)
   public void defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
     if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null){
+        e.printStackTrace();
         throw e;
     }
+    e.printStackTrace();
   }
 }

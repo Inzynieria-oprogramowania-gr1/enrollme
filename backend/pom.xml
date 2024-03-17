@@ -45,6 +45,17 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.0.Beta1</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.6.0.Beta1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -64,6 +75,11 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                        <compilerArgs>
+                            <compilerArg>
+                                    -Amapstruct.defaultComponentModel=spring
+                            </compilerArg>
+                        </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
