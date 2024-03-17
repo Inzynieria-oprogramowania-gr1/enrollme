@@ -5,6 +5,7 @@ import Results from "./teacher/Results";
 import StudentLogin from "./student/StudentLogin";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import StudentTimeTable from "./student/StudentTimeTable";
 
 function App() {
 
@@ -43,7 +44,7 @@ function App() {
           <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
       <Routes>
-        <Route path="/students/timetable" element={isAuthenticated ? <TimeTable/> : <StudentLogin onLogin={handleLogin}/>} />
+        <Route path="/students/timetable" element={isAuthenticated ? <StudentTimeTable/> : <StudentLogin onLogin={handleLogin}/>} />
         <Route path="/results" element={<Results />} />
         <Route path="/timetable" element={<TimeTable />} />
       </Routes>

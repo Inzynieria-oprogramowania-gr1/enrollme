@@ -19,8 +19,8 @@ const StudentLogin: FC<StudentLoginProps> = ({onLogin}) => {
     // } else {
     //   alert('Invalid email. Please try again.');
     // }
-    // onLogin();
-    // history('/students/timetable');
+    onLogin();
+    history('/students/timetable');
 
   };
 
