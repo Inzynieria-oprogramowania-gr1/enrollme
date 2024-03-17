@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import "./TimeTable.css";
 import MailInputs from "./MailInputs";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ShareLink from "./ShareLink";
 
 interface TimeSlot {
   start_date: string;
@@ -103,12 +104,15 @@ const TimeTable = () => {
 
   return (
     <div className="container">
-      <h1 className="mb-3">Time Table</h1>
+      <h5 className="mb-3">Choose preferred time slots:</h5>
       <div className="mb-3">
         {renderTimeTable()}
       </div>
-      <button className="btn btn-primary" onClick={saveTimeTable}>Save</button>
-      <MailInputs></MailInputs>
+      <div className="d-flex justify-content-between align-items-center">
+        <button className="btn btn-secondary" onClick={saveTimeTable}>Save preferred slots</button>
+        <MailInputs></MailInputs>
+        <ShareLink></ShareLink>
+      </div>
     </div>
   );
 };
