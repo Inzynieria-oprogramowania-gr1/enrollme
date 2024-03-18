@@ -10,7 +10,11 @@ import StudentTimeTable from "./student/StudentTimeTable";
 function App() {
 
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ id: null | number, email: string, isAuthenticated: boolean }>({
+    id: null,
+    email: '',
+    isAuthenticated: false
+  });
 
   const handleResultsButtonClick = () => {
     navigate("/results")
@@ -19,8 +23,8 @@ function App() {
     navigate("/timetable")
   }
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
+  const handleLogin = (email: string) => {
+    setUser({id: null, email: email, isAuthenticated: true})
   };
 
   const [greeting, setGreeting] = useState('');
@@ -32,6 +36,8 @@ function App() {
       .then(setGreeting)
       .catch(console.error);
   }, [setGreeting]);
+
+  console.log(user)
   return (
     <div className="App">
       <header className="App-header">
@@ -40,13 +46,14 @@ function App() {
         ) : (
           <p>Loading...</p>
         )}
-          <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>MAKE TIMETABLE</button>
-          <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
+        <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>MAKE TIMETABLE</button>
+        <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
       <Routes>
-        <Route path="/students/timetable" element={isAuthenticated ? <StudentTimeTable/> : <StudentLogin onLogin={handleLogin}/>} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/timetable" element={<TimeTable />} />
+        <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable/> :
+          <StudentLogin onLogin={handleLogin} user={user} setUser={setUser}/>}/>
+        <Route path="/results" element={<Results/>}/>
+        <Route path="/timetable" element={<TimeTable/>}/>
       </Routes>
     </div>
   );
