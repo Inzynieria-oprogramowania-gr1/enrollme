@@ -11,6 +11,8 @@ import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Student;
 import com.company.project.entity.Timeslot;
 import com.company.project.exception.implementations.ResourceNotFoundException;
+import com.company.project.mapper.StudentMapper;
+import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 
@@ -22,23 +24,25 @@ import lombok.RequiredArgsConstructor;
 public class StudentService {
   private final StudentRepository studentRepository;
   private final TimeslotRepository timeslotRepository;
+  private final StudentMapper studentMapper;
+  private final TimeslotMapper timeslotMapper;
   
   public List<StudentDto> getAllStudents(){
     return studentRepository.findAll().stream()
     .map(
-      (student)->new StudentDto(student.getId(), student.getEmail())
+      (student)->studentMapper.mapToStudentDto(student)
     )
     .toList();
   }
 
   public StudentDto getStudentByEmail(String email){
     return studentRepository.findByEmail(email).map(      
-      (student)->new StudentDto(student.getId(), student.getEmail())
+      (student)->studentMapper.mapToStudentDto(student)
     ).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
   }
   public StudentDto getStudentById(Long id){
     return studentRepository.findById(id).map(      
-      (student)->new StudentDto(student.getId(), student.getEmail())
+      (student)->studentMapper.mapToStudentDto(student)
     ).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
   }
 
@@ -51,7 +55,7 @@ public class StudentService {
     return emails.stream().map
       ((e)->{
         Student student = studentRepository.save(new Student(e));
-        return new StudentDto(student.getId(), student.getEmail());
+        return studentMapper.mapToStudentDto(student);
       }
     )
     .toList();
@@ -61,7 +65,7 @@ public class StudentService {
 
     Student student = studentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
 
-    timetable.stream().flatMap(singleTimetable->
+    List<Timeslot> timeslots = timetable.stream().flatMap(singleTimetable->
       singleTimetable
       .timeSlots()
       .stream()
@@ -70,7 +74,9 @@ public class StudentService {
         timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(),ts.start_date(),ts.end_date())
         .orElseThrow(()-> new ResourceNotFoundException("Slot "+singleTimetable.weekday()+" "+ts.start_date()+" "+ts.end_date()+" not found"))
         )
-    ).forEach((bSlot)->{
+    ).toList();
+    
+    timeslots.stream().forEach((bSlot)->{
       Timeslot bSlotReal = bSlot;
       bSlotReal.getPreferences().add(student);
       student.getPreferences().add(bSlotReal);
@@ -78,11 +84,10 @@ public class StudentService {
       studentRepository.save(student);
     });
 
-    return new StudentPreferencesDto(id, student.getEmail(), timetable);
+    return studentMapper.mapToStudentPreferencesDto(student);
   }
   public StudentPreferencesDto getPreferences(Long id) throws RuntimeException{
     Student student = studentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
-    List<TimetableDto> timetables = TimetableService.timeSlotListToTimetableList(student.getPreferences().stream().toList());
-    return new StudentPreferencesDto(student.getId(),student.getEmail(),timetables);
+    return studentMapper.mapToStudentPreferencesDto(student);
   }
 }

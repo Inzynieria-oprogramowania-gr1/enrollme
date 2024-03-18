@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Entity
 @Table(name = "students")
 @NoArgsConstructor
@@ -16,23 +15,21 @@ import java.util.Set;
 @Data
 
 public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "students_id", nullable = false, unique = true)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "students_id", nullable = false, unique = true)
+        private Long id;
 
-    private String email;
+        private String email;
 
+        public Student(String email) {
+                this.email = email;
+        }
 
-    public Student(String email) {
-        this.email = email;
-    }
+        @ManyToMany(mappedBy = "preferences")
+        private Set<Timeslot> preferences = new HashSet<>();
 
-
-   @ManyToMany(mappedBy = "preferences")
-   private Set<Timeslot> preferences = new HashSet<>();
-
-   @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name = "slot_id")
-   private Timeslot result;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "slot_id")
+        private Timeslot result;
 }

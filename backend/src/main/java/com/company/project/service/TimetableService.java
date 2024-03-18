@@ -5,9 +5,13 @@ import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.ShareLink;
 import com.company.project.entity.Timeslot;
+import com.company.project.mapper.ShareLinkMapper;
+import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.TimeslotRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -19,69 +23,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class TimetableService {
     private final TimeslotRepository timeslotRepository;
     private final ActiveLinkRepository activeLinkRepository;
-
-    public TimetableService(
-            TimeslotRepository timeslotRepository,
-            ActiveLinkRepository activeLinkRepository
-    ) {
-        this.timeslotRepository = timeslotRepository;
-        this.activeLinkRepository = activeLinkRepository;
-    }
-
+    private final TimeslotMapper timeslotMapper;
+    private final ShareLinkMapper shareLinkMapper;
 
     public List<TimetableDto> getTimetable() {
         List<Timeslot> timetableEntities = timeslotRepository.findAll();
-
-        return timeSlotListToTimetableList(timetableEntities);
+        return timeslotMapper.mapToTimetableList(timetableEntities);
     }
-
-    public static List<TimetableDto> timeSlotListToTimetableList(List<Timeslot> timetableEntities) {
-        return timetableEntities
-                .stream()
-                .collect(Collectors.groupingBy(Timeslot::getWeekday, Collectors
-                        .mapping(timeslot ->
-                                        new TimeSLotDto(
-                                                timeslot.getStartTime(),
-                                                timeslot.getEndTime(),
-                                                timeslot.isSelected()),
-                                Collectors.toList())))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey()) // Sort by weekday ordinal
-                .map(entry -> new TimetableDto(entry.getKey(), entry
-                        .getValue()
-                        .stream()
-                        .sorted(Comparator.comparing(TimeSLotDto::start_date)) // Sort time slots by start date
-                        .toList()))
-                .toList();
-    }
-
+    
     public List<TimetableDto> updateTimetable(List<TimetableDto> timetableDto) {
-        List<Timeslot> list = timetableDto
-                .stream()
-                .flatMap(e -> e.timeSlots()
-                        .stream()
-                        .map(
-                                a -> new Timeslot(
-                                        e.weekday(),
-                                        a.start_date(),
-                                        a.end_date(),
-                                        a.is_selected()
-                                )
-                        )
-                )
-                .toList();
-        return updateTimeslots(list);
-
+        return updateTimeslots(timeslotMapper.mapToTimeslotList(timetableDto));
     }
 
 
     public List<TimetableDto> updateTimeslots(List<Timeslot> timeslotDtos) {
         List<Timeslot> timeslots = timeslotRepository.findAll();
-
         List<Timeslot> updatedTimeslots = timeslotDtos.stream()
                 .flatMap(timeslotDto -> timeslots.stream()
                         .filter(timeslot -> timeslot.getWeekday() == timeslotDto.getWeekday() &&
@@ -91,7 +51,7 @@ public class TimetableService {
                 .collect(Collectors.toList());
 
         timeslotRepository.saveAll(updatedTimeslots);
-        return timeSlotListToTimetableList(updatedTimeslots);
+        return timeslotMapper.mapToTimetableList(updatedTimeslots);
     }
 
 
@@ -100,7 +60,7 @@ public class TimetableService {
         String link = host.substring(0, host.lastIndexOf(new URI(host).getPath()));
 
         ShareLink savedLink = activeLinkRepository.save(new ShareLink(link + "/students/timetable"));
-        return new ShareLinkDto(savedLink.getShareLink());
+        return shareLinkMapper.mapToShareLinkDto(savedLink);
     }
 
     public Optional<ShareLinkDto> getShareLink() {
@@ -109,7 +69,7 @@ public class TimetableService {
                 .findAll()
                 .stream()
                 .findFirst()
-                .map(e -> new ShareLinkDto(e.getShareLink()));
+                .map(e -> shareLinkMapper.mapToShareLinkDto(e));
     }
 
 }
