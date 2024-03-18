@@ -54,6 +54,40 @@ const StudentTimeTable = () => {
     setAvailableTimeTableData(newTimeTableData);
   };
 
+  const updateTimeTableData = () => {
+    return timeTableData.map(day => {
+      const availableDay = availableTimeTableData.find(d => d.weekday === day.weekday);
+      if (!availableDay) return day;
+      return {
+        ...day,
+        timeSlots: day.timeSlots.map(slot => {
+          const availableSlot = availableDay.timeSlots.find(s => s.start_date === slot.start_date && s.end_date === slot.end_date);
+          if (!availableSlot) return slot;
+          return {
+            ...slot,
+            is_selected: availableSlot.is_selected
+          };
+        })
+      };
+    });
+  };
+
+  const savePreferences = () => {
+    const timeTableDataToSend = updateTimeTableData();
+    // fetch('http://localhost:8080/student/preferences', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(availableTimeTableData),
+    // })
+    //   .then(response => response.json())
+    //   .then(data => console.log(data))
+    //   .catch((error) => {
+    //     console.error('Error:', error);
+    //   });
+  };
+
   return (
     <div className="container">
       <h5 className="mb-3">Fill your preferences</h5>
@@ -66,12 +100,13 @@ const StudentTimeTable = () => {
               onClick={() => toggleSlotSelection(dayIndex, slotIndex)}
             >
               <div className="card-body">
-                <p className="card-title">{`${day.weekday} ${slot.start_date} - ${slot.end_date}`}</p>
+                <h6 className="card-title">{`${day.weekday}`}</h6>
                 <p className="card-text">{`${slot.start_date} - ${slot.end_date}`}</p>
               </div>
             </div>
           ))
       )}
+      <button className="btn btn-secondary" onClick={savePreferences}>Save preferences</button>
     </div>
   )
 }
