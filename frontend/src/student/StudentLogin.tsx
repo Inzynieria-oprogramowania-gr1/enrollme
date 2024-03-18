@@ -4,24 +4,37 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './StudentLogin.css';
 
 interface StudentLoginProps {
-  onLogin: () => void;
+  onLogin: (email: string) => void;
+  user: { id: null | number, email: string, isAuthenticated: boolean };
+  setUser: React.Dispatch<React.SetStateAction<{ id: null | number, email: string, isAuthenticated: boolean }>>;
 }
 
-const StudentLogin: FC<StudentLoginProps> = ({onLogin}) => {
+const StudentLogin: FC<StudentLoginProps> = ({onLogin, user, setUser}) => {
   const [email, setEmail] = useState('');
   const history = useNavigate();
 
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // TO-DO request to the backend to verify email
-    // if (response.ok) {
-    //   history('/students/timetable');
-    // } else {
-    //   alert('Invalid email. Please try again.');
-    // }
-    onLogin();
-    history('/students/timetable');
 
+    fetch(`http://localhost:8080/students?email=${email}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to check email');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setUser({ id: data.id, email: email, isAuthenticated: true });
+        history('/students/timetable');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        window.alert('Failed to log in. Please check your email and try again.');
+      });
   };
 
   return (
@@ -29,7 +42,7 @@ const StudentLogin: FC<StudentLoginProps> = ({onLogin}) => {
       <form onSubmit={handleSubmit} className="login-form">
         <label className="form-label">
           Enter your email:
-          <input className="form-control" type="email" value={email} onChange={e => setEmail(e.target.value)} required/>
+          <input className="form-control" type="email" value={email} onChange={handleEmailChange} required/>
         </label>
         <button className="btn btn-secondary mt-3" type="submit">Submit</button>
       </form>
