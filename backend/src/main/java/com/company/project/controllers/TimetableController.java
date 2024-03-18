@@ -5,11 +5,8 @@ import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.service.TimetableService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -40,8 +37,8 @@ public class TimetableController {
 
     @PostMapping("/share")
     @ResponseBody
-    public ShareLinkDto createShareLink(HttpServletRequest request) throws URISyntaxException {
-        return timetableService.createShareLink(request);
+    public ShareLinkDto createShareLink() throws URISyntaxException {
+        return timetableService.createShareLink();
     }
 
     @GetMapping("/share")

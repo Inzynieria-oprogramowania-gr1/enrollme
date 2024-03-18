@@ -1,7 +1,6 @@
 package com.company.project.service;
 
 import com.company.project.dto.timetable.ShareLinkDto;
-import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.ShareLink;
 import com.company.project.entity.Timeslot;
@@ -9,16 +8,10 @@ import com.company.project.mapper.ShareLinkMapper;
 import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.TimeslotRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,7 +27,7 @@ public class TimetableService {
         List<Timeslot> timetableEntities = timeslotRepository.findAll();
         return timeslotMapper.mapToTimetableList(timetableEntities);
     }
-    
+
     public List<TimetableDto> updateTimetable(List<TimetableDto> timetableDto) {
         return updateTimeslots(timeslotMapper.mapToTimeslotList(timetableDto));
     }
@@ -55,11 +48,8 @@ public class TimetableService {
     }
 
 
-    public ShareLinkDto createShareLink(HttpServletRequest request) throws URISyntaxException {
-        String host = request.getRequestURL().toString();
-        String link = host.substring(0, host.lastIndexOf(new URI(host).getPath()));
-
-        ShareLink savedLink = activeLinkRepository.save(new ShareLink(link + "/students/timetable"));
+    public ShareLinkDto createShareLink() {
+        ShareLink savedLink = activeLinkRepository.save(new ShareLink("/students/timetable"));
         return shareLinkMapper.mapToShareLinkDto(savedLink);
     }
 
@@ -69,7 +59,7 @@ public class TimetableService {
                 .findAll()
                 .stream()
                 .findFirst()
-                .map(e -> shareLinkMapper.mapToShareLinkDto(e));
+                .map(shareLinkMapper::mapToShareLinkDto);
     }
 
 }
