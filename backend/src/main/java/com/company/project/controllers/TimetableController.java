@@ -3,6 +3,7 @@ package com.company.project.controllers;
 
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.service.TimetableService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -39,23 +40,16 @@ public class TimetableController {
 
     @PostMapping("/share")
     @ResponseBody
-    public ResponseEntity<ShareLinkDto> createShareLink(HttpServletRequest request) {
-        try {
-            ShareLinkDto link = timetableService.createShareLink(request);
-            return ResponseEntity.created(new URI(link.link())).body(link);
-        } catch (URISyntaxException e) {
-            // Btw this exception is unlikely to occur
-            return ResponseEntity.internalServerError().body(new ShareLinkDto("")); // TODO any other ideas what to return?
-        }
+    public ShareLinkDto createShareLink(HttpServletRequest request) throws URISyntaxException {
+        return timetableService.createShareLink(request);
     }
 
     @GetMapping("/share")
     @ResponseBody
-    public ResponseEntity<ShareLinkDto> getSharedLink() {
+    public ShareLinkDto getSharedLink() {
         return timetableService
                 .getShareLink()
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Share link not found. Try to generate it first"));
 
     }
 

@@ -1,5 +1,6 @@
 package com.company.project.controllers;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
@@ -34,14 +36,14 @@ public class StudentsController {
     }
     @GetMapping(params = "id")
     public @ResponseBody StudentDto getStudentById(@RequestParam Long id) {
-        return studentService.getStudentById(id).get();
+        return studentService.getStudentById(id);
     }
     @GetMapping(params = "email")
     public @ResponseBody StudentDto getStudentByEmail(@RequestParam String email) {
-        return studentService.getStudentByEmail(email).get();
+        return studentService.getStudentByEmail(email);
     }
     @GetMapping
-    public @ResponseBody List<StudentDto> getStudents() {
+    public @ResponseBody List<StudentDto> getStudents(){
         return studentService.getAllStudents();
     }
 
@@ -51,6 +53,6 @@ public class StudentsController {
     }
     @GetMapping(path = "/{id}/preferences")
     public StudentPreferencesDto getStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable){
-        return studentService.addPreferences(id, timetable);
+        return studentService.getPreferences(id);
     }
 }
