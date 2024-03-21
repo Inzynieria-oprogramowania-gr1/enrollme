@@ -6,11 +6,12 @@ const handleShareToStudents = async () => {
       method: "POST",
     });
     if (!response.ok) {
-      throw new Error('Failed to fetch share link');
+      alert('Failed to fetch share link');
+      return;
     }
 
     const data = await response.json();
-    await navigator.clipboard.writeText(data.link);
+    await navigator.clipboard.writeText("http://localhost:3000" + data.link);
     alert('Link has been saved to clipboard');
   } catch (error) {
     console.error('Error:', error);
