@@ -12,6 +12,16 @@ interface Day {
   weekday: string;
 }
 
+interface User {
+  id: null | number;
+  email: string;
+  isAuthenticated: boolean;
+}
+
+interface StudentTimeTableProps {
+  user: User;
+}
+
 const filterSelectedSlots = (timeTableData: Day[]) => {
   return timeTableData.filter(day =>
     day.timeSlots.some(slot => slot.is_selected)
@@ -31,7 +41,7 @@ const setSlotsToFalse = (availableTimeTableData: Day[]) => {
   }));
 }
 
-const StudentTimeTable = () => {
+const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);
   const [availableTimeTableData, setAvailableTimeTableData] = useState<Day[]>([]);
 
@@ -54,6 +64,46 @@ const StudentTimeTable = () => {
     setAvailableTimeTableData(newTimeTableData);
   };
 
+  const updateTimeTableData = () => {
+    return timeTableData.map(day => {
+      const availableDay = availableTimeTableData.find(d => d.weekday === day.weekday);
+      if (!availableDay) return day;
+      return {
+        ...day,
+        timeSlots: day.timeSlots.map(slot => {
+          const availableSlot = availableDay.timeSlots.find(s => s.start_date === slot.start_date && s.end_date === slot.end_date);
+          if (!availableSlot) return slot;
+          return {
+            ...slot,
+            is_selected: availableSlot.is_selected
+          };
+        })
+      };
+    });
+  };
+
+  const savePreferences = () => {
+    const timeTableDataToSend = updateTimeTableData();
+    fetch(`http://localhost:8080/students/${user.id}/preferences`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(timeTableDataToSend),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save preferences');
+        }
+        alert("Preferences saved successfully!")
+        return response.json();
+      })
+      .then(data => console.log(data))
+      .catch((error) => {
+        alert(error);
+      });
+  };
+
   return (
     <div className="container">
       <h5 className="mb-3">Fill your preferences</h5>
@@ -66,12 +116,13 @@ const StudentTimeTable = () => {
               onClick={() => toggleSlotSelection(dayIndex, slotIndex)}
             >
               <div className="card-body">
-                <p className="card-title">{`${day.weekday} ${slot.start_date} - ${slot.end_date}`}</p>
+                <h6 className="card-title">{`${day.weekday}`}</h6>
                 <p className="card-text">{`${slot.start_date} - ${slot.end_date}`}</p>
               </div>
             </div>
           ))
       )}
+      <button className="btn btn-secondary" onClick={savePreferences}>Save preferences</button>
     </div>
   )
 }
