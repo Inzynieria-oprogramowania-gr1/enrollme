@@ -12,6 +12,16 @@ interface Day {
   weekday: string;
 }
 
+interface User {
+  id: null | number;
+  email: string;
+  isAuthenticated: boolean;
+}
+
+interface StudentTimeTableProps {
+  user: User;
+}
+
 const filterSelectedSlots = (timeTableData: Day[]) => {
   return timeTableData.filter(day =>
     day.timeSlots.some(slot => slot.is_selected)
@@ -31,7 +41,7 @@ const setSlotsToFalse = (availableTimeTableData: Day[]) => {
   }));
 }
 
-const StudentTimeTable = () => {
+const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);
   const [availableTimeTableData, setAvailableTimeTableData] = useState<Day[]>([]);
 
@@ -74,18 +84,24 @@ const StudentTimeTable = () => {
 
   const savePreferences = () => {
     const timeTableDataToSend = updateTimeTableData();
-    // fetch('http://localhost:8080/student/preferences', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(availableTimeTableData),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => console.log(data))
-    //   .catch((error) => {
-    //     console.error('Error:', error);
-    //   });
+    fetch(`http://localhost:8080/students/${user.id}/preferences`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(timeTableDataToSend),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save preferences');
+        }
+        alert("Preferences saved successfully!")
+        return response.json();
+      })
+      .then(data => console.log(data))
+      .catch((error) => {
+        alert(error);
+      });
   };
 
   return (

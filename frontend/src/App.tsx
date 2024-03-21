@@ -50,7 +50,7 @@ function App() {
         <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
       <Routes>
-        <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable/> :
+        <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable user={user}/> :
           <StudentLogin onLogin={handleLogin} user={user} setUser={setUser}/>}/>
         <Route path="/results" element={<Results/>}/>
         <Route path="/timetable" element={<TimeTable/>}/>
