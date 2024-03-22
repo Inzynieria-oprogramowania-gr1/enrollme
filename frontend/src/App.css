@@ -1,6 +1,6 @@
-/*.App {*/
-/*  text-align: center;*/
-/*}*/
+body {
+  background-color: ghostwhite;
+}
 
 /*.App-logo {*/
 /*  height: 40vmin;*/
@@ -16,7 +16,7 @@
 
 
 .App-header {
-  background-color: #282c34;
+  background-color: white;
   height: 10vh;
   display: flex;
   flex-direction: row;
@@ -24,6 +24,12 @@
   justify-content: space-around;
   font-size: calc(10px + 2vmin);
   color: white;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.full_logo {
+  height: 6vh;
 }
 
 /*.App-link {*/

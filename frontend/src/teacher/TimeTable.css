@@ -1,35 +1,36 @@
 .timeTable {
-    border-collapse: collapse;
+    border-collapse: separate;
     width: 100%;
 }
 
 .timeTable-headerRow,
 .timeTable-row {
-    border: 1px solid black;
+    border: #c2c2c2 1px solid;
     padding: 20px;
     text-align: center;
     vertical-align: middle;
 }
 
-.timeTable-headerCell,
-.timeTable-headerRow {
-    background-color: lightblue;
-}
-
-.timeTable-headerCell,
-.timeTable-cell {
+.timeTable-headerCell {
     padding: 20px;
-    border: 1px solid black;
+    overflow: hidden;
+    width: 16%;
 }
 
 .timeTable-cell {
     padding: 20px;
+    margin: 10px;
     text-align: center;
     vertical-align: middle;
     color: gray;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 16%;
+    background-color: white;
 }
 
 .timeTable-selected {
-    background-color: #85d285;
+    background-color: #d3eed3;
     color: black;
+    border: green 1px solid;
 }

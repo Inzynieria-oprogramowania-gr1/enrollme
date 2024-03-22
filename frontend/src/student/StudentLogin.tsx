@@ -2,11 +2,12 @@ import React, {useState, FC} from 'react';
 import {useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './StudentLogin.css';
+import {User} from "../types";
 
 interface StudentLoginProps {
   onLogin: (email: string) => void;
-  user: { id: null | number, email: string, isAuthenticated: boolean };
-  setUser: React.Dispatch<React.SetStateAction<{ id: null | number, email: string, isAuthenticated: boolean }>>;
+  user: User;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
 }
 
 const StudentLogin: FC<StudentLoginProps> = ({onLogin, user, setUser}) => {

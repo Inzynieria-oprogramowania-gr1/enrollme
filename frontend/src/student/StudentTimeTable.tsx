@@ -1,22 +1,6 @@
 import React, {useEffect, useState} from "react";
 import './StudentTimeTable.css'
-
-interface TimeSlot {
-  start_date: string;
-  end_date: string;
-  is_selected: boolean;
-}
-
-interface Day {
-  timeSlots: TimeSlot[];
-  weekday: string;
-}
-
-interface User {
-  id: null | number;
-  email: string;
-  isAuthenticated: boolean;
-}
+import {Day, User} from "../types";
 
 interface StudentTimeTableProps {
   user: User;
