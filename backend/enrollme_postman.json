@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "fa268e96-8200-425f-b93c-44242010daf6",
-		"name": "Enrollme",
+		"_postman_id": "b6402255-16e8-49f0-92a7-b3288474de64",
+		"name": "Enrollme Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33176807"
+		"_exporter_id": "33618961"
 	},
 	"item": [
 		{
@@ -94,6 +94,36 @@
 			"response": []
 		},
 		{
+			"name": "Patch link",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"state\": \"INACTIVE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/teacher/timetable/share",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"timetable",
+						"share"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Post student list",
 			"request": {
 				"method": "POST",
@@ -127,7 +157,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/students?email=zarzitski@student.agh.edu.pl",
+					"raw": "http://localhost:8080/students?id=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -138,8 +168,8 @@
 					],
 					"query": [
 						{
-							"key": "email",
-							"value": "zarzitski@student.agh.edu.pl"
+							"key": "id",
+							"value": "1"
 						}
 					]
 				}
