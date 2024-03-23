@@ -22,8 +22,16 @@ public class Student {
 
         private String email;
 
-        public Student(String email) {
+        @Enumerated(EnumType.ORDINAL)
+        private UserRole role;
+
+        public Student(String email, UserRole role) {
                 this.email = email;
+                this.role = role;
+        }
+        public Student(String email) {
+            this.email = email;
+            this.role = UserRole.STUDENT;
         }
 
         @ManyToMany(mappedBy = "preferences")

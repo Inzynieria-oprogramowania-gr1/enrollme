@@ -48,7 +48,7 @@ public class StudentService {
 
   public StudentDto createStudent(String email){
     Student student = studentRepository.save(new Student(email));
-    return new StudentDto(student.getId(), student.getEmail());
+    return studentMapper.mapToStudentDto(student);
   }
 
   public List<StudentDto> createStudent(List<String> emails){
