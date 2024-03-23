@@ -55,21 +55,6 @@ public class TimetableService {
     }
 
 
-    public ShareLinkDto createShareLink(HttpServletRequest request) throws URISyntaxException {
-        String host = request.getRequestURL().toString();
-        String link = host.substring(0, host.lastIndexOf(new URI(host).getPath()));
 
-        ShareLink savedLink = activeLinkRepository.save(new ShareLink(link + "/students/timetable"));
-        return shareLinkMapper.mapToShareLinkDto(savedLink);
-    }
-
-    public Optional<ShareLinkDto> getShareLink() {
-        // Change to findByTimetableUUID if sessions are present
-        return activeLinkRepository
-                .findAll()
-                .stream()
-                .findFirst()
-                .map(e -> shareLinkMapper.mapToShareLinkDto(e));
-    }
 
 }
