@@ -3,6 +3,7 @@ import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.entity.UserRole;
 import com.company.project.entity.Weekday;
 import com.company.project.service.StudentService;
 import com.company.project.service.TimetableService;
@@ -36,12 +37,12 @@ public class GroupingAlgorithmTest {
     @BeforeEach
     public void setup() {
         List<StudentDto> students = Arrays.asList(
-                new StudentDto(1L, "student1@example.com"),
-                new StudentDto(2L, "student2@example.com"),
-                new StudentDto(3L, "student3@example.com"),
-                new StudentDto(4L, "student4@example.com"),
-                new StudentDto(5L, "student5@example.com"),
-                new StudentDto(6L, "student6@example.com")
+                new StudentDto(1L, "student1@example.com",UserRole.STUDENT),
+                new StudentDto(2L, "student2@example.com",UserRole.STUDENT),
+                new StudentDto(3L, "student3@example.com",UserRole.STUDENT),
+                new StudentDto(4L, "student4@example.com",UserRole.STUDENT),
+                new StudentDto(5L, "student5@example.com",UserRole.STUDENT),
+                new StudentDto(6L, "student6@example.com",UserRole.STUDENT)
         );
         when(studentService.getAllStudents()).thenReturn(students);
 
@@ -107,14 +108,14 @@ public class GroupingAlgorithmTest {
                 List.of(new TimeSLotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))));
 
 
-        assertTrue(studentsForMondaySlot1.contains(new StudentDto(1L, "student1@example.com")));
-        assertTrue(studentsForMondaySlot1.contains(new StudentDto(2L, "student2@example.com")));
-        assertTrue(studentsForMondaySlot2.contains(new StudentDto(3L, "student3@example.com")));
-        assertTrue(studentsForTuesdaySlot.contains(new StudentDto(5L, "student5@example.com")));
-        assertTrue(studentsForMondaySlot2.contains(new StudentDto(4L, "student4@example.com")) ||
-                studentsForTuesdaySlot.contains(new StudentDto(4L, "student4@example.com")));
-        assertTrue(studentsForMondaySlot2.contains(new StudentDto(6L, "student6@example.com")) ||
-                studentsForTuesdaySlot.contains(new StudentDto(6L, "student6@example.com")));
+        assertTrue(studentsForMondaySlot1.contains(new StudentDto(1L, "student1@example.com",UserRole.STUDENT)));
+        assertTrue(studentsForMondaySlot1.contains(new StudentDto(2L, "student2@example.com",UserRole.STUDENT)));
+        assertTrue(studentsForMondaySlot2.contains(new StudentDto(3L, "student3@example.com",UserRole.STUDENT)));
+        assertTrue(studentsForTuesdaySlot.contains(new StudentDto(5L, "student5@example.com",UserRole.STUDENT)));
+        assertTrue(studentsForMondaySlot2.contains(new StudentDto(4L, "student4@example.com",UserRole.STUDENT)) ||
+                studentsForTuesdaySlot.contains(new StudentDto(4L, "student4@example.com",UserRole.STUDENT)));
+        assertTrue(studentsForMondaySlot2.contains(new StudentDto(6L, "student6@example.com",UserRole.STUDENT)) ||
+                studentsForTuesdaySlot.contains(new StudentDto(6L, "student6@example.com",UserRole.STUDENT)));
 
     }
 

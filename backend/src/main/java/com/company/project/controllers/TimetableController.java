@@ -9,13 +9,10 @@ import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.TimetableService;
-<<<<<<< HEAD
-=======
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
->>>>>>> SCRUM-35-and-57-link-fixes
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
