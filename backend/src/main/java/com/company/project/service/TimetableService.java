@@ -48,18 +48,5 @@ public class TimetableService {
     }
 
 
-    public ShareLinkDto createShareLink() {
-        ShareLink savedLink = activeLinkRepository.save(new ShareLink("/students/timetable"));
-        return shareLinkMapper.mapToShareLinkDto(savedLink);
-    }
-
-    public Optional<ShareLinkDto> getShareLink() {
-        // Change to findByTimetableUUID if sessions are present
-        return activeLinkRepository
-                .findAll()
-                .stream()
-                .findFirst()
-                .map(shareLinkMapper::mapToShareLinkDto);
-    }
 
 }

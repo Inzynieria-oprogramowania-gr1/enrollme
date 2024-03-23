@@ -20,16 +20,17 @@ public class ShareLink {
 
     private String shareLink;
 
-    private boolean isActive;
+    @Enumerated(EnumType.ORDINAL)
+    private EnrolmentState state;
 
 
 
-    public ShareLink(String link, boolean isActive) {
+    public ShareLink(String link, EnrolmentState state) {
         this.shareLink = link;
-        this.isActive = isActive;
+        this.state = state;
     }
 
     public ShareLink(String link) {
-        this(link, true);
+        this(link, EnrolmentState.ACTIVE);
     }
 }
