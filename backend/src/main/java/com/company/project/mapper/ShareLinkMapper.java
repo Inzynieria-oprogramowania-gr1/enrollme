@@ -10,6 +10,7 @@ import com.company.project.entity.ShareLink;
 @Mapper(componentModel = "spring")
 public interface ShareLinkMapper {
     @Mapping(source = "link", target = "shareLink")
+    @Mapping(source = "state", target = "state")
     ShareLink mapToShareLink(ShareLinkDto shareLinkDto);
     
     @InheritInverseConfiguration
