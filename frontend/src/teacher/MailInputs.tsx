@@ -1,14 +1,18 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, FC} from "react";
 import "./MailInputs.css";
+
+interface MailInputsProps {
+  linkStatus: string | null;
+}
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-const MailInputs = () => {
+const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
   const [textareaValue, setTextareaValue] = useState<string>('')
 
-  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => { // 3. Create an onChange handler
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextareaValue(event.target.value);
   }
 
@@ -39,7 +43,7 @@ const MailInputs = () => {
     <div className="mail-div">
       <h6>Write list of the students mails, separate with semicolon:</h6>
         <textarea onChange={handleTextareaChange} />
-      <button className="btn btn-secondary" onClick={handleSendingMails}>Upload mails</button>
+      <button className="btn btn-secondary" onClick={handleSendingMails} disabled={linkStatus == 'INACTIVE'}>Upload mails</button>
     </div>
   );
 }

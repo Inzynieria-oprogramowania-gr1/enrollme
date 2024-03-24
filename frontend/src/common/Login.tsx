@@ -32,7 +32,15 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
       .then(data => {
         switch (role) {
           case 'STUDENT':
-            setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
+            fetch('http://localhost:8080/teacher/timetable/share')
+              .then(response => response.json())
+              .then(shareData => {
+                if (shareData.state !== 'ACTIVE') {
+                  alert('Enrollment has not started or has already ended');
+                  return;
+                }
+                setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
+              });
             break;
           case 'TEACHER':
             if (data.role == 'TEACHER') {
