@@ -1,10 +1,14 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, FC} from "react";
 import "./TimeTable.css";
 import {Day} from "../common/types";
 
-const TimeTable = () => {
+interface TimeTableProps {
+  linkStatus: string | null;
+  setLinkStatus: (status: string) => void;
+}
+
+const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);
-  const [isEnrollmentClosed, setIsEnrollmentClosed] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8080/teacher/timetable")
@@ -33,7 +37,7 @@ const TimeTable = () => {
       alert('Failed to close the enrollment');
       return;
     }
-    setIsEnrollmentClosed(true);
+    setLinkStatus('INACTIVE');
     alert('Success: Enrollment was successfully closed');
   }
 
@@ -110,8 +114,8 @@ const TimeTable = () => {
     <div className="mb-3">
       {renderTimeTable()}
       <div className="d-flex justify-content-between">
-        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={isEnrollmentClosed}>Save preferred slots</button>
-        <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment} disabled={isEnrollmentClosed}>Close enrollment</button>
+        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={linkStatus == 'INACTIVE'}>Save preferred slots</button>
+        <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment} disabled={linkStatus != 'ACTIVE'}>Close enrollment</button>
       </div>
 
     </div>
