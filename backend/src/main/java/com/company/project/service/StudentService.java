@@ -85,6 +85,7 @@ public class StudentService {
                 singleTimetable
                         .timeSlots()
                         .stream()
+                        .filter(e->e.is_selected())
                         .map(
                                 (ts) ->
                                         timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(), ts.start_date(), ts.end_date())

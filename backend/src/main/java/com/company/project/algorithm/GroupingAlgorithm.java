@@ -40,7 +40,12 @@ public class GroupingAlgorithm {
     public GroupingAlgorithm(StudentService  studentService, TimetableService timetableService) {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();
-        this.timetableList = timetableService.getTimetable();
+        this.timetableList = timetableService.getTimetable()
+        .stream()
+        .map(e->{
+            List<TimeSLotDto> tdto = e.timeSlots().stream().filter(k->k.is_selected()).toList();
+            return new TimetableDto(e.weekday(), tdto);
+        }).toList();
     }
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
