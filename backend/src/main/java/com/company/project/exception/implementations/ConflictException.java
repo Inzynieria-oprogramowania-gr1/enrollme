@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class ConflictException extends AbstractLocalException {
-    public ConflictException(String message){
+    public ConflictException(String message) {
         super(message);
-      }
+    }
 }

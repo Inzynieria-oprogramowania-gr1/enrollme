@@ -24,7 +24,6 @@ public class ShareLink {
     private EnrolmentState state;
 
 
-
     public ShareLink(String link, EnrolmentState state) {
         this.shareLink = link;
         this.state = state;

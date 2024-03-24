@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
 public class ForbiddenActionException extends AbstractLocalException {
-    public ForbiddenActionException(String message){
+    public ForbiddenActionException(String message) {
         super(message);
-      }
+    }
 }
