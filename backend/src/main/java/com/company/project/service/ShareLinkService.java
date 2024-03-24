@@ -22,9 +22,11 @@ import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.ShareLinkMapper;
 import com.company.project.repository.ActiveLinkRepository;
-
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -36,29 +38,28 @@ public class ShareLinkService {
     private final TimetableService timetableService;
 
 
-    public ShareLinkDto createShareLink() throws URISyntaxException {
-        if(activeLinkRepository
-        .findAll()
-        .stream()
-        .findFirst()
-        .isPresent()){
+    public ShareLinkDto createShareLink() {
+        if (activeLinkRepository
+                .findAll()
+                .stream()
+                .findFirst()
+                .isPresent()) {
             throw new ConflictException("Link already created");
         }
         ShareLink savedLink = activeLinkRepository.save(new ShareLink("/students/timetable"));
         return shareLinkMapper.mapToShareLinkDto(savedLink);
     }
 
-    public ShareLinkDto updateShareLink(EnrolmentState state){
+    public ShareLinkDto updateShareLink(EnrolmentState state) {
         ShareLink link = activeLinkRepository
-        .findAll()
-        .stream()
-        .findFirst()
-        .orElseThrow(()-> new ResourceNotFoundException("Share link not created"));
+                .findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Share link not created"));
         if(link.getState().equals(EnrolmentState.CALCULATING) ||
-            link.getState().equals(EnrolmentState.RESULTS_READY)){
-                throw new ConflictException("Cannot change state of link");
-            }
-
+        link.getState().equals(EnrolmentState.RESULTS_READY)){
+            throw new ConflictException("Cannot change state of link");
+        }
         link.setState(state);
         if(state.equals(EnrolmentState.CALCULATING)){
             GroupingAlgorithm algorithm = new GroupingAlgorithm(studentService, timetableService);
@@ -76,8 +77,7 @@ public class ShareLinkService {
                 .findAll()
                 .stream()
                 .findFirst()
-                .map(e -> 
-                    shareLinkMapper.mapToShareLinkDto(e)
+                .map(shareLinkMapper::mapToShareLinkDto
                 );
     }
 }

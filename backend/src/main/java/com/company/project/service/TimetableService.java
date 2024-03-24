@@ -1,12 +1,8 @@
 package com.company.project.service;
 
-import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.TimetableDto;
-import com.company.project.entity.ShareLink;
 import com.company.project.entity.Timeslot;
-import com.company.project.mapper.ShareLinkMapper;
 import com.company.project.mapper.TimeslotMapper;
-import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.TimeslotRepository;
 import lombok.AllArgsConstructor;
 
@@ -14,7 +10,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Primary
@@ -22,9 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TimetableService {
     private final TimeslotRepository timeslotRepository;
-    private final ActiveLinkRepository activeLinkRepository;
     private final TimeslotMapper timeslotMapper;
-    private final ShareLinkMapper shareLinkMapper;
 
     public List<TimetableDto> getTimetable() {
         List<Timeslot> timetableEntities = timeslotRepository.findAll();
@@ -49,7 +42,6 @@ public class TimetableService {
         timeslotRepository.saveAll(updatedTimeslots);
         return timeslotMapper.mapToTimetableList(updatedTimeslots);
     }
-
 
 
 }
