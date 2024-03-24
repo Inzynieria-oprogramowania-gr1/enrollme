@@ -16,6 +16,7 @@ import com.company.project.service.TimetableService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -54,13 +55,8 @@ public class TimetableController {
     @PatchMapping("/share")
     @ResponseBody
     public ShareLinkDto changeStateShareLink(@RequestBody ShareLinkPutDto requiredState) throws RuntimeException {
-<<<<<<< HEAD
-        if(requiredState.state().equals(EnrolmentState.RESULTS_READY)){
-            throw new ForbiddenActionException("Cannot change state to - "+requiredState);
-=======
         if (requiredState.state() == EnrolmentState.RESULTS_READY) {
             throw new ForbiddenActionException("Cannot change state to - " + requiredState);
->>>>>>> SCRUM-47-get-results
         }
         return shareLinkService.updateShareLink(requiredState.state());
     }
