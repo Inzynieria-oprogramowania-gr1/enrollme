@@ -3,6 +3,12 @@ export interface TimeSlot {
   end_date: string;
   is_selected: boolean;
 }
+export interface SpecifiedTimeSlot {
+  start_date: string;
+  end_date: string;
+  is_selected: boolean;
+  weekday: string;
+}
 
 export interface Day {
   timeSlots: TimeSlot[];
@@ -19,4 +25,10 @@ export interface User {
 export interface ShareLinkData {
   link: string;
   state: string;
+}
+
+export interface Student {
+  id: number;
+  email: string;
+  role: string;
 }
