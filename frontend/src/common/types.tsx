@@ -12,6 +12,7 @@ export interface Day {
 export interface User {
   id: null | number;
   email: string;
+  role: string;
   isAuthenticated: boolean;
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {ShareLinkData} from "../types";
+import {ShareLinkData} from "../common/types";
 
 const handleShareToStudents = async () => {
   try {
