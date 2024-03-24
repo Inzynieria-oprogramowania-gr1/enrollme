@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./TimeTable.css";
-import {Day} from "../types";
+import {Day} from "../common/types";
 
 const TimeTable = () => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);

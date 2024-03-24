@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import './StudentTimeTable.css'
-import {Day, User} from "../types";
+import {Day, User} from "../common/types";
 
 interface StudentTimeTableProps {
   user: User;

@@ -1,16 +1,17 @@
 import React, {useState, FC} from 'react';
 import {useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './StudentLogin.css';
-import {User} from "../types";
+import './Login.css';
+import {User} from "./types";
 
-interface StudentLoginProps {
-  onLogin: (email: string) => void;
+interface LoginProps {
+  onLogin: (email: string, role: string) => void;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+  role: string;
 }
 
-const StudentLogin: FC<StudentLoginProps> = ({onLogin, user, setUser}) => {
+const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
   const [email, setEmail] = useState('');
   const history = useNavigate();
 
@@ -24,17 +25,26 @@ const StudentLogin: FC<StudentLoginProps> = ({onLogin, user, setUser}) => {
     fetch(`http://localhost:8080/students?email=${email}`)
       .then(response => {
         if (!response.ok) {
-          throw new Error('Failed to check email');
+          throw new Error('The provided mail was not found. Check it and try again');
         }
         return response.json();
       })
       .then(data => {
-        setUser({ id: data.id, email: email, isAuthenticated: true });
-        history('/students/timetable');
+        switch (role) {
+          case 'STUDENT':
+            setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
+            break;
+          case 'TEACHER':
+            if (data.role == 'TEACHER') {
+              setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
+            } else {
+              throw new Error('You can not log in to teacher only page with the role of student');
+            }
+            break;
+        }
       })
-      .catch((error) => {
-        console.error('Error:', error);
-        window.alert('Failed to log in. Please check your email and try again.');
+      .catch((error: Error) => {
+        alert(error.message);
       });
   };
 
@@ -52,4 +62,4 @@ const StudentLogin: FC<StudentLoginProps> = ({onLogin, user, setUser}) => {
   );
 };
 
-export default StudentLogin;
+export default Login;
