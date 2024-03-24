@@ -96,7 +96,7 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
           .map((slot, slotIndex) => (
             <div
               key={`${dayIndex}-${slotIndex}`}
-              className={`card mb-3 ${slot.is_selected ? 'selected' : ''}`}
+              className={`student-cell card mb-3 ${slot.is_selected ? 'selected' : ''}`}
               onClick={() => toggleSlotSelection(dayIndex, slotIndex)}
             >
               <div className="card-body">

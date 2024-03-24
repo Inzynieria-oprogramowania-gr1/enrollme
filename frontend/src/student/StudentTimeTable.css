@@ -2,3 +2,7 @@
     border-color: green;
     background-color: #d3eed3;
 }
+
+.student-cell {
+    cursor: pointer;
+}

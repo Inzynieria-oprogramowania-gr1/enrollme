@@ -42,6 +42,9 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
+    if (linkStatus == 'INACTIVE') {
+      return;
+    }
     setTimeTableData(prevData =>
       prevData.map(day => {
         if (day.weekday === weekday) {

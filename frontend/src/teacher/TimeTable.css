@@ -5,7 +5,7 @@
 
 .timeTable-headerRow,
 .timeTable-row {
-    border: #c2c2c2 1px solid;
+    border: transparent 1px solid;
     padding: 20px;
     text-align: center;
     vertical-align: middle;
@@ -24,9 +24,11 @@
     vertical-align: middle;
     color: gray;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    border: transparent 1px solid;
     border-radius: 5px;
     width: 16%;
     background-color: white;
+    cursor: pointer;
 }
 
 .timeTable-selected {
