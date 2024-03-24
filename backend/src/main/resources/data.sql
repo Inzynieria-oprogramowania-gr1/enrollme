@@ -6,7 +6,7 @@ VALUES ('zarzitski@student.agh.edu.pl',0),
        ('amezydlo@student.agh.edu.pl',0),
        ('test@test.com',0),
        ('test2@test.com',0),
-       ("miidzik@agh.edu.pl",1);
+       ('miidzik@agh.edu.pl',1);
 
 INSERT
 INTO mydb.timetable(weekday, start_time, end_time, is_selected)

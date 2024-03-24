@@ -46,8 +46,7 @@ public class TimetableController {
     @PatchMapping("/share")
     @ResponseBody
     public ShareLinkDto changeStateShareLink(@RequestBody ShareLinkPutDto requiredState) throws RuntimeException {
-        System.out.println(requiredState);
-        if (requiredState.state().equals(EnrolmentState.RESULTS_READY)) {
+        if (requiredState.state() == EnrolmentState.RESULTS_READY) {
             throw new ForbiddenActionException("Cannot change state to - " + requiredState);
         }
         return shareLinkService.updateShareLink(requiredState.state());

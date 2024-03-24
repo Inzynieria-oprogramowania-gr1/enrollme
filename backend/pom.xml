@@ -75,11 +75,11 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                        <compilerArgs>
-                            <compilerArg>
-                                    -Amapstruct.defaultComponentModel=spring
-                            </compilerArg>
-                        </compilerArgs>
+<!--                        <compilerArgs>-->
+<!--                            <compilerArg>-->
+<!--                                    -Amapstruct.defaultComponentModel=spring-->
+<!--                            </compilerArg>-->
+<!--                        </compilerArgs>-->
                 </configuration>
             </plugin>
         </plugins>
