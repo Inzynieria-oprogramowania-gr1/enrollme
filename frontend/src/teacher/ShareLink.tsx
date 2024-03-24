@@ -1,20 +1,23 @@
 import React from "react";
+import {ShareLinkData} from "../types";
 
 const handleShareToStudents = async () => {
   try {
-    const response = await fetch("http://localhost:8080/teacher/timetable/share", {
-      method: "POST",
-    });
+    let response = await fetch("http://localhost:8080/teacher/timetable/share");
     if (!response.ok) {
-      alert('Failed to fetch share link');
-      return;
+      response = await fetch("http://localhost:8080/teacher/timetable/share", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        alert('Failed to create share link');
+        return;
+      }
     }
-
-    const data = await response.json();
+    const data: ShareLinkData = await response.json();
+    console.log(data);
     await navigator.clipboard.writeText("http://localhost:3000" + data.link);
     alert('Link has been saved to clipboard');
   } catch (error) {
-    console.error('Error:', error);
     alert('Failed to save link to clipboard');
   }
 }
