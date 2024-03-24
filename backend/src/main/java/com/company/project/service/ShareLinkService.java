@@ -58,12 +58,14 @@ public class ShareLinkService {
             link.getState().equals(EnrolmentState.RESULTS_READY)){
                 throw new ConflictException("Cannot change state of link");
             }
+
+        link.setState(state);
         if(state.equals(EnrolmentState.CALCULATING)){
             GroupingAlgorithm algorithm = new GroupingAlgorithm(studentService, timetableService);
             Map<TimetableDto, List<StudentDto>> tmp =  algorithm.groupStudents();
             studentService.setResults(tmp);
+            link.setState(EnrolmentState.RESULTS_READY);
         }
-        link.setState(state);
         activeLinkRepository.save(link);
         return shareLinkMapper.mapToShareLinkDto(link);
     }

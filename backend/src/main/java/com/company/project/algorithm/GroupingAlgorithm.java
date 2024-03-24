@@ -61,7 +61,6 @@ public class GroupingAlgorithm {
             }
         }
         if(slotAssignments.size()==0){
-            System.out.println("AAAAAAAAAAA");
             TimetableDto td = timetableList.get(0);
             TimetableDto replaced = new TimetableDto(td.weekday(),List.of(td.timeSlots().get(0)));
             slotAssignments.put(replaced, withoutPreferences);

@@ -20,6 +20,7 @@ import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Student;
 import com.company.project.entity.Timeslot;
 import com.company.project.entity.UserRole;
+import com.company.project.exception.implementations.ConflictException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
@@ -87,8 +88,14 @@ public class StudentService {
         .orElseThrow(()-> new ResourceNotFoundException("Slot "+singleTimetable.weekday()+" "+ts.start_date()+" "+ts.end_date()+" not found"))
         )
     ).toList();
+    for(Timeslot t:timeslots){
+        if(t.isSelected() == false){
+            throw new ConflictException("Not selected by teacher");
+        }
+    }
     
     timeslots.stream().forEach((bSlot)->{
+        
       Timeslot bSlotReal = bSlot;
       bSlotReal.getPreferences().add(student);
       student.getPreferences().add(bSlotReal);
