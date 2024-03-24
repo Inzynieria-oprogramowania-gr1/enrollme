@@ -35,7 +35,7 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
 
   return (
     <div>
-      <button disabled={linkStatus == 'CALCULATING'} className="btn btn-secondary" onClick={handleShareToStudents}>Get link for students</button>
+      <button disabled={linkStatus == 'CALCULATING' || linkStatus === 'RESULTS_READY'} className="btn btn-secondary" onClick={handleShareToStudents}>Get link for students</button>
     </div>
   )
 }

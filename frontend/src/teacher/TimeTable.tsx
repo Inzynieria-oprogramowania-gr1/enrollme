@@ -117,7 +117,7 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
     <div className="mb-3">
       {renderTimeTable()}
       <div className="d-flex justify-content-between">
-        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={linkStatus == 'CALCULATING'}>Save preferred slots</button>
+        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={linkStatus === 'ACTIVE' || linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY'}>Save preferred slots</button>
         <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment} disabled={linkStatus != 'ACTIVE'}>Close enrollment</button>
       </div>
 
