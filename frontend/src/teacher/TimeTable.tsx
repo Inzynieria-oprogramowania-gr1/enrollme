@@ -42,7 +42,7 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
-    if (linkStatus == 'CALCULATING') {
+    if (linkStatus == 'CALCULATING' || linkStatus == 'ACTIVE' || linkStatus == 'RESULTS_READY') {
       return;
     }
     setTimeTableData(prevData =>
@@ -60,7 +60,15 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
     );
   };
 
+  const hasSelectedSlot = () => {
+    return timeTableData.some(day => day.timeSlots.some(slot => slot.is_selected));
+  };
+
   const saveTimeTable = () => {
+    if (!hasSelectedSlot()) {
+      alert('Please select at least one time slot');
+      return;
+    }
     fetch("http://localhost:8080/teacher/timetable", {
       method: 'PUT',
       headers: {
