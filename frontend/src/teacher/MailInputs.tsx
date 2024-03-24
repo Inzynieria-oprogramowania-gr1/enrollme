@@ -39,7 +39,7 @@ const MailInputs = () => {
     <div className="mail-div">
       <h6>Write list of the students mails, separate with semicolon:</h6>
         <textarea onChange={handleTextareaChange} />
-      <button className="btn btn-secondary" onClick={handleSendingMails}>Send mails</button>
+      <button className="btn btn-secondary" onClick={handleSendingMails}>Upload mails</button>
     </div>
   );
 }
