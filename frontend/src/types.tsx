@@ -14,3 +14,8 @@ export interface User {
   email: string;
   isAuthenticated: boolean;
 }
+
+export interface ShareLinkData {
+  link: string;
+  state: string;
+}
