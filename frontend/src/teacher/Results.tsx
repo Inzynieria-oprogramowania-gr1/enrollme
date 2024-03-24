@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {SpecifiedTimeSlot, Student, TimeSlot} from "../common/types";
+import './Results.css';
 
 const Results = () => {
     const [results, setResults] = useState([]);
@@ -30,7 +31,6 @@ const Results = () => {
                   <p>Weekday: {timeslot.weekday}</p>
                   <p>Start Date: {timeslot.start_date}</p>
                   <p>End Date: {timeslot.end_date}</p>
-                  <h3>Students</h3>
                   <ul>
                       {students.map((student, index) => (
                         <li key={index}>{student.email}</li>
