@@ -91,11 +91,6 @@ public class StudentService {
                                                 .orElseThrow(() -> new ResourceNotFoundException("Slot " + singleTimetable.weekday() + " " + ts.start_date() + " " + ts.end_date() + " not found"))
                         )
         ).toList();
-        for(Timeslot t:timeslots){
-            if(t.isSelected() == false){
-                throw new ConflictException("Not selected by teacher");
-            }
-        }
         timeslots.forEach((bSlot) -> {
             bSlot.getPreferences().add(student);
             student.getPreferences().add(bSlot);
