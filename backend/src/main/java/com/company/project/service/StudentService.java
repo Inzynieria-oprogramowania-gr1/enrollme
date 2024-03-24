@@ -1,12 +1,21 @@
 package com.company.project.service;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.company.project.dto.AlgorithmResultsDto;
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.timetable.SpecifiedTimeslotDto;
+import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Student;
 import com.company.project.entity.Timeslot;
@@ -18,6 +27,7 @@ import com.company.project.repository.TimeslotRepository;
 
 import lombok.RequiredArgsConstructor;
 
+@Primary
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,6 +38,7 @@ public class StudentService {
   private final TimeslotMapper timeslotMapper;
   
   public List<StudentDto> getAllStudents(){
+    System.out.println(studentRepository.findAll().size());
     return studentRepository.findAll().stream()
     .map(
       (student)->studentMapper.mapToStudentDto(student)
@@ -89,5 +100,45 @@ public class StudentService {
   public StudentPreferencesDto getPreferences(Long id) throws RuntimeException{
     Student student = studentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Student not found"));
     return studentMapper.mapToStudentPreferencesDto(student);
+  }
+
+  public void setResults(Map<TimetableDto, List<StudentDto>> results){
+    for(Entry<TimetableDto, List<StudentDto>> entry: results.entrySet()){
+        TimetableDto timetableDto = entry.getKey();
+        TimeSLotDto timeSLotDto = timetableDto.timeSlots().get(0);
+        Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDto.weekday(), timeSLotDto.start_date(), timeSLotDto.end_date()).orElseThrow(()->new ResourceNotFoundException("Timeslot not found"));
+        timeslot.setSelected(true);
+        for(StudentDto s:entry.getValue()){
+            Student student = studentRepository.findById(s.id()).orElseThrow(()->new ResourceNotFoundException("Student not found"));
+            student.setResult(timeslot);
+            studentRepository.save(student);
+        }
+        timeslotRepository.save(timeslot);
+    }
+  }
+
+  public List<AlgorithmResultsDto> getResults(){
+    List<AlgorithmResultsDto> resultsDtos = new LinkedList<>();
+    List<SpecifiedTimeslotDto> timeslots =  timeslotRepository
+    .findAll()
+    .stream()
+    .filter((e)->e.isSelected() == true)
+    .map(e->timeslotMapper.mapToSpecifiedTimeslotDto(e))
+    .toList();
+    List<Student> studentDtos = studentRepository
+    .findAll();
+    Map<SpecifiedTimeslotDto,List<StudentDto>> mapTimeStudents = new HashMap<>();
+    for(SpecifiedTimeslotDto dto: timeslots){
+        mapTimeStudents.put(dto, new LinkedList<>());
+    }
+    for(Student student: studentDtos){
+        SpecifiedTimeslotDto sp = timeslotMapper.mapToSpecifiedTimeslotDto(student.getResult());
+        mapTimeStudents.get(sp).add(studentMapper.mapToStudentDto(student));
+    }
+    for(Entry<SpecifiedTimeslotDto,List<StudentDto>> l: mapTimeStudents.entrySet()){
+        resultsDtos.add(new AlgorithmResultsDto(l.getKey(),l.getValue()));
+
+    }
+    return resultsDtos;
   }
 }

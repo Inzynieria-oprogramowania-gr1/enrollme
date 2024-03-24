@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Timeslot;
@@ -17,6 +19,12 @@ import com.company.project.entity.Timeslot;
 
 @Mapper(componentModel = "spring")
 public abstract class TimeslotMapper {
+        @Mapping(source = "weekday", target = "weekday")
+        @Mapping(source = "startTime", target = "start_date")
+        @Mapping(source = "endTime", target = "end_date")
+        @Mapping(source = "selected", target = "is_selected")
+        public abstract SpecifiedTimeslotDto mapToSpecifiedTimeslotDto(Timeslot timeslot);
+
         public List<TimetableDto> mapToTimetableList(List<Timeslot> timetableEntities) {
                 return timetableEntities
                         .stream()

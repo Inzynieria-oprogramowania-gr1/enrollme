@@ -17,10 +17,13 @@ import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.service.StudentService;
 import com.company.project.service.TimetableService;
+
+import jakarta.annotation.Resource;
 import lombok.Getter;
 
 import java.util.*;
 
+import org.springframework.stereotype.Component;
 
 public class GroupingAlgorithm {
     private final StudentService studentService;
@@ -30,10 +33,12 @@ public class GroupingAlgorithm {
     Map<TimetableDto, List<StudentDto>> slotAssignments = new HashMap<>();
 
 
-    public GroupingAlgorithm(StudentService studentService, TimetableService timetableService) {
+    public GroupingAlgorithm(StudentService  studentService, TimetableService timetableService) {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();
         this.timetableList = timetableService.getTimetable();
+        System.out.println(studentsList.size());
+        System.out.println(timetableList.size());
     }
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
@@ -46,7 +51,9 @@ public class GroupingAlgorithm {
                 TimetableDto assignedSlot = assignSlot(preferences);
                 if (assignedSlot != null) {
                     slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
+           
                     slotAssignments.get(assignedSlot).add(student);
+                    
                 } else {
                     withoutPreferences.add(student);
                 }
@@ -55,6 +62,7 @@ public class GroupingAlgorithm {
 
         for (StudentDto student : withoutPreferences) {
             TimetableDto assignedSlot = assignRestStudents();
+            slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
             slotAssignments.get(assignedSlot).add(student);
         }
 

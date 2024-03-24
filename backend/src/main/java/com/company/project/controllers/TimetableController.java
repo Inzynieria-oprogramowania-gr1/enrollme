@@ -1,13 +1,17 @@
 package com.company.project.controllers;
 
 
+import com.company.project.dto.AlgorithmResultsDto;
+import com.company.project.dto.StudentDto;
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
+import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.service.ShareLinkService;
+import com.company.project.service.StudentService;
 import com.company.project.service.TimetableService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -26,6 +31,7 @@ public class TimetableController {
 
     private final TimetableService timetableService;
     private final ShareLinkService shareLinkService;
+    private final StudentService studentService;
 
 
 
@@ -48,10 +54,11 @@ public class TimetableController {
         return shareLinkService.createShareLink();
     }
 
+
+
     @PatchMapping("/share")
     @ResponseBody
     public ShareLinkDto changeStateShareLink(@RequestBody ShareLinkPutDto requiredState) throws RuntimeException {
-        System.out.println(requiredState);
         if(requiredState.state().equals(EnrolmentState.RESULTS_READY)){
             throw new ForbiddenActionException("Cannot change state to - "+requiredState);
         }
@@ -67,7 +74,13 @@ public class TimetableController {
         return shareLinkDto;
     }
 
+    @GetMapping("/results")
+    @ResponseBody
+    public List<AlgorithmResultsDto> getResults() throws URISyntaxException {
+        return studentService.getResults();
+    }
 
+    
 }
 
 

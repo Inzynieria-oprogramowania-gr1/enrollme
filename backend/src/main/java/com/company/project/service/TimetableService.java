@@ -9,12 +9,15 @@ import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.TimeslotRepository;
 import lombok.AllArgsConstructor;
+
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Primary
 @Service
 @AllArgsConstructor
 public class TimetableService {
