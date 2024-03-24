@@ -140,6 +140,9 @@ public class StudentService {
                 continue;
             }
             SpecifiedTimeslotDto sp = timeslotMapper.mapToSpecifiedTimeslotDto(student.getResult());
+            if(mapTimeStudents.get(sp)==null){
+                throw new ResourceNotFoundException("Results not set");
+            }
             mapTimeStudents.get(sp).add(studentMapper.mapToStudentDto(student));
         }
         for(Entry<SpecifiedTimeslotDto,List<StudentDto>> l: mapTimeStudents.entrySet()){
