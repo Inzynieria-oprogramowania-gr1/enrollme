@@ -31,18 +31,18 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({state: 'INACTIVE'}),
+      body: JSON.stringify({state: 'CALCULATING'}),
     });
     if (!response.ok) {
       alert('Failed to close the enrollment');
       return;
     }
-    setLinkStatus('INACTIVE');
+    setLinkStatus('CALCULATING');
     alert('Success: Enrollment was successfully closed');
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
-    if (linkStatus == 'INACTIVE') {
+    if (linkStatus == 'CALCULATING') {
       return;
     }
     setTimeTableData(prevData =>
@@ -117,7 +117,7 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
     <div className="mb-3">
       {renderTimeTable()}
       <div className="d-flex justify-content-between">
-        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={linkStatus == 'INACTIVE'}>Save preferred slots</button>
+        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={linkStatus == 'CALCULATING'}>Save preferred slots</button>
         <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment} disabled={linkStatus != 'ACTIVE'}>Close enrollment</button>
       </div>
 

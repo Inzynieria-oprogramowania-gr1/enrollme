@@ -21,7 +21,7 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
         }
       }
       const data: ShareLinkData = await response.json();
-      if (data.state === 'INACTIVE') {
+      if (data.state === 'CALCULATING') {
         alert('The link is currently inactive');
         return;
       }
@@ -35,7 +35,7 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
 
   return (
     <div>
-      <button disabled={linkStatus == 'INACTIVE'} className="btn btn-secondary" onClick={handleShareToStudents}>Get link for students</button>
+      <button disabled={linkStatus == 'CALCULATING'} className="btn btn-secondary" onClick={handleShareToStudents}>Get link for students</button>
     </div>
   )
 }
