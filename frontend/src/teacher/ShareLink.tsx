@@ -14,7 +14,10 @@ const handleShareToStudents = async () => {
       }
     }
     const data: ShareLinkData = await response.json();
-    console.log(data);
+    if (data.state === 'INACTIVE') {
+      alert('The link is currently inactive');
+      return;
+    }
     await navigator.clipboard.writeText("http://localhost:3000" + data.link);
     alert('Link has been saved to clipboard');
   } catch (error) {

@@ -4,6 +4,7 @@ import {Day} from "../types";
 
 const TimeTable = () => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);
+  const [isEnrollmentClosed, setIsEnrollmentClosed] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8080/teacher/timetable")
@@ -19,6 +20,22 @@ const TimeTable = () => {
       )
     )
   );
+
+  const handleCloseEnrollment = async () => {
+    const response = await fetch("http://localhost:8080/teacher/timetable/share", {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({state: 'INACTIVE'}),
+    });
+    if (!response.ok) {
+      alert('Failed to close the enrollment');
+      return;
+    }
+    setIsEnrollmentClosed(true);
+    alert('Success: Enrollment was successfully closed');
+  }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
     setTimeTableData(prevData =>
@@ -92,7 +109,11 @@ const TimeTable = () => {
   return (
     <div className="mb-3">
       {renderTimeTable()}
-      <button className="btn btn-secondary mt-3" onClick={saveTimeTable}>Save preferred slots</button>
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-secondary mt-3" onClick={saveTimeTable} disabled={isEnrollmentClosed}>Save preferred slots</button>
+        <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment} disabled={isEnrollmentClosed}>Close enrollment</button>
+      </div>
+
     </div>
   );
 };
