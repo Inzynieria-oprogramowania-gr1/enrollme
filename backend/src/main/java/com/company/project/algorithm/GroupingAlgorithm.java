@@ -15,6 +15,7 @@ import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeSLotDto;
 import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.entity.UserRole;
 import com.company.project.service.StudentService;
 import com.company.project.service.TimetableService;
 
@@ -37,13 +38,14 @@ public class GroupingAlgorithm {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();
         this.timetableList = timetableService.getTimetable();
-        System.out.println(studentsList.size());
-        System.out.println(timetableList.size());
     }
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
         List<StudentDto> withoutPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
+            if(student.role().equals(UserRole.TEACHER)){
+                continue;
+            }
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
             if (preferences.timetables().isEmpty()) {
                 withoutPreferences.add(student);
@@ -51,7 +53,6 @@ public class GroupingAlgorithm {
                 TimetableDto assignedSlot = assignSlot(preferences);
                 if (assignedSlot != null) {
                     slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
-           
                     slotAssignments.get(assignedSlot).add(student);
                     
                 } else {
@@ -59,7 +60,13 @@ public class GroupingAlgorithm {
                 }
             }
         }
-
+        if(slotAssignments.size()==0){
+            System.out.println("AAAAAAAAAAA");
+            TimetableDto td = timetableList.get(0);
+            TimetableDto replaced = new TimetableDto(td.weekday(),List.of(td.timeSlots().get(0)));
+            slotAssignments.put(replaced, withoutPreferences);
+            return getSlotAssignments();
+        }
         for (StudentDto student : withoutPreferences) {
             TimetableDto assignedSlot = assignRestStudents();
             slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
