@@ -34,7 +34,7 @@ const Results = () => {
 
   const renderResults = () => {
     console.log(linkStatus)
-    if (linkStatus != 'CALCULATING') {
+    if (linkStatus != 'RESULTS_READY' && linkStatus != 'CALCULATING') {
       return ( <p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p> );
     }
     return (
