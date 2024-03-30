@@ -90,3 +90,8 @@ Removing react-java-mysql-frontend-1 ... done
 Removing react-java-mysql-db-1       ... done
 Removing network react-java-mysql-default
 ```
+
+
+# Api Docs
+
+[Swagger UI docs](http://localhost:8080/docs)
