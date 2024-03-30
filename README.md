@@ -94,7 +94,6 @@ Removing network react-java-mysql-default
 
 # Api Docs
 
-[Swagger UI docs](http://localhost:8080/docs)
+[Swagger UI docs](http://localhost:8080/docs) - link to REST API docs
 
-Info how to add description of endpoints and other stuff to the Swagger UI docs
-[Swagger UI config](https://www.baeldung.com/spring-rest-openapi-documentation)
+[Swagger UI config](https://www.baeldung.com/spring-rest-openapi-documentation) - short tutorial on how to add description of endpoints and other stuff to the Swagger UI docs
