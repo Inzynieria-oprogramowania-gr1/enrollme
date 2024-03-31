@@ -24,10 +24,14 @@ public class EnrollmentService {
     public final TimeslotMapper timeslotMapper;
 
 
-    public EnrollmentDto getEnrollmentById(Long id) {
+    public EnrollmentDto getEnrollment() {
         Enrollment enrollment = repository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Enrollment with id: " + id + " not found"));
+                .findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found"));
+
+
 
         List<Timeslot> timeslots = enrollment.getTimeslots();
         List<TimetableDto> timetableDto = timeslotMapper.mapToTimetableList(timeslots);

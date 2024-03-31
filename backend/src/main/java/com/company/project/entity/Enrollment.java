@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,14 +21,14 @@ public class Enrollment {
     @Column(name = "enrollment_id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "group_amount", nullable = false)
-    private Integer groupAmount;
+    @Column(name = "group_amount", nullable = false, columnDefinition = "int default 0")
+    private int groupAmount;
 
     @Column(name = "deadline")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deadline;
 
-    @Column(name = "state")
+    @Column(name = "state", columnDefinition = "tinyint default 0")
     @Enumerated(EnumType.ORDINAL)
     private EnrolmentState state;
 

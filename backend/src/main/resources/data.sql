@@ -9,7 +9,7 @@ VALUES ('zarzitski@student.agh.edu.pl',0),
        ('miidzik@agh.edu.pl',1);
 
 
-INSERT INTO mydb.enrollments(group_amount, deadline) VALUES (0, now());
+INSERT INTO mydb.enrollments VALUES ();
 SET @enrollment_id := LAST_INSERT_ID();
 
 INSERT INTO mydb.timeslots(weekday, start_time, end_time, is_selected, enrollment_id)

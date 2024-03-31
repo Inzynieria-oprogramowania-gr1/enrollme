@@ -31,8 +31,8 @@ public class EnrollmentController {
     // Gets all data - timetable + config
     @GetMapping
     @ResponseBody
-    public EnrollmentDto getEnrollmentById() {
-        return enrollmentService.getEnrollmentById(1L);
+    public EnrollmentDto getEnrollment() {
+        return enrollmentService.getEnrollment();
     }
 
     @PutMapping("/timetable")
@@ -44,7 +44,7 @@ public class EnrollmentController {
     @PutMapping("/config")
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
-        return enrollmentService.configureEnrollment(1L, configDto);
+        return enrollmentService.configureEnrollment(configDto.id(), configDto);
     }
 
 
