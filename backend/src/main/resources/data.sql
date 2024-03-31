@@ -34,4 +34,5 @@ FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT
       UNION ALL
       SELECT '18:30:00', '20:00:00') t;
 
-
+INSERT INTO mydb._user(email, password, role)
+VALUES ('miidzik@agh.edu.pl', '$2a$12$bhFdyY.oYjRuw0Kga1LZcOwMOPORv4APAjYsiy3zE17GYL/CjoS1q', 'TEACHER')
