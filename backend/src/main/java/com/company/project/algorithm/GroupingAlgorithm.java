@@ -13,21 +13,17 @@ package com.company.project.algorithm;
 
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
-import com.company.project.dto.timetable.TimeSLotDto;
+import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.UserRole;
+import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
-import com.company.project.service.TimetableService;
-
-import jakarta.annotation.Resource;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.stereotype.Component;
 
 public class GroupingAlgorithm {
     private final StudentService studentService;
@@ -37,21 +33,21 @@ public class GroupingAlgorithm {
     Map<TimetableDto, List<StudentDto>> slotAssignments = new HashMap<>();
 
 
-    public GroupingAlgorithm(StudentService  studentService, TimetableService timetableService) {
+    public GroupingAlgorithm(StudentService studentService, EnrollmentService enrollmentService) {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();
-        this.timetableList = timetableService.getTimetable()
-        .stream()
-        .map(e->{
-            List<TimeSLotDto> tdto = e.timeSlots().stream().filter(k->k.is_selected()).toList();
-            return new TimetableDto(e.weekday(), tdto);
-        }).toList();
+        this.timetableList = enrollmentService.getTimetable()
+                .stream()
+                .map(e -> {
+                    List<TimeslotDto> dto = e.timeslots().stream().filter(TimeslotDto::isSelected).toList();
+                    return new TimetableDto(e.weekday(), dto);
+                }).toList();
     }
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
         List<StudentDto> withoutPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
-            if(student.role().equals(UserRole.TEACHER)){
+            if (student.role().equals(UserRole.TEACHER)) {
                 continue;
             }
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
@@ -62,15 +58,15 @@ public class GroupingAlgorithm {
                 if (assignedSlot != null) {
                     slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
                     slotAssignments.get(assignedSlot).add(student);
-                    
+
                 } else {
                     withoutPreferences.add(student);
                 }
             }
         }
-        if(slotAssignments.size()==0){
+        if (slotAssignments.isEmpty()) {
             TimetableDto td = timetableList.get(0);
-            TimetableDto replaced = new TimetableDto(td.weekday(),List.of(td.timeSlots().get(0)));
+            TimetableDto replaced = new TimetableDto(td.weekday(), List.of(td.timeslots().get(0)));
             slotAssignments.put(replaced, withoutPreferences);
             return getSlotAssignments();
         }
@@ -85,11 +81,11 @@ public class GroupingAlgorithm {
 
     public TimetableDto assignSlot(StudentPreferencesDto preferences) {
         for (TimetableDto slots : preferences.timetables()) {
-            List<TimeSLotDto> filteredSlots = timetableList.stream()
+            List<TimeslotDto> filteredSlots = timetableList.stream()
                     .filter(t -> t.weekday().equals(slots.weekday()))
-                    .flatMap(t -> t.timeSlots().stream())
+                    .flatMap(t -> t.timeslots().stream())
                     .toList();
-            for (TimeSLotDto slot : slots.timeSlots()) {
+            for (TimeslotDto slot : slots.timeslots()) {
                 if (filteredSlots.contains(slot)) {
                     return new TimetableDto(slots.weekday(), List.of(slot));
                 }

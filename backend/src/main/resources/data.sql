@@ -8,12 +8,16 @@ VALUES ('zarzitski@student.agh.edu.pl',0),
        ('test2@test.com',0),
        ('miidzik@agh.edu.pl',1);
 
-INSERT
-INTO mydb.timetable(weekday, start_time, end_time, is_selected)
+
+INSERT INTO mydb.enrollments(group_amount, deadline) VALUES (0, now());
+SET @enrollment_id := LAST_INSERT_ID();
+
+INSERT INTO mydb.timeslots(weekday, start_time, end_time, is_selected, enrollment_id)
 SELECT w.weekday,
        t.start_time,
        t.end_time,
-       false
+       false,
+       @enrollment_id
 FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) w
          CROSS JOIN
      (SELECT '08:00:00' AS start_time, '09:30:00' AS end_time
@@ -29,3 +33,5 @@ FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT
       SELECT '16:45:00', '18:15:00'
       UNION ALL
       SELECT '18:30:00', '20:00:00') t;
+
+
