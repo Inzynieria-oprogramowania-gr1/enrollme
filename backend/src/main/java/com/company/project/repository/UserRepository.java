@@ -1,10 +1,10 @@
 package com.company.project.repository;
 
-import com.company.project.entity.users.User;
+import com.company.project.entity.users.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+public interface UserRepository extends JpaRepository<Teacher, Long> {
+    Optional<Teacher> findByEmail(String email);
 }

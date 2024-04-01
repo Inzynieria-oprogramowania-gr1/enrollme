@@ -7,7 +7,7 @@ VALUES ('zarzitski@student.agh.edu.pl'),
        ('test@test.com'),
        ('test2@test.com');
 
-INSERT INTO mydb._user(email, password, role)
+INSERT INTO mydb.teacher(email, password, role)
 VALUES ('miidzik@agh.edu.pl', '$2a$12$uTyWiJKnOxy3hYmAeDhTMuqO1xi4B.qKE.2vp.27RQ7XupcNRsjFS', 'ROLE_TEACHER');
 
 
