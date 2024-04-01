@@ -15,6 +15,8 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+
+
         return new OpenAPI()
                 .components(new Components()
                         .addSecuritySchemes(SCHEME_NAME, createSecurityScheme()))
