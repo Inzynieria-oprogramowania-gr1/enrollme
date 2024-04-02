@@ -1,7 +1,7 @@
 package com.company.project.configuration;
 
 
-import com.company.project.repository.UserRepository;
+import com.company.project.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserRepository userRepository;
+    private final TeacherRepository teacherRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository
+        return username -> teacherRepository
                 .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
     }
