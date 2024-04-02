@@ -1,5 +1,6 @@
 package com.company.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "timetable")
+@Table(name = "timeslots")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -39,6 +40,11 @@ public class Timeslot {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Student> result = new HashSet<>();
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "enrollment_id", nullable = false)
+    private Enrollment enrollment;
 
     public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {
         this.weekday = weekday;
