@@ -76,12 +76,12 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
       alert('Please select at least one time slot');
       return;
     }
-    fetch("http://localhost:8080/teacher/timetable", {
+    fetch("http://localhost:8080/enrollment/timetable", {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(enrollConfiguration),
+      body: JSON.stringify(enrollConfiguration?.timeslots),
     })
       .then(response => {
         if (!response.ok) {
