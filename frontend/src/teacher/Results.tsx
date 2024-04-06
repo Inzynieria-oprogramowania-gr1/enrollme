@@ -2,12 +2,13 @@ import React, {useEffect, useState} from "react";
 import {SpecifiedTimeSlot, Student, TimeSlot} from "../common/types";
 import './Results.css';
 
+const ENDPOINT = "http://localhost:8080/enrollment"
 
 const Results = () => {
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/teacher/timetable/share')
+    fetch(ENDPOINT + '/share')
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));
@@ -17,7 +18,7 @@ const Results = () => {
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
 
   useEffect(() => {
-    fetch("http://localhost:8080/teacher/timetable/results")
+    fetch(ENDPOINT + "/results")
       .then(res => res.json())
       .then((data) => {
         setResults(data);

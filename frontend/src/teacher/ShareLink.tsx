@@ -1,6 +1,8 @@
 import React, {FC} from "react";
 import {ShareLinkData} from "../common/types";
 
+const ENDPOINT = "http://localhost:8080/enrollment/share";
+
 interface ShareLinkProps {
   linkStatus: string | null;
   setLinkStatus: (status: string) => void;
@@ -10,9 +12,9 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
 
   const handleShareToStudents = async () => {
     try {
-      let response = await fetch("http://localhost:8080/teacher/timetable/share");
+      let response = await fetch(ENDPOINT);
       if (!response.ok) {
-        response = await fetch("http://localhost:8080/teacher/timetable/share", {
+        response = await fetch(ENDPOINT, {
           method: "POST",
         });
         if (!response.ok) {

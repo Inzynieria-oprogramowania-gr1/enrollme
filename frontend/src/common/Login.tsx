@@ -32,7 +32,7 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
       .then(data => {
         switch (role) {
           case 'STUDENT':
-            fetch('http://localhost:8080/teacher/timetable/share')
+            fetch('http://localhost:8080/enrollment/share')
               .then(response => response.json())
               .then(shareData => {
                 if (shareData.state !== 'ACTIVE') {

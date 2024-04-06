@@ -1,6 +1,8 @@
 import React, {useState, useEffect, FC} from "react";
 import "./TimeTable.css";
-import {Day} from "../common/types";
+import {Day, EnrollConfiguration} from "../common/types";
+
+const ENDPOINT = "http://localhost:8080/enrollment";
 
 interface TimeTableProps {
   linkStatus: string | null;
@@ -8,25 +10,25 @@ interface TimeTableProps {
 }
 
 const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
-  const [timeTableData, setTimeTableData] = useState<Day[]>([]);
+  const [enrollConfiguration, setEnrollConfiguration] = useState<EnrollConfiguration>();
 
   useEffect(() => {
-    fetch("http://localhost:8080/teacher/timetable")
+    fetch(ENDPOINT)
       .then(response => response.json())
-      .then(setTimeTableData)
+      .then(setEnrollConfiguration)
       .catch(err => console.error(err));
-  }, [setTimeTableData]);
+  }, [setEnrollConfiguration]);
 
   const allTimeSlots = Array.from(
     new Set(
-      timeTableData.flatMap(day =>
-        day.timeSlots.map(slot => `${slot.start_date} - ${slot.end_date}`)
+      enrollConfiguration?.timeslots.flatMap(day =>
+        day.timeslots?.map(slot => `${slot.startTime} - ${slot.endTime}`)
       )
     )
   );
 
   const handleCloseEnrollment = async () => {
-    const response = await fetch("http://localhost:8080/teacher/timetable/share", {
+    const response = await fetch(ENDPOINT + "/share", {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -45,23 +47,30 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
     if (linkStatus == 'CALCULATING' || linkStatus == 'ACTIVE' || linkStatus == 'RESULTS_READY') {
       return;
     }
-    setTimeTableData(prevData =>
-      prevData.map(day => {
-        if (day.weekday === weekday) {
-          day.timeSlots = day.timeSlots.map(s => {
-            if (`${s.start_date} - ${s.end_date}` === slot) {
-              return {...s, is_selected: !s.is_selected};
-            }
-            return s;
-          });
-        }
-        return day;
-      })
-    );
+    setEnrollConfiguration(prevData => {
+      if (!prevData) return prevData;
+      return {
+        ...prevData,
+        timeslots: prevData.timeslots.map(day => {
+          if (day.weekday === weekday) {
+            return {
+              ...day,
+              timeslots: day.timeslots.map(s => {
+                if (`${s.startTime} - ${s.endTime}` === slot) {
+                  return {...s, isSelected: !s.isSelected};
+                }
+                return s;
+              }),
+            };
+          }
+          return day;
+        }),
+      };
+    });
   };
 
   const hasSelectedSlot = () => {
-    return timeTableData.some(day => day.timeSlots.some(slot => slot.is_selected));
+    return enrollConfiguration?.timeslots.some(day => day.timeslots.some(slot => slot.isSelected));
   };
 
   const saveTimeTable = () => {
@@ -69,12 +78,12 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
       alert('Please select at least one time slot');
       return;
     }
-    fetch("http://localhost:8080/teacher/timetable", {
+    fetch(ENDPOINT + "/timetable", {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(timeTableData),
+      body: JSON.stringify(enrollConfiguration?.timeslots),
     })
       .then(response => {
         if (!response.ok) {
@@ -87,39 +96,41 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   };
 
   const renderTimeTable = () => (
-    <table className="timeTable">
-      <thead>
-      <tr className="timeTable-headerRow">
-        <th>Timeslots</th>
-        {timeTableData.map((day, index) => (
-          <th key={index} className="timeTable-headerCell">{day.weekday}</th>
-        ))}
-      </tr>
-      </thead>
-      <tbody>
-      {allTimeSlots.map((slot, index) => (
-        <tr key={index} className="timeTable-row">
-          <td>{slot}</td>
-          {timeTableData.map((day, i) => {
-            const isSelected = day.timeSlots.some(
-              s => `${s.start_date} - ${s.end_date}` === slot
-                && s.is_selected
-            );
-            return (
-              <td
-                key={i}
-                className={`timeTable-cell ${isSelected ? 'timeTable-selected' : ''}`}
-                onClick={() => toggleTimeSlotSelection(day.weekday, slot)}
-              >
-                {isSelected ? "✓" : "×"}
-              </td>
-            );
-          })}
+      <table className="timeTable">
+        <thead>
+        <tr className="timeTable-headerRow">
+          <th>Timeslots</th>
+          {enrollConfiguration?.timeslots.map((day, index) => (
+            <th key={index} className="timeTable-headerCell">{day.weekday}</th>
+          ))}
         </tr>
-      ))}
-      </tbody>
-    </table>
-  );
+        </thead>
+        <tbody>
+        {allTimeSlots.map((slot, index) => (
+          <tr key={index} className="timeTable-row">
+            <td>{slot}</td>
+            {enrollConfiguration?.timeslots.map((day, i) => {
+              const isSelected = day.timeslots?.some(
+                s => `${s.startTime} - ${s.endTime}` === slot
+                  && s.isSelected
+              );
+              return (
+                <td
+                  key={i}
+                  className={`timeTable-cell ${isSelected ? 'timeTable-selected' : ''}`}
+                  onClick={() => toggleTimeSlotSelection(day.weekday, slot)}
+                >
+                  {isSelected ? "✓" : "×"}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+        </tbody>
+      </table>
+    );
+
+
 
   return (
     <div className="mb-3">

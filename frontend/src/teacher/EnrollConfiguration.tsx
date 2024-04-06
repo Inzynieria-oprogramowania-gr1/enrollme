@@ -9,7 +9,7 @@ const EnrollConfiguration = () => {
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/teacher/timetable/share')
+    fetch('http://localhost:8080/enrollment/share')
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));
