@@ -2,6 +2,8 @@ import React, {useState, useEffect, FC} from "react";
 import "./TimeTable.css";
 import {Day, EnrollConfiguration} from "../common/types";
 
+const ENDPOINT = "http://localhost:8080/enrollment";
+
 interface TimeTableProps {
   linkStatus: string | null;
   setLinkStatus: (status: string) => void;
@@ -11,7 +13,7 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   const [enrollConfiguration, setEnrollConfiguration] = useState<EnrollConfiguration>();
 
   useEffect(() => {
-    fetch("http://localhost:8080/enrollment")
+    fetch(ENDPOINT)
       .then(response => response.json())
       .then(setEnrollConfiguration)
       .catch(err => console.error(err));
@@ -26,19 +28,19 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
   );
 
   const handleCloseEnrollment = async () => {
-    // const response = await fetch("http://localhost:8080/teacher/timetable/share", {
-    //   method: 'PATCH',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({state: 'CALCULATING'}),
-    // });
-    // if (!response.ok) {
-    //   alert('Failed to close the enrollment');
-    //   return;
-    // }
-    // setLinkStatus('CALCULATING');
-    // alert('Success: Enrollment was successfully closed');
+    const response = await fetch(ENDPOINT + "/share", {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({state: 'CALCULATING'}),
+    });
+    if (!response.ok) {
+      alert('Failed to close the enrollment');
+      return;
+    }
+    setLinkStatus('CALCULATING');
+    alert('Success: Enrollment was successfully closed');
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
@@ -76,7 +78,7 @@ const TimeTable: FC<TimeTableProps> = ({ linkStatus, setLinkStatus }) => {
       alert('Please select at least one time slot');
       return;
     }
-    fetch("http://localhost:8080/enrollment/timetable", {
+    fetch(ENDPOINT + "/timetable", {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
