@@ -8,17 +8,17 @@ interface StudentTimeTableProps {
 
 const filterSelectedSlots = (timeTableData: Day[]) => {
   return timeTableData.filter(day =>
-    day.timeSlots.some(slot => slot.is_selected)
+    day.timeslots.some(slot => slot.isSelected)
   ).map(day => ({
     ...day,
-    timeSlots: day.timeSlots.filter(slot => slot.is_selected)
+    timeSlots: day.timeslots.filter(slot => slot.isSelected)
   }));
 }
 
 const setSlotsToFalse = (availableTimeTableData: Day[]) => {
   return availableTimeTableData.map(day => ({
     ...day,
-    timeSlots: day.timeSlots.map(slot => ({
+    timeSlots: day.timeslots.map(slot => ({
       ...slot,
       is_selected: false
     }))
@@ -44,7 +44,7 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
 
   const toggleSlotSelection = (dayIndex: number, slotIndex: number) => {
     const newTimeTableData = [...availableTimeTableData];
-    newTimeTableData[dayIndex].timeSlots[slotIndex].is_selected = !newTimeTableData[dayIndex].timeSlots[slotIndex].is_selected;
+    newTimeTableData[dayIndex].timeslots[slotIndex].isSelected = !newTimeTableData[dayIndex].timeslots[slotIndex].isSelected;
     setAvailableTimeTableData(newTimeTableData);
   };
 
@@ -54,12 +54,12 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
       if (!availableDay) return day;
       return {
         ...day,
-        timeSlots: day.timeSlots.map(slot => {
-          const availableSlot = availableDay.timeSlots.find(s => s.start_date === slot.start_date && s.end_date === slot.end_date);
+        timeSlots: day.timeslots.map(slot => {
+          const availableSlot = availableDay.timeslots.find(s => s.startTime === slot.startTime && s.endTime === slot.endTime);
           if (!availableSlot) return slot;
           return {
             ...slot,
-            is_selected: availableSlot.is_selected
+            is_selected: availableSlot.isSelected
           };
         })
       };
@@ -92,16 +92,16 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
     <div className="container">
       <h5 className="mb-3">Fill your preferences</h5>
       {availableTimeTableData.map((day, dayIndex) =>
-        day.timeSlots
+        day.timeslots
           .map((slot, slotIndex) => (
             <div
               key={`${dayIndex}-${slotIndex}`}
-              className={`student-cell card mb-3 ${slot.is_selected ? 'selected' : ''}`}
+              className={`student-cell card mb-3 ${slot.isSelected ? 'selected' : ''}`}
               onClick={() => toggleSlotSelection(dayIndex, slotIndex)}
             >
               <div className="card-body">
                 <h6 className="card-title">{`${day.weekday}`}</h6>
-                <p className="card-text">{`${slot.start_date} - ${slot.end_date}`}</p>
+                <p className="card-text">{`${slot.startTime} - ${slot.endTime}`}</p>
               </div>
             </div>
           ))

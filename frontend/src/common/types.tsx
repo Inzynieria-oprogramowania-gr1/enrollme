@@ -1,17 +1,25 @@
+export interface EnrollConfiguration {
+  deadline: null;
+  groupAmount: number;
+  id: number;
+  state: string;
+  timeslots: Day[];
+}
+
+export interface Day {
+  timeslots: TimeSlot[];
+  weekday: string;
+}
+
 export interface TimeSlot {
-  start_date: string;
-  end_date: string;
-  is_selected: boolean;
+  endTime: string;
+  isSelected: boolean;
+  startTime: string;
 }
 export interface SpecifiedTimeSlot {
   start_date: string;
   end_date: string;
   is_selected: boolean;
-  weekday: string;
-}
-
-export interface Day {
-  timeSlots: TimeSlot[];
   weekday: string;
 }
 
