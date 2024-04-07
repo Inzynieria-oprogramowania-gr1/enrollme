@@ -17,8 +17,8 @@ const EnrollConfiguration = () => {
 
   return (
     <div className="container">
-      <h5 className="mb-3">Choose preferred time slots:</h5>
       <TimeTable linkStatus={linkStatus} setLinkStatus={setLinkStatus}/>
+      <h5 className="mb-2 mt-5">Access to students:</h5>
       <div className="d-flex justify-content-between align-items-center">
         <MailInputs linkStatus={linkStatus}></MailInputs>
         <ShareLink linkStatus={linkStatus} setLinkStatus={setLinkStatus}></ShareLink>
