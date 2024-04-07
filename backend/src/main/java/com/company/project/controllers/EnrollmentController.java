@@ -10,23 +10,76 @@ import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
+import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/enrollment")
 @CrossOrigin
-@AllArgsConstructor
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
     private final ShareLinkService shareLinkService;
     private final StudentService studentService;
+    private final EmailServiceImpl emailService;
 
+    private DeadlineHandler deadlineHandler;
+
+    public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
+        EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
+        this.studentService = studentService;
+        this.emailService = emailService;
+        this.enrollmentService = enrollmentService;
+        this.shareLinkService = shareLinkService;
+    }
+
+    private class DeadlineHandler extends Thread {
+        EnrollmentController controller;
+        LocalDateTime deadline;
+
+        public DeadlineHandler(LocalDateTime deadline, EnrollmentController controller) {
+            this.deadline = deadline.minusDays(1);
+            this.controller = controller;
+        }
+
+        public void run() {
+            LocalDateTime localDateTime;
+            while (true) {
+                try {
+                    localDateTime = (LocalDateTime.now()).plusHours(2);
+                    if (localDateTime.compareTo(deadline) > 0) {
+                        controller.emailSending();
+                        break;
+                    }
+                    sleep(3600000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }
+    }
+    
+    @GetMapping(path = "/send")
+    @ResponseBody
+    public String emailSending() {
+        try{
+            emailService.sendEmail("info.enrollme@gmail.com", "Enroll deadline warning has been sent", "");
+            // TODO: Uncomment at release
+            // for(StudentDto student : studentService.getAllStudents()){
+            //     emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
+            // }
+            return "E-mails have been sent";
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
+    }
 
     // Gets all data - timetable + config
     @GetMapping
@@ -44,7 +97,15 @@ public class EnrollmentController {
     @PutMapping("/config")
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
-        return enrollmentService.configureEnrollment(configDto.id(), configDto);
+        EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto);
+        try {
+            deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
+            deadlineHandler.start();
+        }
+        catch (Exception e) {
+            System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
+        }
+        return enrollmentConfigDto;
     }
 
 
