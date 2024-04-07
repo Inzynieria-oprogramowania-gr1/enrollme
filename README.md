@@ -76,9 +76,6 @@ a63dee74d79e        react-java-mysql-backend    "java -Djava.securit…"   39 se
 b176b18fbec4        mysql:8.0.19                "docker-entrypoint.s…"   39 seconds ago      Up 37 seconds       3306/tcp, 33060/tcp    react-java-mysql_db-1
 ```
 
-After the application starts, navigate to `http://localhost:3000` in your web browser to get a colorful message.
-![page](./output.jpg)
-
 Stop and remove the containers
 ```
 $ docker compose down
@@ -90,3 +87,38 @@ Removing react-java-mysql-frontend-1 ... done
 Removing react-java-mysql-db-1       ... done
 Removing network react-java-mysql-default
 ```
+
+
+# Api Docs
+
+[Swagger UI docs](http://localhost:8080/docs) - link to REST API docs
+
+[Swagger UI config](https://www.baeldung.com/spring-rest-openapi-documentation) - short tutorial on how to add description of endpoints and other stuff to the Swagger UI docs
+
+
+# Changelog
+## SCRUM-85 (31.03.2024)
+### Nowy entity `Enrollment`
+
+- Enrollment przechowuje informacje o liczbie grup, deadlinie, stanie (`EnrollmentState`), a także zawiera 
+listę `List<TimeSlot>`, czyli siatkę godzin.
+
+### Zastąpienie `TimetableController` przez `EnrollmentController`
+
+- Zmieniono i dodano nowe endpointy ([Swagger UI docs](http://localhost:8080/docs))
+- Teraz aby pobrać siatkę godzin trzeba skorzystać z `GET /enrollment`, a w odpowiedzi
+JSON zawiera dodatkowo informacje o liczbie grup, deadlinie i stanie enrolla
+- Oddzielono endpointy `GET /taecher/timetable` oraz `POST /teacher/timetable` na:
+  * `GET /enrollment` (opisane wyżej)
+  * `POST /enrollment/timetable`
+
+### Przeniesienie metod z serwisu `TimetableService` do `EnrollmentService`
+
+- Metody `getTimetable()`, `updateTimetable()`, `updateTimeslots()` są teraz dostępne z `EnrollmentService`
+- Metoda `getTimetable()` **nie** jest teraz wykorzysytwana przez żaden kontroler, korzysta z niej jedynie algorytm
+i testy algorytmu
+
+### Fix prezentacji godzin
+
+- Usunięto sekundy z godzin we wszystkich DTO dotyczących `Timeslot`, więc frontend dostaje teraz prawidłowy format
+- Dla obiektów typu `LocalDateTime` właściwym formatem jest `yyyy-MM-dd HH:mm:ss`
