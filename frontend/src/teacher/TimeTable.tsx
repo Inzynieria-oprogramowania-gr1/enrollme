@@ -12,6 +12,7 @@ interface TimeTableProps {
 const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   const [enrollConfiguration, setEnrollConfiguration] = useState<EnrollConfiguration>();
   const [groupAmount, setGroupAmount] = useState<number>(0);
+  const [deadline, setDeadline] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(ENDPOINT)
@@ -19,6 +20,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       .then(data => {
         setEnrollConfiguration(data);
         setGroupAmount(data.groupAmount);
+        setDeadline(data.deadline);
       })
       .catch(err => console.error(err));
   }, [setEnrollConfiguration]);
@@ -33,6 +35,15 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
 
   const handleGroupAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGroupAmount(Number(event.target.value));
+  };
+
+  const handleDeadlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(deadline)
+    setDeadline(event.target.value as string);
+  };
+
+  const handleNoDeadlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDeadline(event.target.checked ? null : new Date().toISOString().split('.')[0]);
   };
 
   const handleCloseEnrollment = async () => {
@@ -148,12 +159,25 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
           Save preferred slots
         </button>
       </div>
-      <h5 className="mb-2 mt-5">Configure enroll details: </h5>
+      <h5 className="mb-4 mt-5">Configure enroll details: </h5>
       <div className="d-flex justify-content-between">
         <div className="form-group">
           <label className="form-label" htmlFor="groupAmount">Desired groups number</label>
           <input className="form-control" id="groupAmount" type="number" min="1" max="35" value={groupAmount}
                  onChange={handleGroupAmountChange}/>
+        </div>
+        <div className="d-flex justify-content-between">
+          <div className="form-group">
+            <label className="form-label" htmlFor="deadline">Enroll close date</label>
+            <input className="form-control" id="deadline" type="datetime-local" value={deadline ? deadline : ''}
+                   onChange={handleDeadlineChange}
+                   disabled={(document.getElementById('noDeadline') as HTMLInputElement)?.checked}/>
+          </div>
+          <div className="ms-3 form-check">
+            <input className="form-check-input" id="noDeadline" type="checkbox" checked={deadline === null}
+                   onChange={handleNoDeadlineChange}/>
+            <label className="form-check-label" htmlFor="noDeadline">No deadline</label>
+          </div>
         </div>
         <div>
           <button className="btn btn-danger mt-3" onClick={handleCloseEnrollment}
