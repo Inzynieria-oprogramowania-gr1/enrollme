@@ -49,6 +49,11 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   const handleSaveConfiguration = async () => {
     if (groupAmount > selectedSlotsCount()) {
       alert('Group amount cannot be greater than the number of selected slots');
+      setGroupAmount(enrollConfiguration?.groupAmount ?? 0);
+      return;
+    }
+    if (deadline && new Date(deadline) < new Date()) {
+      alert('Deadline cannot be set in the past');
       return;
     }
     const dataToSend = {
