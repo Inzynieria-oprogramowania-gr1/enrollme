@@ -1,5 +1,5 @@
 export interface EnrollConfiguration {
-  deadline: null;
+  deadline: string | null;
   groupAmount: number;
   id: number;
   state: string;
