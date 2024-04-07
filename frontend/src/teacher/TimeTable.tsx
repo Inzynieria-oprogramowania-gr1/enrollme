@@ -1,6 +1,6 @@
 import React, {useState, useEffect, FC} from "react";
 import "./TimeTable.css";
-import {Day, EnrollConfiguration} from "../common/types";
+import {EnrollConfiguration} from "../common/types";
 
 const ENDPOINT = "http://localhost:8080/enrollment";
 
@@ -47,6 +47,10 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   };
 
   const handleSaveConfiguration = async () => {
+    if (groupAmount > selectedSlotsCount()) {
+      alert('Group amount cannot be greater than the number of selected slots');
+      return;
+    }
     const dataToSend = {
       id: enrollConfiguration?.id,
       groupAmount: groupAmount,
@@ -127,13 +131,21 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
     });
   };
 
-  const hasSelectedSlot = () => {
-    return enrollConfiguration?.timeslots.some(day => day.timeslots.some(slot => slot.isSelected));
+  const selectedSlotsCount = () => {
+    let count = 0;
+    enrollConfiguration?.timeslots.forEach(day => {
+      day.timeslots.forEach(slot => {
+        if (slot.isSelected) {
+          count++;
+        }
+      });
+    });
+    return count;
   };
 
   const saveTimeTable = () => {
-    if (!hasSelectedSlot()) {
-      alert('Please select at least one time slot');
+    if (selectedSlotsCount() < groupAmount) {
+      alert('Please select at least as many time slots as the group amount');
       return;
     }
     fetch(ENDPOINT + "/timetable", {
@@ -203,6 +215,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
         <div className="form-group">
           <label className="form-label" htmlFor="groupAmount">Desired groups number</label>
           <input className="form-control" id="groupAmount" type="number" min="1" max="35" value={groupAmount}
+                 disabled={linkStatus === 'ACTIVE' || linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY'}
                  onChange={handleGroupAmountChange}/>
           <label>Between 1 and 35</label>
         </div>
@@ -211,16 +224,20 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
             <label className="form-label" htmlFor="deadline">Enroll close date</label>
             <input className="form-control" id="deadline" type="datetime-local" value={deadline ? deadline : ''}
                    onChange={handleDeadlineChange}
-                   disabled={(document.getElementById('noDeadline') as HTMLInputElement)?.checked}/>
+                   disabled={linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY' ||
+                     (document.getElementById('noDeadline') as HTMLInputElement)?.checked}/>
           </div>
           <div className="form-check">
             <input className="form-check-input" id="noDeadline" type="checkbox" checked={deadline === null}
-                   onChange={handleNoDeadlineChange}/>
+                   onChange={handleNoDeadlineChange}
+                   disabled={linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY'}/>
             <label className="form-check-label" htmlFor="noDeadline">No deadline</label>
           </div>
         </div>
         <div>
-          <button className="btn btn-primary" onClick={handleSaveConfiguration}>Save enrollment details</button>
+          <button className="btn btn-primary" onClick={handleSaveConfiguration}
+                  disabled={linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY'}>Save enrollment details
+          </button>
         </div>
         <div>
           <button className="btn btn-danger" onClick={handleCloseEnrollment}
