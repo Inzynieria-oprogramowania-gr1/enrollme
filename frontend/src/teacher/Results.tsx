@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {SpecifiedTimeSlot, Student, TimeSlot} from "../common/types";
+import {SpecifiedTimeSlot, Student} from "../common/types";
 import './Results.css';
 
 const ENDPOINT = "http://localhost:8080/enrollment"
@@ -35,7 +35,7 @@ const Results = () => {
 
   const renderResults = () => {
     console.log(linkStatus)
-    if (linkStatus != 'RESULTS_READY' && linkStatus != 'CALCULATING') {
+    if (linkStatus !== 'RESULTS_READY' && linkStatus !== 'CALCULATING') {
       return ( <p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p> );
     }
     return (

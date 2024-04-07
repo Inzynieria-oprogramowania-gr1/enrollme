@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import EnrollConfiguration from "./teacher/EnrollConfiguration";
 import Results from "./teacher/Results";
@@ -41,10 +41,10 @@ function App() {
         <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable user={user}/> :
           <Login onLogin={handleLogin} user={user} setUser={setUser} role="STUDENT"/>}/>
 
-        <Route path="/results" element={user.isAuthenticated && user.role == 'TEACHER' ? <Results/> :
+        <Route path="/results" element={user.isAuthenticated && user.role === 'TEACHER' ? <Results/> :
           <Login onLogin={handleLogin} user={user} setUser={setUser} role='TEACHER'/>}/>
 
-        <Route path="/timetable" element={user.isAuthenticated && user.role == 'TEACHER' ? <EnrollConfiguration/> :
+        <Route path="/timetable" element={user.isAuthenticated && user.role === 'TEACHER' ? <EnrollConfiguration/> :
           <Login onLogin={handleLogin} user={user} setUser={setUser} role='TEACHER'/>}/>
       </Routes>
     </div>

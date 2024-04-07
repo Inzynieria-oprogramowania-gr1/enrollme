@@ -111,7 +111,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
-    if (linkStatus == 'CALCULATING' || linkStatus == 'ACTIVE' || linkStatus == 'RESULTS_READY') {
+    if (linkStatus === 'CALCULATING' || linkStatus === 'ACTIVE' || linkStatus === 'RESULTS_READY') {
       return;
     }
     setEnrollConfiguration(prevData => {
@@ -246,7 +246,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
         </div>
         <div>
           <button className="btn btn-danger" onClick={handleCloseEnrollment}
-                  disabled={linkStatus != 'ACTIVE'}>Close enrollment now
+                  disabled={linkStatus !== 'ACTIVE'}>Close enrollment now
           </button>
         </div>
 

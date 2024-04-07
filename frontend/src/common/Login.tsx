@@ -1,5 +1,4 @@
 import React, {useState, FC} from 'react';
-import {useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
 import {User} from "./types";
@@ -13,7 +12,6 @@ interface LoginProps {
 
 const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
   const [email, setEmail] = useState('');
-  const history = useNavigate();
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -43,7 +41,7 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
               });
             break;
           case 'TEACHER':
-            if (data.role == 'TEACHER') {
+            if (data.role === 'TEACHER') {
               setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
             } else {
               throw new Error('You can not log in to teacher only page with the role of student');

@@ -43,7 +43,7 @@ const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
     <div className="mail-div">
       <h6>Write list of the students mails, separate with semicolon:</h6>
         <textarea onChange={handleTextareaChange} />
-      <button className="btn btn-secondary" onClick={handleSendingMails} disabled={linkStatus == 'CALCULATING' || linkStatus === 'RESULTS_READY'}>Upload mails</button>
+      <button className="btn btn-secondary" onClick={handleSendingMails} disabled={linkStatus === 'CALCULATING' || linkStatus === 'RESULTS_READY'}>Upload mails</button>
     </div>
   );
 }
