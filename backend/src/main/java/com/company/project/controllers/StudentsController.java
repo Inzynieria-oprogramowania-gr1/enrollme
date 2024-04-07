@@ -3,6 +3,7 @@ package com.company.project.controllers;
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import java.util.List;
 public class StudentsController {
 
     private final StudentService studentService;
-
+    private final EnrollmentService enrollmentService;
     @PostMapping
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails) {
         return studentService.createStudent(emails);
@@ -45,5 +46,12 @@ public class StudentsController {
     @GetMapping(path = "/{id}/preferences")
     public StudentPreferencesDto getStudentPreferences(@PathVariable("id") Long id) {
         return studentService.getPreferences(id);
+    }
+
+
+    @GetMapping(path = "/timetable")
+    @ResponseBody
+    public List<TimetableDto> getTimeslots() {
+        return enrollmentService.getTimetable();
     }
 }
