@@ -10,7 +10,7 @@ import java.util.List;
 public record EnrollmentDto(
         Long id,
         int groupAmount,
-        @JsonFormat(pattern="yyyy-mm-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
         LocalDateTime deadline,
         EnrolmentState state,
         List<TimetableDto> timeslots
