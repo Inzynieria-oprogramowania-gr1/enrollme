@@ -9,20 +9,18 @@ interface StudentTimeTableProps {
 }
 
 const filterSelectedSlots = (timeTableData: Day[]) => {
-  return timeTableData.filter(day =>
-    day.timeslots.some(slot => slot.isSelected)
-  ).map(day => ({
+  return timeTableData.map(day => ({
     ...day,
-    timeSlots: day.timeslots.filter(slot => slot.isSelected)
-  }));
+    timeslots: day.timeslots.filter(slot => slot.isSelected)
+  })).filter(day => day.timeslots.length > 0);
 }
 
 const setSlotsToFalse = (availableTimeTableData: Day[]) => {
   return availableTimeTableData.map(day => ({
     ...day,
-    timeSlots: day.timeslots.map(slot => ({
+    timeslots: day.timeslots.map(slot => ({
       ...slot,
-      is_selected: false
+      isSelected: false
     }))
   }));
 }
@@ -32,7 +30,7 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   const [availableTimeTableData, setAvailableTimeTableData] = useState<Day[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/enrollment")
+    fetch(ENDPOINT + "/timetable")
       .then(response => response.json())
       .then(setTimeTableData)
       .catch(err => console.error(err));
@@ -48,34 +46,29 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
     const newTimeTableData = [...availableTimeTableData];
     newTimeTableData[dayIndex].timeslots[slotIndex].isSelected = !newTimeTableData[dayIndex].timeslots[slotIndex].isSelected;
     setAvailableTimeTableData(newTimeTableData);
+    console.log(availableTimeTableData);
   };
 
-  const updateTimeTableData = () => {
+  const getDataToSend = () => {
     return timeTableData.map(day => {
       const availableDay = availableTimeTableData.find(d => d.weekday === day.weekday);
       if (!availableDay) return day;
       return {
         ...day,
-        timeSlots: day.timeslots.map(slot => {
-          const availableSlot = availableDay.timeslots.find(s => s.startTime === slot.startTime && s.endTime === slot.endTime);
-          if (!availableSlot) return slot;
-          return {
-            ...slot,
-            is_selected: availableSlot.isSelected
-          };
-        })
+        timeslots: availableDay.timeslots.filter(slot => slot.isSelected)
       };
-    });
+    }).filter(day => day.timeslots.length > 0);
   };
 
   const savePreferences = () => {
-    const timeTableDataToSend = updateTimeTableData();
-    fetch(ENDPOINT + `${user.id}/preferences`, {
+    const dataToSend = getDataToSend();
+    console.log(dataToSend)
+    fetch(ENDPOINT + `/${user.id}/preferences`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(timeTableDataToSend),
+      body: JSON.stringify(dataToSend),
     })
       .then(response => {
         if (!response.ok) {
