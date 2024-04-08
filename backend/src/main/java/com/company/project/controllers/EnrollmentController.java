@@ -70,9 +70,9 @@ public class EnrollmentController {
     public String emailSending() {
         try{
             emailService.sendEmail("info.enrollme@gmail.com", "Enroll deadline warning has been sent", "");
-            for(StudentDto student : studentService.getAllStudents()){
-                emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
-            }
+            // for(StudentDto student : studentService.getAllStudents()){
+            //     emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
+            // }
             return "E-mails have been sent";
         }
         catch (Exception e){
