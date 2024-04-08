@@ -44,8 +44,8 @@ const Results = () => {
           Array.from(resultsMap.entries()).map(([timeslot, students], index) => (
             <div className="timeslot" key={index}>
               <p>Weekday: {timeslot.weekday}</p>
-              <p>Start Date: {timeslot.start_date}</p>
-              <p>End Date: {timeslot.end_date}</p>
+              <p>From: {timeslot.startTime}</p>
+              <p>To: {timeslot.endTime}</p>
               <ul>
                 {students.map((student, index) => (
                   <li key={index}>{student.email}</li>
