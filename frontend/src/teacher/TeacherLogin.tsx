@@ -1,5 +1,6 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {User} from "../common/types";
+import {AuthContext} from "../common/AuthContext";
 
 interface LoginProps {
   onLogin: (email: string, role: string) => void;
@@ -11,6 +12,7 @@ interface LoginProps {
 const TeacherLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { setAuth } = useContext(AuthContext);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -20,10 +22,12 @@ const TeacherLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
     setPassword(event.target.value);
   };
 
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const basicAuth = 'Basic ' + btoa(email + ':' + password);
+    setAuth(basicAuth);
 
     fetch(`http://localhost:8080/auth/login`, {
       method: 'POST',

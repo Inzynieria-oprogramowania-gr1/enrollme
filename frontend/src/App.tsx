@@ -9,8 +9,10 @@ import StudentTimeTable from "./student/StudentTimeTable";
 import logo from "./resources/full_logo.png";
 import {User} from "./common/types";
 import TeacherLogin from "./teacher/TeacherLogin";
+import { AuthContext } from "./common/AuthContext";
 
 function App() {
+  const [auth, setAuth] = useState('');
 
   const navigate = useNavigate();
   const [user, setUser] = useState<User>({
@@ -42,16 +44,20 @@ function App() {
         <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>ENROLL CONFIG</button>
         <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>
-      <Routes>
-        <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable user={user}/> :
-          <StudentLogin onLogin={handleStudentLogin} user={user} setUser={setUser}/>}/>
+      <AuthContext.Provider value={{ auth, setAuth }}>
+        <Routes>
 
-        {/*<Route path="/results" element={user.isAuthenticated && user.role === 'TEACHER' ? <Results/> :*/}
-        {/*  <TeacherLogin onLogin={handleLogin} user={user} setUser={setUser} role='TEACHER'/>}/>*/}
+          <Route path="/students/timetable" element={user.isAuthenticated ? <StudentTimeTable user={user}/> :
+            <StudentLogin onLogin={handleStudentLogin} user={user} setUser={setUser}/>}/>
 
-        <Route path="/timetable" element={user.isAuthenticated && user.password != null ? <EnrollConfiguration/> :
-          <TeacherLogin onLogin={handleTeacherLogin} user={user} setUser={setUser} />}/>
-      </Routes>
+          <Route path="/results" element={user.isAuthenticated && user.password != null ? <Results/> :
+            <TeacherLogin onLogin={handleTeacherLogin} user={user} setUser={setUser}/>}/>
+
+          <Route path="/timetable" element={user.isAuthenticated && user.password != null ? <EnrollConfiguration/> :
+            <TeacherLogin onLogin={handleTeacherLogin} user={user} setUser={setUser} />}/>
+        </Routes>
+      </AuthContext.Provider>
+
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import React, {FC} from "react";
+import React, {FC, useContext} from "react";
 import {ShareLinkData} from "../common/types";
+import {AuthContext} from "../common/AuthContext";
 
 const ENDPOINT = "http://localhost:8080/enrollment/share";
 
@@ -9,13 +10,21 @@ interface ShareLinkProps {
 }
 
 const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
+  const { auth } = useContext(AuthContext);
 
   const handleShareToStudents = async () => {
     try {
-      let response = await fetch(ENDPOINT);
+      let response = await fetch(ENDPOINT, {
+        headers: {
+          'Authorization': auth
+        }
+      });
       if (!response.ok) {
         response = await fetch(ENDPOINT, {
           method: "POST",
+          headers: {
+            'Authorization': auth
+          }
         });
         if (!response.ok) {
           alert('Failed to create share link');

@@ -1,15 +1,21 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import "./TimeTable.css";
 import MailInputs from "./MailInputs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ShareLink from "./ShareLink";
 import TimeTable from "./TimeTable";
+import {AuthContext} from "../common/AuthContext";
 
 const EnrollConfiguration = () => {
+  const { auth } = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/enrollment/share')
+    fetch('http://localhost:8080/enrollment/share', {
+      headers: {
+        'Authorization': auth
+      }
+    })
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));

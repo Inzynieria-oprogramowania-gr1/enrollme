@@ -1,6 +1,7 @@
-import React, {useState, useEffect, FC} from "react";
+import React, {useState, useEffect, FC, useContext} from "react";
 import "./TimeTable.css";
 import {EnrollConfiguration} from "../common/types";
+import {AuthContext} from "../common/AuthContext";
 
 const ENDPOINT = "http://localhost:8080/enrollment";
 
@@ -10,12 +11,17 @@ interface TimeTableProps {
 }
 
 const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
+  const { auth } = useContext(AuthContext);
   const [enrollConfiguration, setEnrollConfiguration] = useState<EnrollConfiguration>();
   const [groupAmount, setGroupAmount] = useState<number>(0);
   const [deadline, setDeadline] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(ENDPOINT)
+    fetch(ENDPOINT, {
+      headers: {
+        'Authorization': auth
+      }
+    })
       .then(response => response.json())
       .then(data => {
         setEnrollConfiguration(data);
@@ -65,6 +71,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': auth
       },
       body: JSON.stringify(dataToSend),
     });
@@ -99,6 +106,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': auth
       },
       body: JSON.stringify({state: 'CALCULATING'}),
     });
@@ -157,6 +165,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': auth
       },
       body: JSON.stringify(enrollConfiguration?.timeslots),
     })
