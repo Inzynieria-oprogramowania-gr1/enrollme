@@ -1,6 +1,7 @@
 package com.company.project.controllers;
 
 
+import com.company.project.dto.StudentDto;
 import com.company.project.dto.enrollment.EnrollmentConfigDto;
 import com.company.project.dto.enrollment.EnrollmentDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
@@ -15,6 +16,8 @@ import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
 import lombok.AllArgsConstructor;
+
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
@@ -68,11 +71,11 @@ public class EnrollmentController {
     @GetMapping(path = "/send")
     @ResponseBody
     public String emailSending() {
-        try{
+        try {
             emailService.sendEmail("info.enrollme@gmail.com", "Enroll deadline warning has been sent", "");
-            // for(StudentDto student : studentService.getAllStudents()){
-            //     emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
-            // }
+            for(StudentDto student : studentService.getAllStudents()){
+                emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
+            }
             return "E-mails have been sent";
         }
         catch (Exception e){
@@ -97,12 +100,14 @@ public class EnrollmentController {
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
         EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto);
-        try {
-            deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
-            deadlineHandler.start();
-        }
-        catch (Exception e) {
-            System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
+        if (enrollmentService.getEnrollment().deadline() != null) {
+            try {
+                deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
+                deadlineHandler.start();
+            }
+            catch (Exception e) {
+                System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
+            }
         }
         return enrollmentConfigDto;
     }
