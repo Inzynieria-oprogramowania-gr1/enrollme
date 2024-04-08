@@ -26,7 +26,7 @@ export interface SpecifiedTimeSlot {
 export interface User {
   id: null | number;
   email: string;
-  role: string;
+  password: string | null;
   isAuthenticated: boolean;
 }
 
