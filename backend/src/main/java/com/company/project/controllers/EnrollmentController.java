@@ -16,7 +16,6 @@ import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,7 @@ public class EnrollmentController {
     private final EmailServiceImpl emailService;
 
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
-        EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
+                                EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
         this.studentService = studentService;
         this.emailService = emailService;
         this.enrollmentService = enrollmentService;
@@ -76,8 +75,7 @@ public class EnrollmentController {
                 // emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
             }
             return "E-mails have been sent";
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
@@ -103,8 +101,7 @@ public class EnrollmentController {
             try {
                 DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
                 deadlineHandler.start();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
             }
         }
@@ -142,6 +139,12 @@ public class EnrollmentController {
     @ResponseBody
     public List<EnrollmentResultsDto> getResults() {
         return studentService.getResults();
+    }
+
+
+    @GetMapping("/reset/{id}")
+    public void resetEnrollment(@PathVariable Long id) {
+        enrollmentService.resetEnrollment(id);
     }
 
 }
