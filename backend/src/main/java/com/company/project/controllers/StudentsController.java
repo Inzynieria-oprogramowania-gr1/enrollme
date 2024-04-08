@@ -11,7 +11,6 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 
 
@@ -23,6 +22,7 @@ public class StudentsController {
 
     private final StudentService studentService;
     private final EnrollmentService enrollmentService;
+
     @PostMapping
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails) {
         return studentService.createStudent(emails);
@@ -35,9 +35,9 @@ public class StudentsController {
             @RequestParam(required = false) String email,
             HttpServletRequest httpServletRequest
     ) throws BadRequestException {
-        if(httpServletRequest.getParameterMap().size() > 1)
+        if (httpServletRequest.getParameterMap().size() > 1)
             throw new BadRequestException("Bad request");
-        if(id != null)
+        if (id != null)
             return ResponseEntity.ok(studentService.getStudentById(id));
         else if (email != null)
             return ResponseEntity.ok(studentService.getStudentByEmail(email));

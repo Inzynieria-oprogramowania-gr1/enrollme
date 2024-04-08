@@ -144,5 +144,4 @@ public class EnrollmentController {
         return studentService.getResults();
     }
 
-
 }
