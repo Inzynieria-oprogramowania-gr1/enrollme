@@ -15,12 +15,9 @@ import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
-import lombok.AllArgsConstructor;
-
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -32,8 +29,6 @@ public class EnrollmentController {
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
 
-    private DeadlineHandler deadlineHandler;
-
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
         EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
         this.studentService = studentService;
@@ -42,7 +37,7 @@ public class EnrollmentController {
         this.shareLinkService = shareLinkService;
     }
 
-    private class DeadlineHandler extends Thread {
+    private static class DeadlineHandler extends Thread {
         EnrollmentController controller;
         LocalDateTime deadline;
 
@@ -56,7 +51,7 @@ public class EnrollmentController {
             while (true) {
                 try {
                     localDateTime = (LocalDateTime.now()).plusHours(2);
-                    if (localDateTime.compareTo(deadline) > 0) {
+                    if (localDateTime.isAfter(deadline)) {
                         controller.emailSending();
                         break;
                     }
@@ -103,7 +98,7 @@ public class EnrollmentController {
         EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto);
         if (enrollmentService.getEnrollment().deadline() != null) {
             try {
-                deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
+                DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
                 deadlineHandler.start();
             }
             catch (Exception e) {

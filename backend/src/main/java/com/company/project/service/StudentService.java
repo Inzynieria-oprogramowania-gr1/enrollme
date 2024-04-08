@@ -55,11 +55,6 @@ public class StudentService {
         ).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
     }
 
-    public StudentDto createStudent(String email) {
-        Student student = studentRepository.save(new Student(email));
-        return studentMapper.mapToStudentDto(student);
-    }
-
     public List<StudentDto> createStudent(List<String> emails) {
         return emails.stream().map
                         ((e) -> {
