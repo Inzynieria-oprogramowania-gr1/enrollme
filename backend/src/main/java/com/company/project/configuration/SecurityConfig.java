@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/enrollment", "/enrollment/**").hasRole("TEACHER")
+                        .requestMatchers("/enrollment", "/enrollment/**", "/auth", "/auth/**").hasRole("TEACHER")
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults());
