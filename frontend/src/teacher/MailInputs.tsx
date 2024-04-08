@@ -1,5 +1,8 @@
 import React, {useState, FC} from "react";
 import "./MailInputs.css";
+import {RELEASE_ENDPOINT} from "../common/types";
+
+const ENDPOINT = RELEASE_ENDPOINT + "/students";
 
 interface MailInputsProps {
   linkStatus: string | null;
@@ -25,7 +28,7 @@ const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
       }
     }
     console.log(emails);
-    const response = await fetch("http://localhost:8080/students", {
+    const response = await fetch(ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

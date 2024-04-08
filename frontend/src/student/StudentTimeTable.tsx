@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import './StudentTimeTable.css'
-import {Day, User} from "../common/types";
+import {Day, RELEASE_ENDPOINT, User} from "../common/types";
 
-const ENDPOINT = "http://localhost:8080/students";
+const ENDPOINT = RELEASE_ENDPOINT + "/students";
 
 interface StudentTimeTableProps {
   user: User;

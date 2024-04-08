@@ -1,7 +1,9 @@
 import React, {useState, FC} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
-import {User} from "./types";
+import {RELEASE_ENDPOINT, User} from "./types";
+
+const ENDPOINT = RELEASE_ENDPOINT;
 
 interface LoginProps {
   onLogin: (email: string, role: string) => void;
@@ -20,7 +22,7 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetch(`http://localhost:8080/students?email=${email}`)
+    fetch(ENDPOINT + `/students?email=${email}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('The provided mail was not found. Check it and try again');
@@ -30,7 +32,7 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
       .then(data => {
         switch (role) {
           case 'STUDENT':
-            fetch('http://localhost:8080/enrollment/share')
+            fetch(ENDPOINT + '/enrollment/share')
               .then(response => response.json())
               .then(shareData => {
                 if (shareData.state !== 'ACTIVE') {

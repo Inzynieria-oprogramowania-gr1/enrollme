@@ -1,3 +1,11 @@
+export const LOCAL_ENDPOINT = "http://localhost:8080"
+
+export const RELEASE_ENDPOINT = "http://81.28.6.141:8080"
+
+export const LOCAL_FRONT_ENDPOINT = "http://localhost:3000"
+
+export const RELEASE_FRONT_ENDPOINT = "http://81.28.6.141:3000"
+
 export interface EnrollConfiguration {
   deadline: string | null;
   groupAmount: number;

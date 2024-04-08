@@ -1,8 +1,8 @@
 import React, {useState, useEffect, FC} from "react";
 import "./TimeTable.css";
-import {EnrollConfiguration} from "../common/types";
+import {EnrollConfiguration, RELEASE_ENDPOINT} from "../common/types";
 
-const ENDPOINT = "http://localhost:8080/enrollment";
+const ENDPOINT = RELEASE_ENDPOINT + "/enrollment";
 
 interface TimeTableProps {
   linkStatus: string | null;

@@ -4,12 +4,15 @@ import MailInputs from "./MailInputs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ShareLink from "./ShareLink";
 import TimeTable from "./TimeTable";
+import {RELEASE_ENDPOINT} from "../common/types";
+
+const ENDPOINT = RELEASE_ENDPOINT;
 
 const EnrollConfiguration = () => {
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/enrollment/share')
+    fetch(ENDPOINT + '/enrollment/share')
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));

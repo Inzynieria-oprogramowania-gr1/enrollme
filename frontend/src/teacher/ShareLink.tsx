@@ -1,7 +1,9 @@
 import React, {FC} from "react";
-import {ShareLinkData} from "../common/types";
+import {RELEASE_ENDPOINT, RELEASE_FRONT_ENDPOINT, ShareLinkData} from "../common/types";
 
-const ENDPOINT = "http://localhost:8080/enrollment/share";
+const ENDPOINT = RELEASE_ENDPOINT + "/enrollment/share";
+
+const FRONT_ENDPOINT = RELEASE_FRONT_ENDPOINT;
 
 interface ShareLinkProps {
   linkStatus: string | null;
@@ -27,7 +29,7 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
         alert('The link is currently inactive');
         return;
       }
-      await navigator.clipboard.writeText("http://localhost:3000" + data.link);
+      await navigator.clipboard.writeText(FRONT_ENDPOINT + data.link);
       alert('Link has been saved to clipboard');
       setLinkStatus('ACTIVE');
     } catch (error) {

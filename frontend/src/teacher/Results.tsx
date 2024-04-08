@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {SpecifiedTimeSlot, Student} from "../common/types";
+import {RELEASE_ENDPOINT, SpecifiedTimeSlot, Student} from "../common/types";
 import './Results.css';
 
-const ENDPOINT = "http://localhost:8080/enrollment"
+const ENDPOINT = RELEASE_ENDPOINT + "/enrollment";
 
 const Results = () => {
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
