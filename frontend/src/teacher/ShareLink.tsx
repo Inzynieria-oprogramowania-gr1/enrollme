@@ -29,8 +29,8 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
         alert('The link is currently inactive');
         return;
       }
-      await navigator.clipboard.writeText(FRONT_ENDPOINT + data.link);
-      alert('Link has been saved to clipboard');
+      // await navigator.clipboard.writeText(FRONT_ENDPOINT + data.link);
+      alert('Link has been saved to clipboard. The link is: ' + FRONT_ENDPOINT + data.link);
       setLinkStatus('ACTIVE');
     } catch (error) {
       alert('Failed to save link to clipboard');
