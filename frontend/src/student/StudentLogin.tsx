@@ -1,16 +1,15 @@
 import React, {useState, FC} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Login.css';
-import {User} from "./types";
+import './StudentLogin.css';
+import {User} from "../common/types";
 
 interface LoginProps {
   onLogin: (email: string, role: string) => void;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
-  role: string;
 }
 
-const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
+const StudentLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
   const [email, setEmail] = useState('');
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,26 +27,15 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
         return response.json();
       })
       .then(data => {
-        switch (role) {
-          case 'STUDENT':
-            fetch('http://localhost:8080/enrollment/share')
-              .then(response => response.json())
-              .then(shareData => {
-                if (shareData.state !== 'ACTIVE') {
-                  alert('Enrollment has not started or has already ended');
-                  return;
-                }
-                setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
-              });
-            break;
-          case 'TEACHER':
-            if (data.role === 'TEACHER') {
-              setUser({ id: data.id, email: email, role: data.role, isAuthenticated: true });
-            } else {
-              throw new Error('You can not log in to teacher only page with the role of student');
+        fetch('http://localhost:8080/enrollment/share')
+          .then(response => response.json())
+          .then(shareData => {
+            if (shareData.state !== 'ACTIVE') {
+              alert('Enrollment has not started or has already ended');
+              return;
             }
-            break;
-        }
+            setUser({id: data.id, email: email, password: null, isAuthenticated: true});
+          });
       })
       .catch((error: Error) => {
         alert(error.message);
@@ -68,4 +56,4 @@ const Login: FC<LoginProps> = ({onLogin, user, setUser, role}) => {
   );
 };
 
-export default Login;
+export default StudentLogin;

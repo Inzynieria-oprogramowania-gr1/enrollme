@@ -5,10 +5,14 @@ import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @CrossOrigin
@@ -18,25 +22,29 @@ public class StudentsController {
 
     private final StudentService studentService;
     private final EnrollmentService enrollmentService;
+
     @PostMapping
     public @ResponseBody List<StudentDto> addStudentList(@RequestBody List<String> emails) {
         return studentService.createStudent(emails);
     }
 
-    @GetMapping(params = "id")
-    public @ResponseBody StudentDto getStudentById(@RequestParam Long id) {
-        return studentService.getStudentById(id);
-    }
-
-    @GetMapping(params = "email")
-    public @ResponseBody StudentDto getStudentByEmail(@RequestParam String email) {
-        return studentService.getStudentByEmail(email);
-    }
 
     @GetMapping
-    public @ResponseBody List<StudentDto> getStudents() {
-        return studentService.getAllStudents();
+    public @ResponseBody ResponseEntity<?> getStudents(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String email,
+            HttpServletRequest httpServletRequest
+    ) throws BadRequestException {
+        if (httpServletRequest.getParameterMap().size() > 1)
+            throw new BadRequestException("Bad request");
+        if (id != null)
+            return ResponseEntity.ok(studentService.getStudentById(id));
+        else if (email != null)
+            return ResponseEntity.ok(studentService.getStudentByEmail(email));
+        else
+            return ResponseEntity.ok(studentService.getAllStudents());
     }
+
 
     @PostMapping(path = "/{id}/preferences")
     public StudentPreferencesDto addStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable) {

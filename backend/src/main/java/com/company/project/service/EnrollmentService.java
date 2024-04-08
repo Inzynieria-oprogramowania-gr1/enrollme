@@ -66,6 +66,12 @@ public class EnrollmentService {
         return timeslotMapper.mapToTimetableList(timetableEntities);
     }
 
+    public List<TimetableDto> getSelectedTimetable() {
+        List<Timeslot> t = timeslotRepository.findAll().stream()
+        .filter(timeslot->timeslot.isSelected()).toList();
+        return timeslotMapper.mapToTimetableList(t);
+    }
+
     private List<TimetableDto> updateTimeslots(List<Timeslot> timeslotDtos) {
         List<Timeslot> timeslots = timeslotRepository.findAll();
         List<Timeslot> updatedTimeslots = timeslotDtos.stream()

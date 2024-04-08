@@ -1,9 +1,8 @@
-package com.company.project.entity;
+package com.company.project.entity.users;
 
+import com.company.project.entity.Timeslot;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,21 +12,15 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "students_id", nullable = false, unique = true)
     private Long id;
-
     private String email;
 
-    @Enumerated(EnumType.ORDINAL)
-    private UserRole role;
 
     public Student(String email) {
         this.email = email;
-        this.role = UserRole.STUDENT;
     }
 
     @ManyToMany(mappedBy = "preferences")
@@ -36,4 +29,5 @@ public class Student {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id")
     private Timeslot result;
+
 }

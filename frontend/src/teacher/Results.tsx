@@ -1,14 +1,20 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {SpecifiedTimeSlot, Student} from "../common/types";
 import './Results.css';
+import {AuthContext} from "../common/AuthContext";
 
 const ENDPOINT = "http://localhost:8080/enrollment"
 
 const Results = () => {
+  const { auth } = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(ENDPOINT + '/share')
+    fetch(ENDPOINT + '/share', {
+      headers: {
+        'Authorization': auth
+      }
+    })
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));
@@ -18,7 +24,11 @@ const Results = () => {
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
 
   useEffect(() => {
-    fetch(ENDPOINT + "/results")
+    fetch(ENDPOINT + "/results", {
+      headers: {
+        'Authorization': auth
+      }
+    })
       .then(res => res.json())
       .then((data) => {
         setResults(data);

@@ -2,7 +2,7 @@ package com.company.project.mapper;
 
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
-import com.company.project.entity.Student;
+import com.company.project.entity.users.Student;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

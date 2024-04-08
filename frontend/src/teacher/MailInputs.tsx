@@ -1,5 +1,6 @@
-import React, {useState, FC} from "react";
+import React, {useState, FC, useContext} from "react";
 import "./MailInputs.css";
+import {AuthContext} from "../common/AuthContext";
 
 interface MailInputsProps {
   linkStatus: string | null;
@@ -10,6 +11,7 @@ function isValidEmail(email: string) {
 }
 
 const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
+  const { auth } = useContext(AuthContext);
   const [textareaValue, setTextareaValue] = useState<string>('')
 
   const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -29,6 +31,7 @@ const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': auth
       },
       body: JSON.stringify(emails)
     });

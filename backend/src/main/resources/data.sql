@@ -1,12 +1,17 @@
-INSERT INTO mydb.students(email, role)
-VALUES ('zarzitski@student.agh.edu.pl',0),
-       ('zolszowka@student.agh.edu.pl',0),
-       ('pkuchta@student.agh.edu.pl',0),
-       ('Asobiesiak@student.agh.edu.pl',0),
-       ('amezydlo@student.agh.edu.pl',0),
-       ('test@test.com',0),
-       ('test2@test.com',0),
-       ('miidzik@agh.edu.pl',1);
+INSERT INTO mydb.students(email)
+VALUES ('zarzitski@student.agh.edu.pl'),
+       ('zolszowka@student.agh.edu.pl'),
+       ('pkuchta@student.agh.edu.pl'),
+       ('Asobiesiak@student.agh.edu.pl'),
+       ('amezydlo@student.agh.edu.pl'),
+       ('test@test.com'),
+       ('test2@test.com');
+
+INSERT INTO mydb.teacher(email, password, role)
+VALUES ('miidzik@agh.edu.pl', '$2a$12$uTyWiJKnOxy3hYmAeDhTMuqO1xi4B.qKE.2vp.27RQ7XupcNRsjFS', 'ROLE_TEACHER');
+
+
+
 
 
 INSERT INTO mydb.enrollments VALUES ();
@@ -33,5 +38,3 @@ FROM (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT
       SELECT '16:45:00', '18:15:00'
       UNION ALL
       SELECT '18:30:00', '20:00:00') t;
-
-

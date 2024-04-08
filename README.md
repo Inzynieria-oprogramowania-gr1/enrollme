@@ -122,3 +122,37 @@ i testy algorytmu
 
 - Usunięto sekundy z godzin we wszystkich DTO dotyczących `Timeslot`, więc frontend dostaje teraz prawidłowy format
 - Dla obiektów typu `LocalDateTime` właściwym formatem jest `yyyy-MM-dd HH:mm:ss`
+
+## SCRUM-67 (02.04.2024)
+### Dodanie autentykacji
+
+- od teraz na endpointy `/enrollment` i `/enrollment/**` może wejść jedynie użytkownik, który za pomocą
+BasicAuth poda w zapytaniu login i hasło:
+
+```
+login: miidzik@agh.edu.pl
+hasło: I<3Burito
+```
+- pozostałe endpointy są otwarte dla wszystkich
+
+### Stworzenie klasy `Teacher`
+
+- Klasa Teacher odpowiada typowej klasie User, jednak póki co tylko Teacher się może zalogować
+
+### Usunięcie pola `UserRole` z klasy Student
+
+- klasa student nie potrzebuje już pola typu `UserRole`, w zasadzie klasa `Teacher` również i obecnie zamiana
+autoryzacji po roli na autoryzację po autentykacji (każdy zalogowany ma dostęp) niczego nie zmieni
+
+### Modyfikacja obsługi `GET /students`
+
+- zastąpiono 3 metody jedną, która w zależości od liczby i rodzaju parametru wykonuje odpowiednie czynności.
+Problemem było głównie OpenApi, które nie pozwalało na przesłanie tylko 1 z parametrów.
+
+### Dodanie `OpenApiConfig`
+
+- Aby poprawnie móc testować autentykację potrzebna była konfiguracja OpenApi
+- W przyszłości pewnie warto poprawić i dodać więcej opisów / przykładów
+np. przykładowy `PUT /enrollment/timetable` podaje godzinę jako obiekt zamiast napisu.
+Aby poprawnie wysłać żądanie należy w przykładzie zmienić godzinę na format `"startTime": "08:00"`.
+Ważne jest, że godziny 1-cyfrowe muszą być poprzedzone 0!
