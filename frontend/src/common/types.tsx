@@ -17,9 +17,9 @@ export interface TimeSlot {
   startTime: string;
 }
 export interface SpecifiedTimeSlot {
-  start_date: string;
-  end_date: string;
-  is_selected: boolean;
+  startTime: string;
+  endTime: string;
+  isSelected: boolean;
   weekday: string;
 }
 
