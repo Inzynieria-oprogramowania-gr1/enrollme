@@ -15,7 +15,6 @@ import com.company.project.dto.StudentDto;
 import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDto;
-import com.company.project.entity.UserRole;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
 import lombok.Getter;
@@ -47,9 +46,6 @@ public class GroupingAlgorithm {
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
         List<StudentDto> withoutPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
-            if (student.role().equals(UserRole.TEACHER)) {
-                continue;
-            }
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
             if (preferences.timetables().isEmpty()) {
                 withoutPreferences.add(student);

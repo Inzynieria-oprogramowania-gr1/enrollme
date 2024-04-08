@@ -15,6 +15,8 @@ import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/enrollment")
 @CrossOrigin
+@SecurityRequirement(name = "basicAuth")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
     private final ShareLinkService shareLinkService;
@@ -62,7 +65,7 @@ public class EnrollmentController {
             }
         }
     }
-    
+
     @GetMapping(path = "/send")
     @ResponseBody
     public String emailSending() {

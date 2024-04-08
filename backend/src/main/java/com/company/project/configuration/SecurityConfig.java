@@ -22,14 +22,23 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/docs",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/students",
+            "/students/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/students/**")
-                        .permitAll()
+                        .requestMatchers("/enrollment", "/enrollment/**").hasRole("TEACHER")
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
+//                        .requestMatchers("/students", "/students/**").permitAll()
                         .anyRequest()
                         .authenticated()
                 )

@@ -6,9 +6,8 @@ import com.company.project.dto.enrollment.EnrollmentResultsDto;
 import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDto;
-import com.company.project.entity.Student;
 import com.company.project.entity.Timeslot;
-import com.company.project.entity.UserRole;
+import com.company.project.entity.users.Student;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
@@ -124,9 +123,6 @@ public class StudentService {
             mapTimeStudents.put(dto, new LinkedList<>());
         }
         for (Student student : studentDtos) {
-            if (student.getRole().equals(UserRole.TEACHER)) {
-                continue;
-            }
             SpecifiedTimeslotDto sp = timeslotMapper.mapToSpecifiedTimeslotDto(student.getResult());
             if (mapTimeStudents.get(sp) == null) {
                 throw new ResourceNotFoundException("Results not set");

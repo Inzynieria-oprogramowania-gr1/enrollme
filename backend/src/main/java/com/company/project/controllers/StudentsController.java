@@ -8,7 +8,9 @@ import com.company.project.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
+
 
 @RestController
 @CrossOrigin
@@ -23,17 +25,18 @@ public class StudentsController {
         return studentService.createStudent(emails);
     }
 
-    @GetMapping(params = "id")
+    @GetMapping(params = {"id", "!email"})
     public @ResponseBody StudentDto getStudentById(@RequestParam Long id) {
         return studentService.getStudentById(id);
+
     }
 
-    @GetMapping(params = "email")
+    @GetMapping(params = {"email", "!id"})
     public @ResponseBody StudentDto getStudentByEmail(@RequestParam String email) {
         return studentService.getStudentByEmail(email);
     }
 
-    @GetMapping
+    @GetMapping(params = "!query")
     public @ResponseBody List<StudentDto> getStudents() {
         return studentService.getAllStudents();
     }

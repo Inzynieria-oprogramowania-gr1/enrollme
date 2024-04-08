@@ -1,4 +1,4 @@
-package com.company.project.entity;
+package com.company.project.entity.users;
 
 
 import jakarta.persistence.*;
@@ -22,11 +22,11 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
+    protected String email;
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    protected UserRole role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
