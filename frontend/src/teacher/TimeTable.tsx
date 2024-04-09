@@ -11,7 +11,7 @@ interface TimeTableProps {
 }
 
 const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
-  const { auth } = useContext(AuthContext);
+  const {auth} = useContext(AuthContext);
   const [enrollConfiguration, setEnrollConfiguration] = useState<EnrollConfiguration>();
   const [groupAmount, setGroupAmount] = useState<number>(0);
   const [deadline, setDeadline] = useState<string | null>(null);
@@ -116,6 +116,26 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
     }
     setLinkStatus('CALCULATING');
     alert('Success: Enrollment was successfully closed');
+  }
+
+  const handleResetEnrollment = async () => {
+    const confirmation = window.confirm("Are you sure you want to reset enrollment and go back to default state?");
+    if (!confirmation) {
+      return;
+    }
+    const id = enrollConfiguration?.id;
+    const response = await fetch(ENDPOINT + `/reset/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': auth
+      }
+    });
+    if (!response.ok) {
+      alert('Failed to reset the enrollment');
+      return;
+    }
+    alert('Enrollment was reset successfully');
+    window.location.reload();
   }
 
   const toggleTimeSlotSelection = (weekday: string, slot: string) => {
@@ -254,9 +274,16 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
           </button>
         </div>
         <div>
-          <button className="btn btn-danger" onClick={handleCloseEnrollment}
-                  disabled={linkStatus !== 'ACTIVE'}>Close enrollment now
-          </button>
+          <div className="mb-3">
+            <button className="btn btn-danger" onClick={handleCloseEnrollment}
+                    disabled={linkStatus !== 'ACTIVE'}>Close enrollment now
+            </button>
+          </div>
+          <div>
+            <button className="btn btn-danger" onClick={handleResetEnrollment}>RESET ENROLLMENT
+            </button>
+          </div>
+
         </div>
 
       </div>
