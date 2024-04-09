@@ -25,7 +25,6 @@ public class ShareLinkService {
     private final ActiveLinkRepository activeLinkRepository;
     private final ShareLinkMapper shareLinkMapper;
     private final StudentService studentService;
-    private final EnrollmentService enrollmentService;
 
 
     public ShareLinkDto createShareLink() {
@@ -40,7 +39,7 @@ public class ShareLinkService {
         return shareLinkMapper.mapToShareLinkDto(savedLink);
     }
 
-    public ShareLinkDto updateShareLink(EnrolmentState state) {
+    public ShareLinkDto updateShareLink(EnrolmentState state, EnrollmentService enrollmentService) {
         ShareLink link = activeLinkRepository
                 .findAll()
                 .stream()

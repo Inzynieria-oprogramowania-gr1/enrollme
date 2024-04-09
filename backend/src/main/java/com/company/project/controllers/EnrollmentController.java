@@ -122,7 +122,7 @@ public class EnrollmentController {
         if (requiredState.state() == EnrolmentState.RESULTS_READY) {
             throw new ForbiddenActionException("Cannot change state to - " + requiredState);
         }
-        return shareLinkService.updateShareLink(requiredState.state());
+        return shareLinkService.updateShareLink(requiredState.state(), enrollmentService);
     }
 
     @GetMapping("/share")
