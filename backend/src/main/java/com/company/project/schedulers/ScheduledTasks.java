@@ -21,8 +21,7 @@ public class ScheduledTasks {
     public void put(TaskType type, Instant triggerDate, ShareLinkService shareLinkService) {
 
         // sth like a factory
-        if(type == TaskType.CLOSE_ENROLLMENT)
-        {
+        if (type == TaskType.CLOSE_ENROLLMENT) {
             CloseEnrollmentTask task = new CloseEnrollmentTask(this, shareLinkService);
             ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, triggerDate);
             tasks.put(TaskType.CLOSE_ENROLLMENT, scheduledTask);
@@ -31,16 +30,20 @@ public class ScheduledTasks {
     }
 
     public void cancelCurrent(TaskType type) {
-        tasks.get(type).cancel(false);
-        tasks.remove(type);
+        if (isScheduled(type)) {
+            tasks.get(type).cancel(false);
+            tasks.remove(type);
+        }
+
     }
 
 
     public void remove(TaskType type) {
-        tasks.remove(type);
+        if (isScheduled(type))
+            tasks.remove(type);
     }
 
-    public boolean isScheduled(TaskType type){
+    public boolean isScheduled(TaskType type) {
         return tasks.containsKey(type);
     }
 
