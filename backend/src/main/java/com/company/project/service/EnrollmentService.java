@@ -4,33 +4,37 @@ import com.company.project.dto.enrollment.EnrollmentConfigDto;
 import com.company.project.dto.enrollment.EnrollmentDto;
 import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Enrollment;
+import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.Timeslot;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.EnrollmentRepository;
+import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Service
 @AllArgsConstructor
 public class EnrollmentService {
-    public final EnrollmentRepository repository;
+    public final EnrollmentRepository enrollmentRepository;
     public final TimeslotRepository timeslotRepository;
     public final TimeslotMapper timeslotMapper;
+    private final StudentRepository studentRepository;
+    private final ShareLinkService shareLinkService;
 
 
     public EnrollmentDto getEnrollment() {
-        Enrollment enrollment = repository
+        Enrollment enrollment = enrollmentRepository
                 .findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found"));
-
 
 
         List<Timeslot> timeslots = enrollment.getTimeslots();
@@ -47,13 +51,13 @@ public class EnrollmentService {
     }
 
     public EnrollmentConfigDto configureEnrollment(Long id, EnrollmentConfigDto configDto) {
-        Enrollment enrollment = repository
+        Enrollment enrollment = enrollmentRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment with id: " + id + "does not exist"));
 
         enrollment.setGroupAmount(configDto.groupAmount());
         enrollment.setDeadline(configDto.deadline());
-        repository.save(enrollment);
+        enrollmentRepository.save(enrollment);
         return configDto;
     }
 
@@ -68,7 +72,7 @@ public class EnrollmentService {
 
     public List<TimetableDto> getSelectedTimetable() {
         List<Timeslot> t = timeslotRepository.findAll().stream()
-        .filter(timeslot->timeslot.isSelected()).toList();
+                .filter(Timeslot::isSelected).toList();
         return timeslotMapper.mapToTimetableList(t);
     }
 
@@ -84,5 +88,29 @@ public class EnrollmentService {
 
         timeslotRepository.saveAll(updatedTimeslots);
         return timeslotMapper.mapToTimetableList(updatedTimeslots);
+    }
+
+    public void resetEnrollment(Long id) {
+        Optional<Enrollment> byId = enrollmentRepository.findById(id);
+        byId.ifPresent(enrollment -> {
+            enrollment.setState(EnrolmentState.INACTIVE);
+            enrollment.setGroupAmount(0);
+            enrollment.setDeadline(null);
+            enrollment.getTimeslots().forEach(timeslot -> {
+                timeslot.setSelected(false);
+                timeslot.getResult().forEach(
+                        student -> student.setResult(null)
+                );
+                timeslot.getResult().clear();
+                timeslot.getPreferences().clear();
+            });
+
+            enrollment.setState(EnrolmentState.ACTIVE);
+            enrollmentRepository.save(enrollment);
+        });
+
+        shareLinkService.removeAll();
+
+        studentRepository.deleteAllByIdGreaterThan(7L);
     }
 }
