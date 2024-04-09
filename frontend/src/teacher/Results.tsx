@@ -18,7 +18,7 @@ const Results = () => {
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));
-  }, []);
+  }, [auth]);
 
   const [results, setResults] = useState([]);
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
@@ -41,7 +41,7 @@ const Results = () => {
         setResultsMap(newMap);
       })
       .catch(console.error);
-  }, [setResults]);
+  }, [setResults, auth]);
 
   const renderResults = () => {
     console.log(linkStatus)

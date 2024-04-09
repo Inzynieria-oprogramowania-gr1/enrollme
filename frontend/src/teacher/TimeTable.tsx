@@ -29,7 +29,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
         setDeadline(data.deadline);
       })
       .catch(err => console.error(err));
-  }, [setEnrollConfiguration]);
+  }, [setEnrollConfiguration, auth]);
 
   const allTimeSlots = Array.from(
     new Set(

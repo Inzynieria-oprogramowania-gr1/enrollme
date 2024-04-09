@@ -40,7 +40,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img className="full_logo" src={logo}></img>
+        <img className="full_logo" src={logo} alt="Logo"></img>
         <button className="btn btn-primary" onClick={handleMakeTimeTableClick}>ENROLL CONFIG</button>
         <button className="btn btn-primary" onClick={handleResultsButtonClick}>RESULTS</button>
       </header>

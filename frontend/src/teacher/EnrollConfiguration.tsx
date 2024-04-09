@@ -19,7 +19,7 @@ const EnrollConfiguration = () => {
       .then(response => response.json())
       .then(data => setLinkStatus(data.state))
       .catch(error => setLinkStatus('NOT_STARTED'));
-  }, []);
+  }, [auth]);
 
   return (
     <div className="container">
