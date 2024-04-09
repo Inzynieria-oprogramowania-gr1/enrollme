@@ -70,4 +70,8 @@ public class ShareLinkService {
                 .map(shareLinkMapper::mapToShareLinkDto
                 );
     }
+
+    public void removeAll(){
+        activeLinkRepository.deleteAll();
+    }
 }

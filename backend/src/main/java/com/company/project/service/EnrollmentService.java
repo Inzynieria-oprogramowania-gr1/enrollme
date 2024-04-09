@@ -26,6 +26,7 @@ public class EnrollmentService {
     public final TimeslotRepository timeslotRepository;
     public final TimeslotMapper timeslotMapper;
     private final StudentRepository studentRepository;
+    private final ShareLinkService shareLinkService;
 
 
     public EnrollmentDto getEnrollment() {
@@ -107,6 +108,8 @@ public class EnrollmentService {
             enrollment.setState(EnrolmentState.ACTIVE);
             enrollmentRepository.save(enrollment);
         });
+
+        shareLinkService.removeAll();
 
         studentRepository.deleteAllByIdGreaterThan(7L);
     }
