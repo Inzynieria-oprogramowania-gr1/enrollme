@@ -9,12 +9,12 @@ import java.util.concurrent.ScheduledFuture;
 
 public class ScheduledTasks {
     private final HashMap<TaskType, ScheduledFuture<?>> tasks;
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final ThreadPoolTaskScheduler oneTimeTaskScheduler;
 
 
-    public ScheduledTasks(ThreadPoolTaskScheduler taskScheduler) {
+    public ScheduledTasks(ThreadPoolTaskScheduler oneTimeTaskScheduler) {
         tasks = new HashMap<>();
-        this.taskScheduler = taskScheduler;
+        this.oneTimeTaskScheduler = oneTimeTaskScheduler;
     }
 
 
@@ -23,7 +23,7 @@ public class ScheduledTasks {
         // sth like a factory
         if (type == TaskType.CLOSE_ENROLLMENT) {
             CloseEnrollmentTask task = new CloseEnrollmentTask(this, shareLinkService);
-            ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, triggerDate);
+            ScheduledFuture<?> scheduledTask = oneTimeTaskScheduler.schedule(task, triggerDate);
             tasks.put(TaskType.CLOSE_ENROLLMENT, scheduledTask);
         }
 

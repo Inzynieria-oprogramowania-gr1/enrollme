@@ -23,9 +23,4 @@ public class CloseEnrollmentTask implements Runnable {
         }
     }
 
-    @Override
-    public String toString() {
-        return "CloseEnrollmentTask [type=" + "]";
-    }
-
 }

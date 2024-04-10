@@ -7,6 +7,7 @@ import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.ShareLink;
 import com.company.project.exception.implementations.ConflictException;
+import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.ShareLinkMapper;
 import com.company.project.repository.ActiveLinkRepository;
@@ -40,6 +41,12 @@ public class ShareLinkService {
     }
 
     public ShareLinkDto updateShareLink(EnrolmentState state, EnrollmentService enrollmentService) {
+
+        if (state == EnrolmentState.RESULTS_READY) {
+            throw new ForbiddenActionException("Cannot change state to - " + state);
+        }
+
+
         ShareLink link = activeLinkRepository
                 .findAll()
                 .stream()

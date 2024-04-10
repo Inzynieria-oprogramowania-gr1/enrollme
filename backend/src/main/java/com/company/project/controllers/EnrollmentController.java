@@ -8,8 +8,6 @@ import com.company.project.dto.enrollment.EnrollmentResultsDto;
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
 import com.company.project.dto.timetable.TimetableDto;
-import com.company.project.entity.EnrolmentState;
-import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
@@ -27,6 +25,7 @@ import java.util.List;
 @SecurityRequirement(name = "basicAuth")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
+    // TODO maybe move some of share link methods to enrollment
     private final ShareLinkService shareLinkService;
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
@@ -98,6 +97,8 @@ public class EnrollmentController {
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
         // TODO simplify to just one call to service!
         EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
+
+
         if (enrollmentService.getEnrollment().deadline() != null) {
             try {
                 DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
@@ -120,9 +121,6 @@ public class EnrollmentController {
     @PatchMapping("/share")
     @ResponseBody
     public ShareLinkDto changeShareLinkState(@RequestBody ShareLinkPutDto requiredState) throws RuntimeException {
-        if (requiredState.state() == EnrolmentState.RESULTS_READY) {
-            throw new ForbiddenActionException("Cannot change state to - " + requiredState);
-        }
         return shareLinkService.updateShareLink(requiredState.state(), enrollmentService);
     }
 

@@ -90,31 +90,17 @@ public class EnrollmentService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment with id: " + id + "does not exist"));
 
-
-        // TODO extract method
-
-        if (deadline != null) {
-            if (enrollment.getDeadline() == null) {
-                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
-                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
-
-            } else if (!enrollment.getDeadline().isEqual(deadline)) {
-                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
-                scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
-                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
-            }
-        } else if (scheduledTasks.isScheduled(TaskType.CLOSE_ENROLLMENT)) {
-            scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
-            scheduledTasks.remove(TaskType.CLOSE_ENROLLMENT);
-        }
+        updateCloseEnrollmentTask(shareLinkService, deadline, enrollment);
 
 
-        // TODO validate if number of groups is greater than one when enrollment(id) has at least one slot selected
+        validateGroupAmount(configDto, enrollment);
+
         enrollment.setGroupAmount(configDto.groupAmount());
         enrollment.setDeadline(configDto.deadline());
         enrollmentRepository.save(enrollment);
         return configDto;
     }
+
 
     public List<TimetableDto> updateTimetable(List<TimetableDto> timetableDto) {
         return updateTimeslots(timeslotMapper.mapToTimeslotList(timetableDto));
@@ -167,5 +153,35 @@ public class EnrollmentService {
         shareLinkService.removeAll();
 
         studentRepository.deleteAllByIdGreaterThan(7L);
+    }
+
+    private void updateCloseEnrollmentTask(ShareLinkService shareLinkService, LocalDateTime deadline, Enrollment enrollment) {
+        if (deadline != null) {
+            if (enrollment.getDeadline() == null) {
+                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
+
+            } else if (!enrollment.getDeadline().isEqual(deadline)) {
+                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
+                scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
+            }
+        } else if (scheduledTasks.isScheduled(TaskType.CLOSE_ENROLLMENT)) {
+            scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
+            scheduledTasks.remove(TaskType.CLOSE_ENROLLMENT);
+        }
+    }
+
+    private void validateGroupAmount(EnrollmentConfigDto configDto, Enrollment enrollment) {
+        boolean isSelectedAny = false;
+        for (Timeslot timeslot : enrollment.getTimeslots()) {
+            if (timeslot.isSelected()) {
+                isSelectedAny = true;
+                break;
+            }
+        }
+
+        if (isSelectedAny && configDto.groupAmount() <= 0)
+            throw new ForbiddenActionException("GroupAmount must be greater than zero");
     }
 }
