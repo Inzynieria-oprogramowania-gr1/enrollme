@@ -22,10 +22,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 @Primary
@@ -70,45 +67,53 @@ public class StudentService {
 
 
     public StudentPreferencesDto updatePreferences(Long id, StudentPreferencesDto updatedPreferences) throws RuntimeException {
-        Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        // TODO extract methods
 
-        List<Timeslot> timeslots = updatedPreferences
-                .preferences()
+        // Check if updatedPreferences contain only legal timeslots (selected by a teacher and from timetable)
+        List<Timeslot> timeslots = timeslotRepository.findAllBySelected(true);
+
+        List<PreferredTimeslot> preferredTimeslots = timeslots
                 .stream()
-                .flatMap(timetableDay ->
-                        timetableDay
-                                .timeslots()
-                                .stream()
-                                .map(
-                                        ts -> {
-                                            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDay.weekday(), ts.startTime(), ts.endTime()).
-                                                    orElseThrow(() -> new ResourceNotFoundException("Slot " + timetableDay.weekday() + " " + ts.startTime() + " " + ts.endTime() + " not found"));
-
-                                            if (!timeslot.isSelected())
-                                                throw new ForbiddenActionException("Slot " + timetableDay.weekday() + " " + ts.startTime() + " " + ts.endTime() + " has not been selected by teacher!");
-                                            return timeslot;
-                                        }
-
-                                )
+                .map(timeslot -> new PreferredTimeslot(
+                        timeslot.getWeekday(),
+                        timeslot.getStartTime(),
+                        timeslot.getEndTime())
                 ).toList();
 
+        List<PreferredTimeslot> updatedTimeslots = updatedPreferences.preferences()
+                .stream()
+                .map(SinglePreference::timeslot)
+                .toList();
 
-        timeslots.forEach((timeslot) -> {
-            timeslot.getPreferences().add(new StudentPreference(
-                    student,
-                    timeslot,
-                    updatedPreferences.isSelected(),
-                    updatedPreferences.note())
-            );
-
-            timeslotRepository.save(timeslot);
+        updatedTimeslots.forEach(preferredTimeslot -> {
+            if (!preferredTimeslots.contains(preferredTimeslot))
+                throw new ForbiddenActionException("Slot " + preferredTimeslot + " has not been selected by teacher");
         });
+
+        // update preferences of the student
+        Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        Set<StudentPreference> preferences = new HashSet<>();
+
+        updatedPreferences.preferences().forEach(preference ->
+                {
+                    PreferredTimeslot preferredTimeslot = preference.timeslot();
+                    for (Timeslot timeslot : timeslots) {
+                        if (preferredTimeslot.weekday() == timeslot.getWeekday() && preferredTimeslot.startTime() == timeslot.getStartTime())
+                            preferences.add(new StudentPreference(student, timeslot, preference.selected(), preference.note()));
+                    }
+                }
+        );
+
+        student.setPreferences(preferences);
+        studentRepository.save(student);
 
         return updatedPreferences;
     }
 
 
     public StudentPreferencesDto getPreferences(Long id) throws RuntimeException {
+        // TODO introduce mapper?
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         List<SinglePreference> preferences = student.getPreferences()
                 .stream()

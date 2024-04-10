@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -43,7 +45,7 @@ public class Timeslot {
     private Enrollment enrollment;
 
     @OneToMany(mappedBy = "timeslot")
-    private Set<StudentPreference> preferences = new HashSet<>();
+    private List<StudentPreference> preferences = new ArrayList<>();
 
     public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {
         this.weekday = weekday;
