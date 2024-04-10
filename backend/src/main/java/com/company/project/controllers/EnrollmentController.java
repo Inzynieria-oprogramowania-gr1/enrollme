@@ -25,13 +25,12 @@ import java.util.List;
 @SecurityRequirement(name = "basicAuth")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
-    // TODO maybe move some of share link methods to enrollment
     private final ShareLinkService shareLinkService;
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
 
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
-                                EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
+        EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
         this.studentService = studentService;
         this.emailService = emailService;
         this.enrollmentService = enrollmentService;
