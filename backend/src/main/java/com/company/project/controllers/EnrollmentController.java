@@ -140,6 +140,13 @@ public class EnrollmentController {
     }
 
 
+    @PatchMapping("/results")
+    @ResponseBody
+    public List<EnrollmentResultsDto> updateResults(@RequestBody List<EnrollmentResultsDto> updatedResults) {
+        return updatedResults;
+    }
+
+
     @GetMapping("/reset/{id}")
     public void resetEnrollment(@PathVariable Long id) {
         enrollmentService.resetEnrollment(id);
