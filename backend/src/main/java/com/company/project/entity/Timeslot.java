@@ -45,6 +45,7 @@ public class Timeslot {
     private Enrollment enrollment;
 
     @OneToMany(mappedBy = "timeslot")
+    @EqualsAndHashCode.Exclude
     private List<StudentPreference> preferences = new ArrayList<>();
 
     public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {

@@ -1,5 +1,7 @@
 import com.company.project.algorithm.GroupingAlgorithm;
 import com.company.project.dto.StudentDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.SinglePreference;
 import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDayDto;
@@ -45,11 +47,12 @@ public class GroupingAlgorithmTest {
         );
         when(studentService.getAllStudents()).thenReturn(students);
 
-        when(studentService.getPreferences(1L)).thenReturn(new StudentPreferencesDto(1L, "student1@example.com", List.of(new TimetableDayDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
-        when(studentService.getPreferences(2L)).thenReturn(new StudentPreferencesDto(2L, "student2@example.com", List.of(new TimetableDayDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))), new TimetableDayDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
-        when(studentService.getPreferences(3L)).thenReturn(new StudentPreferencesDto(3L, "student3@example.com", List.of(new TimetableDayDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true))), new TimetableDayDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
+
+        when(studentService.getPreferences(1L)).thenReturn(new StudentPreferencesDto(1L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
+        when(studentService.getPreferences(2L)).thenReturn(new StudentPreferencesDto(2L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""), new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
+        when(studentService.getPreferences(3L)).thenReturn(new StudentPreferencesDto(3L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(9, 45), LocalTime.of(11, 15)), true, ""), new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
         when(studentService.getPreferences(4L)).thenReturn(new StudentPreferencesDto(4L, "student4@example.com", new ArrayList<>()));
-        when(studentService.getPreferences(5L)).thenReturn(new StudentPreferencesDto(5L, "student5@example.com", List.of(new TimetableDayDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))), new TimetableDayDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true))))));
+        when(studentService.getPreferences(5L)).thenReturn(new StudentPreferencesDto(5L, "student5@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""), new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(9, 45), LocalTime.of(11, 15)), true, ""))));
         when(studentService.getPreferences(6L)).thenReturn(new StudentPreferencesDto(6L, "student6@example.com", new ArrayList<>()));
 
         List<TimetableDayDto> timetables = Arrays.asList(

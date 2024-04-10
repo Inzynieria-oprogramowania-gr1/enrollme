@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface TimeslotRepository extends JpaRepository<Timeslot, Long> {
     Optional<Timeslot> findByWeekdayAndStartTimeAndEndTime(Weekday weekday, LocalTime startTime, LocalTime endTime);
 
-    List<Timeslot> findAllBySelected(boolean selected);
+    List<Timeslot> findAllByIsSelected(boolean selected);
 }
