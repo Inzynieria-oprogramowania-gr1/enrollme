@@ -42,7 +42,6 @@ public class ShareLinkService {
     }
 
     public ShareLinkDto updateShareLink(EnrolmentState state) {
-
         if (state == EnrolmentState.RESULTS_READY) {
             throw new ForbiddenActionException("Cannot change state to - " + state);
         }
