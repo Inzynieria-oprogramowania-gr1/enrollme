@@ -7,7 +7,7 @@ import com.company.project.dto.enrollment.EnrollmentDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
@@ -87,8 +87,8 @@ public class EnrollmentController {
 
     @PutMapping("/timetable")
     @ResponseBody
-    public List<TimetableDto> saveSelectedTimeSlots(@RequestBody List<TimetableDto> timetableDto) {
-        return enrollmentService.updateTimetable(timetableDto);
+    public List<TimetableDayDto> saveSelectedTimeSlots(@RequestBody List<TimetableDayDto> timetableDayDto) {
+        return enrollmentService.updateTimetable(timetableDayDto);
     }
 
     @PutMapping("/config")

@@ -1,7 +1,7 @@
 package com.company.project.mapper;
 
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.entity.users.Student;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -13,7 +13,7 @@ public interface StudentMapper {
 
     Student mapToStudent(StudentDto studentDto);
 
-    @Mapping(source = "preferences", target = "timetables")
+    @Mapping(source = "preferences", target = "timetableDays")
     StudentPreferencesDto mapToStudentPreferencesDto(Student student);
 
     @InheritInverseConfiguration

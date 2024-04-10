@@ -1,13 +1,17 @@
 package com.company.project.service;
 
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.SinglePreference;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimeslotDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
+import com.company.project.entity.StudentPreference;
 import com.company.project.entity.Timeslot;
 import com.company.project.entity.users.Student;
+import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
@@ -64,42 +68,77 @@ public class StudentService {
                 .toList();
     }
 
-    public StudentPreferencesDto addPreferences(Long id, List<TimetableDto> timetable) throws RuntimeException {
 
+    public StudentPreferencesDto updatePreferences(Long id, StudentPreferencesDto updatedPreferences) throws RuntimeException {
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
-        List<Timeslot> timeslots = timetable.stream().flatMap(singleTimetable ->
-                singleTimetable
-                        .timeslots()
-                        .stream()
-                        .filter(TimeslotDto::isSelected)
-                        .map(
-                                (ts) ->
-                                        timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(), ts.startTime(), ts.endTime())
-                                                .orElseThrow(() -> new ResourceNotFoundException("Slot " + singleTimetable.weekday() + " " + ts.startTime() + " " + ts.endTime() + " not found"))
-                        )
-        ).toList();
-        timeslots.forEach((bSlot) -> {
-            bSlot.getPreferences().add(student);
-            student.getPreferences().add(bSlot);
-            timeslotRepository.save(bSlot);
-            studentRepository.save(student);
+        List<Timeslot> timeslots = updatedPreferences
+                .preferences()
+                .stream()
+                .flatMap(timetableDay ->
+                        timetableDay
+                                .timeslots()
+                                .stream()
+                                .map(
+                                        ts -> {
+                                            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDay.weekday(), ts.startTime(), ts.endTime()).
+                                                    orElseThrow(() -> new ResourceNotFoundException("Slot " + timetableDay.weekday() + " " + ts.startTime() + " " + ts.endTime() + " not found"));
+
+                                            if (!timeslot.isSelected())
+                                                throw new ForbiddenActionException("Slot " + timetableDay.weekday() + " " + ts.startTime() + " " + ts.endTime() + " has not been selected by teacher!");
+                                            return timeslot;
+                                        }
+
+                                )
+                ).toList();
+
+
+        timeslots.forEach((timeslot) -> {
+            timeslot.getPreferences().add(new StudentPreference(
+                    student,
+                    timeslot,
+                    updatedPreferences.isSelected(),
+                    updatedPreferences.note())
+            );
+
+            timeslotRepository.save(timeslot);
         });
 
-        return studentMapper.mapToStudentPreferencesDto(student);
+        return updatedPreferences;
     }
 
 
     public StudentPreferencesDto getPreferences(Long id) throws RuntimeException {
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-        return studentMapper.mapToStudentPreferencesDto(student);
+        List<SinglePreference> preferences = student.getPreferences()
+                .stream()
+                .map(
+                        preference -> {
+                            Timeslot timeslot = preference.getTimeslot();
+
+                            PreferredTimeslot preferredTimeslot = new PreferredTimeslot(
+                                    timeslot.getWeekday(),
+                                    timeslot.getStartTime(),
+                                    timeslot.getEndTime()
+                            );
+
+
+                            String note = preference.getNote();
+                            boolean selected = preference.isSelected();
+
+                            return new SinglePreference(preferredTimeslot, selected, note);
+                        }
+                ).toList();
+
+        return new StudentPreferencesDto(id, student.getEmail(), preferences);
     }
 
-    public void setResults(Map<TimetableDto, List<StudentDto>> results) {
-        for (Entry<TimetableDto, List<StudentDto>> entry : results.entrySet()) {
-            TimetableDto timetableDto = entry.getKey();
-            TimeslotDto timeSLotDto = timetableDto.timeslots().get(0);
-            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDto.weekday(), timeSLotDto.startTime(), timeSLotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
+
+    public void setResults(Map<TimetableDayDto, List<StudentDto>> results) {
+        for (Entry<TimetableDayDto, List<StudentDto>> entry : results.entrySet()) {
+            TimetableDayDto timetableDayDto = entry.getKey();
+            TimeslotDto timeSLotDto = timetableDayDto.timeslots().get(0);
+            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDayDto.weekday(), timeSLotDto.startTime(), timeSLotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
             for (StudentDto s : entry.getValue()) {
                 Student student = studentRepository.findById(s.id()).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
                 student.setResult(timeslot);
@@ -108,6 +147,7 @@ public class StudentService {
             timeslotRepository.save(timeslot);
         }
     }
+
 
     public List<EnrollmentResultsDto> getResults() {
         List<EnrollmentResultsDto> resultsDtos = new LinkedList<>();
