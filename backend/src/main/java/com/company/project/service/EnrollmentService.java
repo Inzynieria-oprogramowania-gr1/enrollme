@@ -6,16 +6,25 @@ import com.company.project.dto.timetable.TimetableDto;
 import com.company.project.entity.Enrollment;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.Timeslot;
+import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.EnrollmentRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
+import com.company.project.schedulers.CloseEnrollmentTask;
+import com.company.project.schedulers.ScheduledTasks;
+import com.company.project.schedulers.TaskType;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 
@@ -27,6 +36,8 @@ public class EnrollmentService {
     public final TimeslotMapper timeslotMapper;
     private final StudentRepository studentRepository;
     private final ShareLinkService shareLinkService;
+    public final ScheduledTasks scheduledTasks;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
 
     public EnrollmentDto getEnrollment() {
@@ -51,10 +62,52 @@ public class EnrollmentService {
     }
 
     public EnrollmentConfigDto configureEnrollment(Long id, EnrollmentConfigDto configDto) {
+        LocalDateTime deadline = configDto.deadline();
+        int groupAmount = configDto.groupAmount();
+        boolean isFormatException = false;
+
+        // TODO extract to validation method (maybe Validator class)
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (groupAmount < 0) {
+            isFormatException = true;
+            String message = "GroupAmount must be greater than zero";
+            stringBuilder.append(message);
+        }
+
+        if (deadline != null && deadline.isBefore(LocalDateTime.now())) {
+            isFormatException = true;
+            String message = "Deadline is before current time";
+            stringBuilder.append("\n");
+            stringBuilder.append(message);
+        }
+
+        if (isFormatException)
+            throw new ForbiddenActionException(stringBuilder.toString());
+
+
         Enrollment enrollment = enrollmentRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment with id: " + id + "does not exist"));
 
+
+        // TODO extract method
+
+        if (deadline != null) {
+            if (enrollment.getDeadline() == null) {
+                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant);
+
+            } else if (!enrollment.getDeadline().isEqual(deadline)) {
+                Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
+                scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant);
+            }
+        }
+
+
+        // TODO validate if number of groups is greater than one when enrollment(id) has at least one slot selected
         enrollment.setGroupAmount(configDto.groupAmount());
         enrollment.setDeadline(configDto.deadline());
         enrollmentRepository.save(enrollment);

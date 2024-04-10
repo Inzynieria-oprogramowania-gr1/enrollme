@@ -1,6 +1,7 @@
 package com.company.project.configuration;
 
 
+import com.company.project.schedulers.ScheduledTasks;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -15,5 +16,10 @@ public class TaskSchedulerConfig {
         threadPoolTaskScheduler.setThreadNamePrefix(
                 "ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
+    }
+
+    @Bean
+    public ScheduledTasks scheduledTasks(ThreadPoolTaskScheduler taskScheduler) {
+        return new ScheduledTasks(taskScheduler);
     }
 }

@@ -2,21 +2,23 @@ package com.company.project.configuration;
 
 
 import com.company.project.repository.EnrollmentRepository;
+import com.company.project.schedulers.ScheduledTasks;
+import com.company.project.schedulers.TaskType;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 @AllArgsConstructor
 @Component
 public class EventListeners {
 
     private final EnrollmentRepository enrollmentRepository;
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final ScheduledTasks scheduledTasks;
 
     // in  case of restarting application in production, we won't like to miss the deadline
     @EventListener(ApplicationReadyEvent.class)
@@ -27,10 +29,11 @@ public class EventListeners {
                 .findFirst()
                 .ifPresent(enrollment -> {
                     LocalDateTime deadline = enrollment.getDeadline();
-                    if (deadline != null && deadline.isBefore(LocalDateTime.now()))
-                        taskScheduler.schedule(() -> System.out.println("Here goes the task"), deadline.toInstant(ZoneOffset.UTC));
+                    if (deadline != null && deadline.isAfter(LocalDateTime.now())) {
+                        Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
+                        scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant);
 
-                    else if (deadline != null) {
+                    } else if (deadline != null) {
                         // TODO call task "close enrollment"
                     }
 
