@@ -9,13 +9,13 @@ import com.company.project.entity.Timeslot;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.TimeslotMapper;
+import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.EnrollmentRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import com.company.project.schedulers.ScheduledTasks;
 import com.company.project.schedulers.TaskType;
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,9 +33,8 @@ public class EnrollmentService {
     public final TimeslotRepository timeslotRepository;
     public final TimeslotMapper timeslotMapper;
     private final StudentRepository studentRepository;
-    private final ShareLinkService shareLinkService;
     public final ScheduledTasks scheduledTasks;
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final ActiveLinkRepository shareLinkRepository;
 
 
     public EnrollmentDto getEnrollment() {
@@ -150,7 +149,7 @@ public class EnrollmentService {
             enrollmentRepository.save(enrollment);
         });
 
-        shareLinkService.removeAll();
+        shareLinkRepository.deleteAll();
 
         studentRepository.deleteAllByIdGreaterThan(7L);
     }

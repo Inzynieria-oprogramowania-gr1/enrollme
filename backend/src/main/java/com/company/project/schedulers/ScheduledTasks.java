@@ -11,7 +11,6 @@ public class ScheduledTasks {
     private final HashMap<TaskType, ScheduledFuture<?>> tasks;
     private final ThreadPoolTaskScheduler oneTimeTaskScheduler;
 
-
     public ScheduledTasks(ThreadPoolTaskScheduler oneTimeTaskScheduler) {
         tasks = new HashMap<>();
         this.oneTimeTaskScheduler = oneTimeTaskScheduler;

@@ -2,6 +2,7 @@ package com.company.project.configuration;
 
 
 import com.company.project.schedulers.ScheduledTasks;
+import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class TaskSchedulerConfig {
     }
 
     @Bean
-    public ScheduledTasks scheduledTasks(ThreadPoolTaskScheduler taskScheduler) {
+    public ScheduledTasks scheduledTasks(ThreadPoolTaskScheduler taskScheduler, EnrollmentService enrollmentService) {
         return new ScheduledTasks(taskScheduler);
     }
 }

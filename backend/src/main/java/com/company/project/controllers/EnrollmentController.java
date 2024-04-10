@@ -121,7 +121,7 @@ public class EnrollmentController {
     @PatchMapping("/share")
     @ResponseBody
     public ShareLinkDto changeShareLinkState(@RequestBody ShareLinkPutDto requiredState) throws RuntimeException {
-        return shareLinkService.updateShareLink(requiredState.state(), enrollmentService);
+        return shareLinkService.updateShareLink(requiredState.state());
     }
 
     @GetMapping("/share")

@@ -3,6 +3,7 @@ package com.company.project.schedulers;
 
 import com.company.project.entity.EnrolmentState;
 import com.company.project.exception.implementations.ConflictException;
+import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import lombok.AllArgsConstructor;
 
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 public class CloseEnrollmentTask implements Runnable {
     private final ScheduledTasks scheduledTasks;
     private final ShareLinkService shareLinkService;
-
 
     @Override
     public void run() {
