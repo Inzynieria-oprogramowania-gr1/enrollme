@@ -96,18 +96,17 @@ public class EnrollmentController {
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
         // TODO simplify to just one call to service!
-        EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
 
 
-        if (enrollmentService.getEnrollment().deadline() != null) {
-            try {
-                DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
-                deadlineHandler.start();
-            } catch (Exception e) {
-                System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
-            }
-        }
-        return enrollmentConfigDto;
+//        if (enrollmentService.getEnrollment().deadline() != null) {
+//            try {
+//                DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
+//                deadlineHandler.start();
+//            } catch (Exception e) {
+//                System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
+//            }
+//        }
+        return enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
     }
 
 

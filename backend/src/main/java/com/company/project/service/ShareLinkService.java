@@ -78,7 +78,4 @@ public class ShareLinkService {
                 );
     }
 
-    public void removeAll(){
-        activeLinkRepository.deleteAll();
-    }
 }

@@ -69,7 +69,7 @@ public class EnrollmentService {
 
         if (groupAmount < 0) {
             isFormatException = true;
-            String message = "GroupAmount must be greater than zero";
+            String message = "GroupAmount must not be less than zero";
             stringBuilder.append(message);
         }
 
@@ -131,6 +131,7 @@ public class EnrollmentService {
     }
 
     public void resetEnrollment(Long id) {
+        scheduledTasks.removeAll();
         Optional<Enrollment> byId = enrollmentRepository.findById(id);
         byId.ifPresent(enrollment -> {
             enrollment.setState(EnrolmentState.INACTIVE);
@@ -180,7 +181,7 @@ public class EnrollmentService {
             }
         }
 
-        if (isSelectedAny && configDto.groupAmount() <= 0)
+        if (isSelectedAny && configDto.groupAmount() == 0)
             throw new ForbiddenActionException("GroupAmount must be greater than zero");
     }
 }

@@ -43,9 +43,13 @@ public class GroupingAlgorithm {
     }
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
+
+
         List<StudentDto> withoutPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
+
+
             if (preferences.timetables().isEmpty()) {
                 withoutPreferences.add(student);
             } else {
@@ -59,6 +63,7 @@ public class GroupingAlgorithm {
                 }
             }
         }
+
         if (slotAssignments.isEmpty()) {
             TimetableDto td = timetableList.get(0);
             TimetableDto replaced = new TimetableDto(td.weekday(), List.of(td.timeslots().get(0)));
