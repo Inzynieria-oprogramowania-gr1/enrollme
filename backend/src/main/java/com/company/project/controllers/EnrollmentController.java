@@ -14,8 +14,18 @@ import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -137,6 +147,46 @@ public class EnrollmentController {
     @ResponseBody
     public List<EnrollmentResultsDto> getResults() {
         return studentService.getResults();
+    }
+
+
+    @GetMapping("/results/xlsx")
+    public ResponseEntity<byte[]> generateExcel() throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Enrollment Results");
+
+        Row headerOneRow = sheet.createRow(0);
+        headerOneRow.createCell(0).setCellValue("Poniedziałek");
+        headerOneRow.createCell(1).setCellValue("08:00 - 09:30");
+        headerOneRow.createCell(2).setCellValue("09:45 - 11:15");
+
+        for (int i = 1; i < 5; i++) {
+            Row studentRow = sheet.createRow(i);
+            studentRow.createCell(1).setCellValue("Jan Kowalski");
+            studentRow.createCell(2).setCellValue("Anna Nowak");
+        }
+
+        Row headerTwoRow = sheet.createRow(7);
+        headerTwoRow.createCell(0).setCellValue("Wtorek");
+        headerTwoRow.createCell(1).setCellValue("08:00 - 09:30");
+        headerTwoRow.createCell(2).setCellValue("09:45 - 11:15");
+
+        for (int i = 8; i < 13; i++) {
+            Row studentRow = sheet.createRow(i);
+            studentRow.createCell(1).setCellValue("Jan Kowalski");
+            studentRow.createCell(2).setCellValue("Anna Nowak");
+        }
+
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("filename", "example.xlsx");
+
+        return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
     }
 
 
