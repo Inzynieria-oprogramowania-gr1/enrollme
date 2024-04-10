@@ -12,7 +12,6 @@ import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.EnrollmentRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
-import com.company.project.schedulers.CloseEnrollmentTask;
 import com.company.project.schedulers.ScheduledTasks;
 import com.company.project.schedulers.TaskType;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 
@@ -61,7 +59,7 @@ public class EnrollmentService {
         );
     }
 
-    public EnrollmentConfigDto configureEnrollment(Long id, EnrollmentConfigDto configDto) {
+    public EnrollmentConfigDto configureEnrollment(Long id, EnrollmentConfigDto configDto, ShareLinkService shareLinkService) {
         LocalDateTime deadline = configDto.deadline();
         int groupAmount = configDto.groupAmount();
         boolean isFormatException = false;
@@ -83,6 +81,7 @@ public class EnrollmentService {
             stringBuilder.append(message);
         }
 
+
         if (isFormatException)
             throw new ForbiddenActionException(stringBuilder.toString());
 
@@ -97,13 +96,16 @@ public class EnrollmentService {
         if (deadline != null) {
             if (enrollment.getDeadline() == null) {
                 Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
-                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant);
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
 
             } else if (!enrollment.getDeadline().isEqual(deadline)) {
                 Instant instant = deadline.atZone(ZoneId.of("Europe/Warsaw")).toInstant();
                 scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
-                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant);
+                scheduledTasks.put(TaskType.CLOSE_ENROLLMENT, instant, shareLinkService);
             }
+        } else if (scheduledTasks.isScheduled(TaskType.CLOSE_ENROLLMENT)) {
+            scheduledTasks.cancelCurrent(TaskType.CLOSE_ENROLLMENT);
+            scheduledTasks.remove(TaskType.CLOSE_ENROLLMENT);
         }
 
 

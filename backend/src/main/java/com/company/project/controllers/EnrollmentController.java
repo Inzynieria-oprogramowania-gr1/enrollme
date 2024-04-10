@@ -96,7 +96,8 @@ public class EnrollmentController {
     @PutMapping("/config")
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
-        EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto);
+        // TODO simplify to just one call to service!
+        EnrollmentConfigDto enrollmentConfigDto = enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
         if (enrollmentService.getEnrollment().deadline() != null) {
             try {
                 DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
