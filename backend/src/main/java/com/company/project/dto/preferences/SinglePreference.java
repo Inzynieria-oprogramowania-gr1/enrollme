@@ -4,6 +4,7 @@ public record SinglePreference(PreferredTimeslot timeslot, boolean selected, Str
 }
 
 
+// TODO remove comments
 // jak przesłać preferencje??
 
 // StudentPreferencesDto (Long id, String email, List<SinglePreferenceDto> preferences)

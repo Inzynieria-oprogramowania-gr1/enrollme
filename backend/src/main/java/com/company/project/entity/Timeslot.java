@@ -28,13 +28,9 @@ public class Timeslot {
     @Temporal(TemporalType.TIME)
     private LocalTime endTime;
 
+    @Column(name = "is_selected")
     private boolean isSelected;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "slot_preference", joinColumns = @JoinColumn(name = "students_id"), inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Set<Student> preferences = new HashSet<>();
 
     @OneToMany(mappedBy = "result")
     @ToString.Exclude
@@ -45,6 +41,9 @@ public class Timeslot {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enrollment_id", nullable = false)
     private Enrollment enrollment;
+
+    @OneToMany(mappedBy = "timeslot")
+    private Set<StudentPreference> preferences = new HashSet<>();
 
     public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {
         this.weekday = weekday;

@@ -2,7 +2,7 @@ package com.company.project.mapper;
 
 import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimeslotDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.Timeslot;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,7 +22,7 @@ public abstract class TimeslotMapper {
     @Mapping(source = "selected", target = "isSelected")
     public abstract SpecifiedTimeslotDto mapToSpecifiedTimeslotDto(Timeslot timeslot);
 
-    public List<TimetableDto> mapToTimetableList(List<Timeslot> timetableEntities) {
+    public List<TimetableDayDto> mapToTimetableList(List<Timeslot> timetableEntities) {
         return timetableEntities
                 .stream()
                 .collect(Collectors.groupingBy(Timeslot::getWeekday, Collectors
@@ -35,7 +35,7 @@ public abstract class TimeslotMapper {
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey()) // Sort by weekday ordinal
-                .map(entry -> new TimetableDto(entry.getKey(), entry
+                .map(entry -> new TimetableDayDto(entry.getKey(), entry
                         .getValue()
                         .stream()
                         .sorted(Comparator.comparing(TimeslotDto::startTime)) // Sort time slots by start date
@@ -43,8 +43,8 @@ public abstract class TimeslotMapper {
                 .toList();
     }
 
-    public List<Timeslot> mapToTimeslotList(List<TimetableDto> timetableDtos) {
-        return timetableDtos
+    public List<Timeslot> mapToTimeslotList(List<TimetableDayDto> timetableDayDtos) {
+        return timetableDayDtos
                 .stream()
                 .flatMap(e -> e.timeslots()
                         .stream()
@@ -60,11 +60,11 @@ public abstract class TimeslotMapper {
                 .toList();
     }
 
-    public Set<Timeslot> mapToTimeslotSet(List<TimetableDto> timetableDtos) {
-        return Set.copyOf(this.mapToTimeslotList(timetableDtos));
+    public Set<Timeslot> mapToTimeslotSet(List<TimetableDayDto> timetableDayDtos) {
+        return Set.copyOf(this.mapToTimeslotList(timetableDayDtos));
     }
 
-    public List<TimetableDto> mapToTimetableList(Set<Timeslot> timetableDtos) {
+    public List<TimetableDayDto> mapToTimetableList(Set<Timeslot> timetableDtos) {
         return this.mapToTimetableList(List.copyOf(timetableDtos));
     }
 
