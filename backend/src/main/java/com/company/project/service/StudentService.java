@@ -15,6 +15,7 @@ import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
+import com.company.project.repository.StudentPreferenceRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class StudentService {
     private final TimeslotRepository timeslotRepository;
     private final StudentMapper studentMapper;
     private final TimeslotMapper timeslotMapper;
+    private final StudentPreferenceRepository sortedStudentPreferenceRepository;
 
     public List<StudentDto> getAllStudents() {
         return studentRepository.findAll().stream()
@@ -70,7 +72,7 @@ public class StudentService {
         // TODO extract methods
 
         // Check if updatedPreferences contain only legal timeslots (selected by a teacher and from timetable)
-        List<Timeslot> timeslots = timeslotRepository.findAllBySelected(true);
+        List<Timeslot> timeslots = timeslotRepository.findAllByIsSelected(true);
 
         List<PreferredTimeslot> preferredTimeslots = timeslots
                 .stream()
@@ -99,12 +101,19 @@ public class StudentService {
                 {
                     PreferredTimeslot preferredTimeslot = preference.timeslot();
                     for (Timeslot timeslot : timeslots) {
-                        if (preferredTimeslot.weekday() == timeslot.getWeekday() && preferredTimeslot.startTime() == timeslot.getStartTime())
-                            preferences.add(new StudentPreference(student, timeslot, preference.selected(), preference.note()));
+                        if (preferredTimeslot.weekday() == timeslot.getWeekday()
+                                && preferredTimeslot.startTime().equals(timeslot.getStartTime())
+                        ) {
+
+                            StudentPreference studentPreference = new StudentPreference(student, timeslot, preference.selected(), preference.note());
+                            sortedStudentPreferenceRepository.save(studentPreference);
+                            preferences.add(studentPreference);
+                        }
                     }
                 }
         );
 
+//        preferences.forEach(p -> System.out.println(p.getNote()));
         student.setPreferences(preferences);
         studentRepository.save(student);
 

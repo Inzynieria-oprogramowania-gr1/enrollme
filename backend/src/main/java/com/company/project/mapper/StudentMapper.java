@@ -13,9 +13,9 @@ public interface StudentMapper {
 
     Student mapToStudent(StudentDto studentDto);
 
-    @Mapping(source = "preferences", target = "timetableDays")
-    StudentPreferencesDto mapToStudentPreferencesDto(Student student);
-
-    @InheritInverseConfiguration
-    Student mapToStudent(StudentPreferencesDto studentPreferencesDto);
+//    @Mapping(source = "preferences", target = "timetableDays")
+//    StudentPreferencesDto mapToStudentPreferencesDto(Student student);
+//
+//    @InheritInverseConfiguration
+//    Student mapToStudent(StudentPreferencesDto studentPreferencesDto);
 }

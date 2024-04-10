@@ -12,6 +12,7 @@
 package com.company.project.algorithm;
 
 import com.company.project.dto.StudentDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
 import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDayDto;
@@ -46,7 +47,7 @@ public class GroupingAlgorithm {
         List<StudentDto> withoutPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
-            if (preferences.timetableDays().isEmpty()) {
+            if (preferences.preferences().isEmpty()) {
                 withoutPreferences.add(student);
             } else {
                 TimetableDayDto assignedSlot = assignSlot(preferences);
@@ -75,18 +76,31 @@ public class GroupingAlgorithm {
     }
 
     public TimetableDayDto assignSlot(StudentPreferencesDto preferences) {
-        for (TimetableDayDto slots : preferences.timetableDays()) {
-            List<TimeslotDto> filteredSlots = timetableList.stream()
-                    .filter(t -> t.weekday().equals(slots.weekday()))
-                    .flatMap(t -> t.timeslots().stream())
-                    .toList();
-            for (TimeslotDto slot : slots.timeslots()) {
-                if (filteredSlots.contains(slot)) {
-                    return new TimetableDayDto(slots.weekday(), List.of(slot));
-                }
-            }
-        }
-        return null;
+
+        // TODO fix, it is just a temporary implementation so it can at least run...
+        PreferredTimeslot tim = preferences.preferences().get(0).timeslot();
+        TimeslotDto timeslotDto = new TimeslotDto(tim.startTime(), tim.endTime(), true);
+        return new TimetableDayDto(tim.weekday(), List.of(timeslotDto));
+
+        // pierwszy for w pierwszej iteracji weźmie jakiś dzień, np. Poniedziałek
+        // i listę slotów, które w pon. pasują studentowi
+
+        // dalej filtrujemy cały timetable po tym dniu ^
+        // drugi for w pierwszej iteracji sprawdzi, czy pierwszy slot wybrany przez studenta w poniedziałek
+        // jest w poniedziałek ... ?
+
+//        for (TimetableDayDto slots : preferences.timetableDays()) {
+//            List<TimeslotDto> filteredSlots = timetableList.stream()
+//                    .filter(t -> t.weekday().equals(slots.weekday()))
+//                    .flatMap(t -> t.timeslots().stream())
+//                    .toList();
+//            for (TimeslotDto slot : slots.timeslots()) {
+//                if (filteredSlots.contains(slot)) {
+//                    return new TimetableDayDto(slots.weekday(), List.of(slot));
+//                }
+//            }
+//        }
+//        return null;
     }
 
     public TimetableDayDto assignRestStudents() {
