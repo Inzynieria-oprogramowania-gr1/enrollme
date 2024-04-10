@@ -31,7 +31,6 @@ public class GroupingAlgorithm {
     @Getter
     Map<TimetableDto, List<StudentDto>> slotAssignments = new HashMap<>();
 
-
     public GroupingAlgorithm(StudentService studentService, EnrollmentService enrollmentService) {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();

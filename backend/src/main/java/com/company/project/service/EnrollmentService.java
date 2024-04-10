@@ -33,7 +33,7 @@ public class EnrollmentService {
     public final TimeslotRepository timeslotRepository;
     public final TimeslotMapper timeslotMapper;
     private final StudentRepository studentRepository;
-    public final ScheduledTasks scheduledTasks;
+    private final ScheduledTasks scheduledTasks;
     private final ActiveLinkRepository shareLinkRepository;
 
 
