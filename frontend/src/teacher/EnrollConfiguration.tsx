@@ -5,13 +5,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ShareLink from "./ShareLink";
 import TimeTable from "./TimeTable";
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
 const EnrollConfiguration = () => {
   const { auth } = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/enrollment/share', {
+    fetch(BASE_URL + '/enrollment/share', {
       headers: {
         'Authorization': auth
       }

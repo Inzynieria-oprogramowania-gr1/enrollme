@@ -1,6 +1,7 @@
 import React, {useState, FC, useContext} from "react";
 import "./MailInputs.css";
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
 interface MailInputsProps {
   linkStatus: string | null;
@@ -26,8 +27,7 @@ const MailInputs: FC<MailInputsProps> = ({ linkStatus }) => {
         return;
       }
     }
-    console.log(emails);
-    const response = await fetch("http://localhost:8080/students", {
+    const response = await fetch(BASE_URL + "/students", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

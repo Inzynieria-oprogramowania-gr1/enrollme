@@ -1,8 +1,9 @@
 import React, {FC, useContext} from "react";
 import {ShareLinkData} from "../common/types";
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
-const ENDPOINT = "http://localhost:8080/enrollment/share";
+const URL = BASE_URL + "/enrollment/share";
 
 interface ShareLinkProps {
   linkStatus: string | null;
@@ -14,13 +15,13 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
 
   const handleShareToStudents = async () => {
     try {
-      let response = await fetch(ENDPOINT, {
+      let response = await fetch(URL, {
         headers: {
           'Authorization': auth
         }
       });
       if (!response.ok) {
-        response = await fetch(ENDPOINT, {
+        response = await fetch(URL, {
           method: "POST",
           headers: {
             'Authorization': auth
