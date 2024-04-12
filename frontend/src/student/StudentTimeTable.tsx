@@ -27,8 +27,35 @@ const setSlotsToFalse = (availableTimeTableData: Day[]) => {
   }));
 }
 
-const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
+const fillStudentPreference = (studentPreference: StudentPreference, timeTableData: Day[]): StudentPreference => {
+  const filledPreferences: StudentPreferenceSlot[] = timeTableData.flatMap(day => {
+    return day.timeslots.map(slot => {
+      const preference = studentPreference.preferences.find(p =>
+        p.timeslot.weekday === day.weekday &&
+        p.timeslot.startTime === slot.startTime &&
+        p.timeslot.endTime === slot.endTime
+      );
+      return preference || {
+        timeslot: {
+          weekday: day.weekday,
+          startTime: slot.startTime,
+          endTime: slot.endTime
+        },
+        selected: false,
+        note: null
+      };
+    });
+  });
+
+  return {
+    ...studentPreference,
+    preferences: filledPreferences
+  };
+}
+
+const StudentTimeTable: React.FC<StudentTimeTableProps> = ({user}) => {
   const [timeTableData, setTimeTableData] = useState<Day[]>([]);
+  const [studentPreference, setStudentPreference] = useState<StudentPreference>({id: 0, email: '', preferences: []});
 
   useEffect(() => {
     fetch(URL + "/timetable")
@@ -39,44 +66,44 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
       .catch(err => console.error(err));
   }, [setTimeTableData]);
 
-  const toggleSlotSelection = (dayIndex: number, slotIndex: number) => {
-    const newTimeTableData = [...timeTableData];
-    newTimeTableData[dayIndex].timeslots[slotIndex].isSelected = !newTimeTableData[dayIndex].timeslots[slotIndex].isSelected;
-    setTimeTableData(newTimeTableData);
-    console.log(timeTableData);
-  };
+  useEffect(() => {
+    if (timeTableData.length > 0) {
+      fetch(URL + `/${user.id}/preferences`)
+        .then(response => response.json())
+        .then(data => {
+          const filledPreferences = fillStudentPreference(data, timeTableData);
+          setStudentPreference(filledPreferences);
+        })
+        .catch(err => console.log(err));
+    }
+  }, [timeTableData, setStudentPreference]);
 
-  const getDataToSend = (): StudentPreference => {
-    const preferences: StudentPreferenceSlot[] = timeTableData.flatMap(day => {
-      const availableDay = timeTableData.find(d => d.weekday === day.weekday);
-      if (!availableDay) return [];
-      return availableDay.timeslots.filter(slot => slot.isSelected).map(slot => ({
-        timeslot: {
-          weekday: day.weekday,
-          startTime: slot.startTime,
-          endTime: slot.endTime
-        },
-        selected: slot.isSelected,
-        note: null
-      }));
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      preferences: preferences
-    };
+  const toggleSlotSelection = (weekday: string, startTime: string, endTime: string) => {
+    const dayIndex = timeTableData.findIndex(day => day.weekday === weekday);
+    if (dayIndex !== -1) {
+      const slotIndex = timeTableData[dayIndex].timeslots.findIndex(slot => slot.startTime === startTime && slot.endTime === endTime);
+      if (slotIndex !== -1) {
+        const newPreferences = [...studentPreference.preferences];
+        const preferenceIndex = newPreferences.findIndex(p =>
+          p.timeslot.weekday === weekday &&
+          p.timeslot.startTime === startTime &&
+          p.timeslot.endTime === endTime
+        );
+        if (preferenceIndex !== -1) {
+          newPreferences[preferenceIndex].selected = !newPreferences[preferenceIndex].selected;
+          setStudentPreference({...studentPreference, preferences: newPreferences});
+        }
+      }
+    }
   };
 
   const savePreferences = () => {
-    const dataToSend = getDataToSend();
-    console.log(dataToSend)
     fetch(URL + `/${user.id}/preferences`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dataToSend),
+      body: JSON.stringify(studentPreference),
     })
       .then(response => {
         if (!response.ok) {
@@ -94,20 +121,17 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   return (
     <div className="container">
       <h5 className="mb-3">Fill your preferences</h5>
-      {timeTableData.map((day, dayIndex) =>
-        day.timeslots
-          .map((slot, slotIndex) => (
-            <div
-              key={`${dayIndex}-${slotIndex}`}
-              className={`student-cell card mb-3 ${slot.isSelected ? 'selected' : ''}`}
-              onClick={() => toggleSlotSelection(dayIndex, slotIndex)}
-            >
-              <div className="card-body">
-                <h6 className="card-title">{`${day.weekday}`}</h6>
-                <p className="card-text">{`${slot.startTime} - ${slot.endTime}`}</p>
-              </div>
-            </div>
-          ))
+      {studentPreference.preferences.map((preference, index) =>
+        <div
+          key={index}
+          className={`student-cell card mb-3 ${preference.selected ? 'selected' : ''}`}
+          onClick={() => toggleSlotSelection(preference.timeslot.weekday, preference.timeslot.startTime, preference.timeslot.endTime)}
+        >
+          <div className="card-body">
+            <h6 className="card-title">{`${preference.timeslot.weekday}`}</h6>
+            <p className="card-text">{`${preference.timeslot.startTime} - ${preference.timeslot.endTime}`}</p>
+          </div>
+        </div>
       )}
       <button className="btn btn-secondary" onClick={savePreferences}>Save preferences</button>
     </div>
