@@ -97,6 +97,19 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({user}) => {
     }
   };
 
+  const handleNoteChange = (weekday: string, startTime: string, endTime: string, note: string) => {
+    const newPreferences = [...studentPreference.preferences];
+    const preferenceIndex = newPreferences.findIndex(p =>
+      p.timeslot.weekday === weekday &&
+      p.timeslot.startTime === startTime &&
+      p.timeslot.endTime === endTime
+    );
+    if (preferenceIndex !== -1) {
+      newPreferences[preferenceIndex].note = note;
+      setStudentPreference({...studentPreference, preferences: newPreferences});
+    }
+  };
+
   const savePreferences = () => {
     fetch(URL + `/${user.id}/preferences`, {
       method: 'PUT',
@@ -122,15 +135,25 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({user}) => {
     <div className="container">
       <h5 className="mb-3">Fill your preferences</h5>
       {studentPreference.preferences.map((preference, index) =>
-        <div
-          key={index}
-          className={`student-cell card mb-3 ${preference.selected ? 'selected' : ''}`}
-          onClick={() => toggleSlotSelection(preference.timeslot.weekday, preference.timeslot.startTime, preference.timeslot.endTime)}
-        >
-          <div className="card-body">
-            <h6 className="card-title">{`${preference.timeslot.weekday}`}</h6>
-            <p className="card-text">{`${preference.timeslot.startTime} - ${preference.timeslot.endTime}`}</p>
+        <div key={index} className="d-flex justify-content-between">
+          <div
+            className={`student-cell card mb-3 ${preference.selected ? 'selected' : ''}`}
+            onClick={() => toggleSlotSelection(preference.timeslot.weekday, preference.timeslot.startTime, preference.timeslot.endTime)}
+          >
+            <div className="card-body">
+              <h6 className="card-title">{`${preference.timeslot.weekday}`}</h6>
+              <p className="card-text">{`${preference.timeslot.startTime} - ${preference.timeslot.endTime}`}</p>
+            </div>
           </div>
+          <div className='student-note card mb-3'>
+            <textarea
+              className="input card-text"
+              value={preference.note || ''}
+              onChange={(e) => handleNoteChange(preference.timeslot.weekday, preference.timeslot.startTime, preference.timeslot.endTime, e.target.value)}
+              placeholder="Add a note"
+            />
+          </div>
+
         </div>
       )}
       <button className="btn btn-secondary" onClick={savePreferences}>Save preferences</button>
