@@ -184,4 +184,8 @@ public class EnrollmentService {
         if (isSelectedAny && configDto.groupAmount() == 0)
             throw new ForbiddenActionException("GroupAmount must be greater than zero");
     }
+
+    public int getGroupAmount() {
+        return enrollmentRepository.findAll().stream().findFirst().orElseThrow(() -> new ResourceNotFoundException("Enrollment not found")).getGroupAmount();
+    }
 }
