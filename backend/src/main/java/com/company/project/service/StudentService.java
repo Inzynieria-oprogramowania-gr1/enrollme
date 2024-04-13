@@ -94,9 +94,12 @@ public class StudentService {
 
         // update preferences of the student
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-
+        for(var s:sortedStudentPreferenceRepository.findAll()){
+            if(s.getStudent().getId() == id){
+                sortedStudentPreferenceRepository.delete(s);
+            }
+        }
         Set<StudentPreference> preferences = new HashSet<>();
-
         updatedPreferences.preferences().forEach(preference ->
                 {
                     PreferredTimeslot preferredTimeslot = preference.timeslot();
@@ -104,7 +107,6 @@ public class StudentService {
                         if (preferredTimeslot.weekday() == timeslot.getWeekday()
                                 && preferredTimeslot.startTime().equals(timeslot.getStartTime())
                         ) {
-
                             StudentPreference studentPreference = new StudentPreference(student, timeslot, preference.selected(), preference.note());
                             sortedStudentPreferenceRepository.save(studentPreference);
                             preferences.add(studentPreference);
