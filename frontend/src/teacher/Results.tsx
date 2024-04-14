@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {SpecifiedTimeSlot, Student} from "../common/types";
+import {EnrollmentResultsDto, SpecifiedTimeSlot, Student} from "../common/types";
 import './Results.css';
 import {AuthContext} from "../common/AuthContext";
 import {BASE_URL} from "../common/Constants";
@@ -22,8 +22,10 @@ const Results = () => {
       .catch(error => setLinkStatus('NOT_STARTED'));
   }, [auth]);
 
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<EnrollmentResultsDto[]>();
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
+  const [selectedTimeslot, setSelectedTimeslot] = useState<SpecifiedTimeSlot | null>(null);
+  const [previousTimeslots, setPreviousTimeslots] = useState(new Map<string, SpecifiedTimeSlot>());
 
   useEffect(() => {
     fetch(URL + "/results", {
@@ -34,7 +36,6 @@ const Results = () => {
       .then(res => res.json())
       .then((data) => {
         setResults(data);
-        console.log(data);
         const newMap = new Map();
         data.forEach((result: any) => {
           const studentDto: Student[] = result['studentDto'];
@@ -47,21 +48,70 @@ const Results = () => {
       .catch(console.error);
   }, [setResults, auth]);
 
+  const handleTimeslotChange = (event: any, student: Student) => {
+    // @ts-ignore
+    const selectedTimeslotKey = Array.from(resultsMap.keys())[event.target.selectedIndex];
+    let map = new Map(resultsMap);
+    setSelectedTimeslot(selectedTimeslotKey);
+    let currentTimeslot: SpecifiedTimeSlot | undefined;
+    // @ts-ignore
+    for (const [key, value] of map.entries()) {
+      if (value.includes(student)) {
+        currentTimeslot = key;
+        break;
+      }
+    }
+    console.log("CURRENT TIMESLOT: ");
+    console.log(currentTimeslot);
+    console.log("SELECTED TIMESLOT: ");
+    console.log(selectedTimeslotKey);
+
+    if (currentTimeslot) {
+      console.log("IN THE IF")
+      let students = map.get(currentTimeslot);
+      students = students?.filter((s) => s !== student);
+      if (students) {
+        map.set(currentTimeslot, students);
+      }
+      console.log(students);
+      setResultsMap(map);
+    }
+    map.get(selectedTimeslotKey)?.push(student);
+  }
+
   const renderResults = () => {
-    console.log(linkStatus);
     return (
       <div>
         {
           Array.from(resultsMap.entries()).map(([timeslot, students], index) => (
             <div className="timeslot" key={index}>
-              <p>Weekday: {timeslot.weekday}</p>
-              <p>From: {timeslot.startTime}</p>
-              <p>To: {timeslot.endTime}</p>
-              <ul>
-                {students.map((student, index) => (
-                  <li key={index}>{student.email}</li>
-                ))}
-              </ul>
+              <div className="weekday-div">
+                <p>Weekday: {timeslot.weekday}</p>
+                <p>From: {timeslot.startTime}</p>
+                <p>To: {timeslot.endTime}</p>
+                <p>Amount of people: {students.length}</p>
+              </div>
+              <div>
+                <ul>
+                  {students.map((student, index) => (
+                    <div key={index}>
+                      <li>{student.email}</li>
+                      <select onChange={(event) => handleTimeslotChange(event, student)}>
+                        {
+                          Array.from(resultsMap.keys()).map((optionTimeslot, optionIndex) => {
+                            const isCurrentTimeslot = resultsMap.get(optionTimeslot)?.includes(student);
+                            return (
+                              <option key={optionIndex} value={optionIndex} selected={isCurrentTimeslot}>
+                                {`Weekday: ${optionTimeslot.weekday}, From: ${optionTimeslot.startTime}, To: ${optionTimeslot.endTime}`}
+                              </option>
+                            )
+                          })
+                        }
+                      </select>
+                    </div>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))
         }
@@ -93,8 +143,9 @@ const Results = () => {
 
   const updateGroups = async () => {
     try {
-      await fetch(URL + '/update', {
-        method: 'PUT',
+      console.log(resultsMap);
+      await fetch(URL + '/results', {
+        method: 'PATCH',
         headers: {
           'Authorization': auth
         }
