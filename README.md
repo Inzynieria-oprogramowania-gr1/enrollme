@@ -99,21 +99,21 @@ Removing network react-java-mysql-default
 After the aplication starts, you can open the client web application under `http://localhost:3000`.
 ### Home Page
 ![page](./readme_resources/homepage.png)
-From here, you can navigate to Enroll Configuration Page and Results Page
+From here, you can navigate to Enroll Configuration Page and Results Page.
 
 ### Enroll Configuration Page
 ![page](./readme_resources/teacher_login.png)
 The teacher pages are secured with Spring Security basic auth. You need the correct email and password to access those pages.
 ![page](./readme_resources/enroll_config.png)
-Here, the teacher can configure the whole enrollment for students
+Here, the teacher can configure the whole enrollment for students:
 - Choose the timeslots that he is available at
 - Configure enrollment details:
   - The desired number of groups that algorithm is supposed to generate
-  - The planned deadline, which also includes sending enroll remainders to students about closing enrollment soon
+  - The planned deadline, which also includes sending email remainders to students about the enrollment closing soon
   - He can choose not to set a deadline, and close the enrollment manually
 - Student access
-  - The teacher can insert student email for them to be able to fill their preferences
-  - Get the link with access for students preferences page
+  - The teacher can insert student emails for them to be able to fill their preferences
+  - Get the link with access for students preferences page (it also starts the enrollment for students)
 - He can also reset the application to initial state at any moment
 
 ### Student Preferences Page
@@ -122,7 +122,7 @@ The page for students is secured with an email access. Only the students who wer
 The page is also blocked when the enrollment is not active.
 
 ![page](./readme_resources/preferences.png)
-Here, a student can fill his preferences with possibility to leave a note next to any timeslot.
+Here, the student can fill his preferences with possibility to leave a note next to any timeslot.
 If a student wants to change his preferences later, he's going to get the existing preferences from the server when returning to this page.
 
 ### Results Page
