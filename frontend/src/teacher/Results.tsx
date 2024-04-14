@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {EnrollmentResultsDto, SpecifiedTimeSlot, Student} from "../common/types";
+import {EnrollmentResultsDto, SpecifiedTimeSlot, Student, StudentPreference} from "../common/types";
 import './Results.css';
 import {AuthContext} from "../common/AuthContext";
 import {BASE_URL} from "../common/Constants";
@@ -22,6 +22,34 @@ const Results = () => {
       .catch(error => setLinkStatus('NOT_STARTED'));
   }, [auth]);
 
+  const [preferences, setPreferences] = useState<StudentPreference[]>([]);
+
+  useEffect(() => {
+    fetch(URL + "/preferences", {
+      headers: {
+        'Authorization': auth
+      }
+    })
+      .then(res => res.json())
+      .then((data) => {
+        setPreferences(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentPreferences, setSelectedStudentPreferences] = useState<StudentPreference | null>(null);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleStudentClick = (student: Student) => {
+    const studentPreferences = preferences.find(preference => preference.id === student.id) || null;
+    setSelectedStudentPreferences(studentPreferences);
+    setIsModalOpen(true);
+  };
+
   const [results, setResults] = useState<EnrollmentResultsDto[]>();
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
   const [selectedTimeslot, setSelectedTimeslot] = useState<SpecifiedTimeSlot | null>(null);
@@ -43,7 +71,6 @@ const Results = () => {
           newMap.set(timeslotDto, studentDto);
         });
         setResultsMap(newMap);
-        console.log(newMap);
       })
       .catch(console.error);
   }, [setResults, auth]);
@@ -61,23 +88,58 @@ const Results = () => {
         break;
       }
     }
-    console.log("CURRENT TIMESLOT: ");
-    console.log(currentTimeslot);
-    console.log("SELECTED TIMESLOT: ");
-    console.log(selectedTimeslotKey);
 
     if (currentTimeslot) {
-      console.log("IN THE IF")
       let students = map.get(currentTimeslot);
       students = students?.filter((s) => s !== student);
       if (students) {
         map.set(currentTimeslot, students);
       }
-      console.log(students);
       setResultsMap(map);
     }
     map.get(selectedTimeslotKey)?.push(student);
   }
+
+  console.log(preferences);
+
+  const renderModal = () => (
+    <div className={`modal ${isModalOpen ? 'show' : ''}`} onClick={closeModal}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <h5>Student Preferences</h5>
+        {selectedStudentPreferences ? (
+          <div>
+            <div>
+              <table className="modal-table">
+                <thead>
+                <tr>
+                  <th>Weekday</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Is Selected</th>
+                  <th>Note</th>
+                </tr>
+                </thead>
+                <tbody>
+                {selectedStudentPreferences.preferences.map((preference, index) => (
+                  <tr key={index}>
+                    <td>{preference.timeslot.weekday}</td>
+                    <td>{preference.timeslot.startTime}</td>
+                    <td>{preference.timeslot.endTime}</td>
+                    <td>{preference.selected ? 'Yes' : 'No'}</td>
+                    <td>{preference.note || 'No note'}</td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <p>This student has not set any preferences.</p>
+        )}
+        <button className="btn btn-secondary mt-3" onClick={closeModal}>Close</button>
+      </div>
+    </div>
+  )
 
   const renderResults = () => {
     return (
@@ -95,7 +157,7 @@ const Results = () => {
                 <ul className="student-ul">
                   {students.map((student, index) => (
                     <div key={index} className="d-flex justify-content-between align-content-centert">
-                      <li className="mt-2 email">{student.email}</li>
+                      <li className="mt-2 email" onClick={() => handleStudentClick(student)}>{student.email}</li>
                       <select className="student-select" onChange={(event) => handleTimeslotChange(event, student)}>
                         {
                           Array.from(resultsMap.keys()).map((optionTimeslot, optionIndex) => {
@@ -177,6 +239,7 @@ const Results = () => {
       <div className="container">
         <h5>Results</h5>
         {renderResults()}
+        {renderModal()}
         <div className="button-div">
           <button className="btn btn-secondary mt-3" onClick={exportResults}>Export to xlsx</button>
           <button className="btn btn-secondary mt-3" onClick={updateGroups}>Update Groups</button>
