@@ -10,6 +10,7 @@ import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
 import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.exception.implementations.ResourceNotFoundException;
+import com.company.project.fileGenerators.XlsxGenerator;
 import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.schedulers.ScheduledTasks;
 import com.company.project.schedulers.TaskType;
@@ -47,15 +48,17 @@ public class EnrollmentController {
     private final ShareLinkService shareLinkService;
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
+    private final XlsxGenerator xlsxGenerator;
 
     private final ScheduledTasks taskHandler;
 
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
-        EnrollmentService enrollmentService, ShareLinkService shareLinkService, ScheduledTasks taskHandler) {
+        XlsxGenerator xlsxGenerator, EnrollmentService enrollmentService, ShareLinkService shareLinkService, ScheduledTasks taskHandler) {
         this.studentService = studentService;
         this.emailService = emailService;
         this.enrollmentService = enrollmentService;
         this.shareLinkService = shareLinkService;
+        this.xlsxGenerator = xlsxGenerator;
         this.taskHandler = taskHandler;
     }
 
@@ -65,8 +68,6 @@ public class EnrollmentController {
         try {
             emailService.sendEmail("info.enrollme@gmail.com", "Enroll deadline warning has been sent", "");
             for (StudentDto student : studentService.getAllStudents()) {
-                // TODO commented to prevent email spam
-                // emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
             }
             return "E-mails have been sent";
         } catch (Exception e) {
@@ -152,41 +153,14 @@ public class EnrollmentController {
 
     @GetMapping("/results/xlsx")
     public ResponseEntity<byte[]> generateExcel() throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Enrollment Results");
-
-        Row headerOneRow = sheet.createRow(0);
-        headerOneRow.createCell(0).setCellValue("Poniedziałek");
-        headerOneRow.createCell(1).setCellValue("08:00 - 09:30");
-        headerOneRow.createCell(2).setCellValue("09:45 - 11:15");
-
-        for (int i = 1; i < 5; i++) {
-            Row studentRow = sheet.createRow(i);
-            studentRow.createCell(1).setCellValue("Jan Kowalski");
-            studentRow.createCell(2).setCellValue("Anna Nowak");
-        }
-
-        Row headerTwoRow = sheet.createRow(7);
-        headerTwoRow.createCell(0).setCellValue("Wtorek");
-        headerTwoRow.createCell(1).setCellValue("08:00 - 09:30");
-        headerTwoRow.createCell(2).setCellValue("09:45 - 11:15");
-
-        for (int i = 8; i < 13; i++) {
-            Row studentRow = sheet.createRow(i);
-            studentRow.createCell(1).setCellValue("Jan Kowalski");
-            studentRow.createCell(2).setCellValue("Anna Nowak");
-        }
-
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
-        workbook.close();
+        xlsxGenerator.generate();
+        byte[] workbookBytes = xlsxGenerator.getWorkbookAsByteArray();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData("filename", "results.xlsx");
 
-        return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(workbookBytes, headers, HttpStatus.OK);
     }
 
 

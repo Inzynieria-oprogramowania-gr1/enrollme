@@ -104,7 +104,6 @@ public class StudentService {
                         if (preferredTimeslot.weekday() == timeslot.getWeekday()
                                 && preferredTimeslot.startTime().equals(timeslot.getStartTime())
                         ) {
-
                             StudentPreference studentPreference = new StudentPreference(timeslot, preference.selected(), preference.note());
                             student.addPreference(studentPreference);
                         }
