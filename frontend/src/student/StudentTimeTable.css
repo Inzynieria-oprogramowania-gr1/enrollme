@@ -5,4 +5,15 @@
 
 .student-cell {
     cursor: pointer;
+    width: 30%;
+}
+
+.student-note {
+    width: 65%;
+}
+
+.input {
+    padding: 2vh 3vh;
+    border-style: none;
+    border-radius: inherit;
 }

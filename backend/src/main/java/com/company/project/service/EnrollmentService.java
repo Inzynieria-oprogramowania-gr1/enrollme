@@ -2,15 +2,20 @@ package com.company.project.service;
 
 import com.company.project.dto.enrollment.EnrollmentConfigDto;
 import com.company.project.dto.enrollment.EnrollmentDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.preferences.StudentPreferencesDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.Enrollment;
 import com.company.project.entity.EnrolmentState;
+import com.company.project.entity.StudentPreference;
 import com.company.project.entity.Timeslot;
+import com.company.project.entity.users.Student;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
+import com.company.project.mapper.StudentPreferencesMapper;
 import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.EnrollmentRepository;
+import com.company.project.repository.StudentPreferenceRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import com.company.project.schedulers.ScheduledTasks;
@@ -35,7 +40,8 @@ public class EnrollmentService {
     private final StudentRepository studentRepository;
     private final ScheduledTasks scheduledTasks;
     private final ActiveLinkRepository shareLinkRepository;
-
+    private final StudentPreferenceRepository studentPreferenceRepository;
+    private final StudentPreferencesMapper studentPreferencesMapper;
 
     public EnrollmentDto getEnrollment() {
         Enrollment enrollment = enrollmentRepository
@@ -46,7 +52,7 @@ public class EnrollmentService {
 
 
         List<Timeslot> timeslots = enrollment.getTimeslots();
-        List<TimetableDto> timetableDto = timeslotMapper.mapToTimetableList(timeslots);
+        List<TimetableDayDto> timetableDayDto = timeslotMapper.mapToTimetableList(timeslots);
 
 
         return new EnrollmentDto(
@@ -54,7 +60,7 @@ public class EnrollmentService {
                 enrollment.getGroupAmount(),
                 enrollment.getDeadline(),
                 enrollment.getState(),
-                timetableDto
+                timetableDayDto
         );
     }
 
@@ -101,22 +107,22 @@ public class EnrollmentService {
     }
 
 
-    public List<TimetableDto> updateTimetable(List<TimetableDto> timetableDto) {
-        return updateTimeslots(timeslotMapper.mapToTimeslotList(timetableDto));
+    public List<TimetableDayDto> updateTimetable(List<TimetableDayDto> timetableDayDto) {
+        return updateTimeslots(timeslotMapper.mapToTimeslotList(timetableDayDto));
     }
 
-    public List<TimetableDto> getTimetable() {
+    public List<TimetableDayDto> getTimetable() {
         List<Timeslot> timetableEntities = timeslotRepository.findAll();
         return timeslotMapper.mapToTimetableList(timetableEntities);
     }
 
-    public List<TimetableDto> getSelectedTimetable() {
+    public List<TimetableDayDto> getSelectedTimetable() {
         List<Timeslot> t = timeslotRepository.findAll().stream()
                 .filter(Timeslot::isSelected).toList();
         return timeslotMapper.mapToTimetableList(t);
     }
 
-    private List<TimetableDto> updateTimeslots(List<Timeslot> timeslotDtos) {
+    private List<TimetableDayDto> updateTimeslots(List<Timeslot> timeslotDtos) {
         List<Timeslot> timeslots = timeslotRepository.findAll();
         List<Timeslot> updatedTimeslots = timeslotDtos.stream()
                 .flatMap(timeslotDto -> timeslots.stream()
@@ -128,6 +134,12 @@ public class EnrollmentService {
 
         timeslotRepository.saveAll(updatedTimeslots);
         return timeslotMapper.mapToTimetableList(updatedTimeslots);
+    }
+
+    public List<StudentPreferencesDto> getAllPreferences(){
+        List<StudentPreference> preferencesDto = this.studentPreferenceRepository.findAll();
+        List<StudentPreferencesDto> preferencesDtos = studentPreferencesMapper.mapToStudentPreferencesDto(preferencesDto);
+        return preferencesDtos;
     }
 
     public void resetEnrollment(Long id) {
@@ -145,6 +157,8 @@ public class EnrollmentService {
                 timeslot.getResult().clear();
                 timeslot.getPreferences().clear();
             });
+
+            studentRepository.findAll().forEach(Student::removeAllPreferences);
 
             enrollment.setState(EnrolmentState.ACTIVE);
             enrollmentRepository.save(enrollment);
@@ -188,4 +202,5 @@ public class EnrollmentService {
     public int getGroupAmount() {
         return enrollmentRepository.findAll().stream().findFirst().orElseThrow(() -> new ResourceNotFoundException("Enrollment not found")).getGroupAmount();
     }
+
 }

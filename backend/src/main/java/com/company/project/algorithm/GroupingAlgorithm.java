@@ -21,9 +21,10 @@
 package com.company.project.algorithm;
 
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
 import lombok.Getter;
@@ -36,8 +37,9 @@ public class GroupingAlgorithm {
     private final List<TimetableDto> timetableList;
     private final int groupAmount;
     private final int maxStudentsPerGroup;
+  
     @Getter
-    Map<TimetableDto, List<StudentDto>> slotAssignments = new HashMap<>();
+    Map<TimetableDayDto, List<StudentDto>> slotAssignments = new HashMap<>();
 
 
     public GroupingAlgorithm(StudentService studentService, EnrollmentService enrollmentService) {
@@ -47,7 +49,7 @@ public class GroupingAlgorithm {
                 .stream()
                 .map(e -> {
                     List<TimeslotDto> dto = e.timeslots().stream().filter(TimeslotDto::isSelected).toList();
-                    return new TimetableDto(e.weekday(), dto);
+                    return new TimetableDayDto(e.weekday(), dto);
                 }).toList();
         this.groupAmount = Math.min(enrollmentService.getGroupAmount(), timetableList.size());
         if (groupAmount == 0) {
@@ -56,6 +58,7 @@ public class GroupingAlgorithm {
             this.maxStudentsPerGroup = studentsList.size() / groupAmount;
         }
     }
+
 
     public Map<TimetableDto, List<StudentDto>> groupStudents() {
         Map<TimetableDto, Integer> slotsFrequency = getSlotsFrequency();
@@ -113,6 +116,7 @@ public class GroupingAlgorithm {
                 slotAssignments.put(bestSlot, students);
             }
         }
+      
         int restGroups = groupAmount - slotAssignments.size();
 
         for (TimetableDto slot : slotsFrequencyCopy.keySet()) {
@@ -139,11 +143,10 @@ public class GroupingAlgorithm {
 
         // assign students without preferences
         for (StudentDto student : withoutPreferences) {
-            TimetableDto assignedSlot = assignRestStudents();
+            TimetableDayDto assignedSlot = assignRestStudents();
             slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
             slotAssignments.get(assignedSlot).add(student);
         }
-
 
         repairAssignments();
 
@@ -176,10 +179,10 @@ public class GroupingAlgorithm {
         return bestSlot;
     }
 
-    public TimetableDto assignRestStudents() {
-        TimetableDto minSlot = null;
+    public TimetableDayDto assignRestStudents() {
+        TimetableDayDto minSlot = null;
         int minStudents = Integer.MAX_VALUE;
-        for (TimetableDto slot : slotAssignments.keySet()) {
+        for (TimetableDayDto slot : slotAssignments.keySet()) {
             if (slotAssignments.get(slot).size() < minStudents) {
                 minStudents = slotAssignments.get(slot).size();
                 minSlot = slot;

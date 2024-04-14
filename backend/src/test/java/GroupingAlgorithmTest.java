@@ -1,8 +1,10 @@
 import com.company.project.algorithm.GroupingAlgorithm;
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.SinglePreference;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.Weekday;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
@@ -44,9 +46,10 @@ public class GroupingAlgorithmTest {
         );
         when(studentService.getAllStudents()).thenReturn(students);
 
-        when(studentService.getPreferences(1L)).thenReturn(new StudentPreferencesDto(1L, "student1@example.com", List.of(new TimetableDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
-        when(studentService.getPreferences(2L)).thenReturn(new StudentPreferencesDto(2L, "student2@example.com", List.of(new TimetableDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))), new TimetableDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
-        when(studentService.getPreferences(3L)).thenReturn(new StudentPreferencesDto(3L, "student3@example.com", List.of(new TimetableDto(Weekday.Monday, List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true))), new TimetableDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
+
+        when(studentService.getPreferences(1L)).thenReturn(new StudentPreferencesDto(1L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
+        when(studentService.getPreferences(2L)).thenReturn(new StudentPreferencesDto(2L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""), new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
+        when(studentService.getPreferences(3L)).thenReturn(new StudentPreferencesDto(3L, "student1@example.com", List.of(new SinglePreference(new PreferredTimeslot(Weekday.Monday, LocalTime.of(9, 45), LocalTime.of(11, 15)), true, ""), new SinglePreference(new PreferredTimeslot(Weekday.Tuesday, LocalTime.of(8, 0), LocalTime.of(9, 30)), true, ""))));
         when(studentService.getPreferences(4L)).thenReturn(new StudentPreferencesDto(4L, "student4@example.com", new ArrayList<>()));
         when(studentService.getPreferences(5L)).thenReturn(new StudentPreferencesDto(5L, "student5@example.com", List.of(new TimetableDto(Weekday.Tuesday, List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))));
         when(studentService.getPreferences(6L)).thenReturn(new StudentPreferencesDto(6L, "student6@example.com", new ArrayList<>()));
@@ -72,47 +75,47 @@ public class GroupingAlgorithmTest {
         this.groupingAlgorithm = new GroupingAlgorithm(studentService, enrollmentService);
     }
 
-    private int getNumberOfStudentsAssignedToSlot(Map<TimetableDto, List<StudentDto>> assignments, TimetableDto slot) {
+    private int getNumberOfStudentsAssignedToSlot(Map<TimetableDayDto, List<StudentDto>> assignments, TimetableDayDto slot) {
         return assignments.get(slot).size();
     }
 
-    private List<StudentDto> getStudentsAssignedToSlot(Map<TimetableDto, List<StudentDto>> assignments, TimetableDto slot) {
+    private List<StudentDto> getStudentsAssignedToSlot(Map<TimetableDayDto, List<StudentDto>> assignments, TimetableDayDto slot) {
         return assignments.get(slot);
     }
 
     @Test
     public void testSelectedSlots() {
-        Map<TimetableDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
+        Map<TimetableDayDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
 
-        assertTrue(resultAssignments.containsKey(new TimetableDto(Weekday.Monday,
+        assertTrue(resultAssignments.containsKey(new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))); // Slot poniedziałkowy 8:00-9:30
-        assertTrue(resultAssignments.containsKey(new TimetableDto(Weekday.Monday,
+        assertTrue(resultAssignments.containsKey(new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true))))); // Slot poniedziałkowy 9:45-11:15
-        assertTrue(resultAssignments.containsKey(new TimetableDto(Weekday.Tuesday,
+        assertTrue(resultAssignments.containsKey(new TimetableDayDto(Weekday.Tuesday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))))); // Slot wtorkowy 8:00-9:30
     }
 
     @Test
     public void testNumberOfStudentsAssignedToSlot() {
-        Map<TimetableDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
+        Map<TimetableDayDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
 
-        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Monday,
+        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true)))));
-        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Monday,
+        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true)))));
-        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Tuesday,
+        assertEquals(2, getNumberOfStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Tuesday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true)))));
     }
 
     @Test
     public void testStudentsAssignedToSlot() {
-        Map<TimetableDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
+        Map<TimetableDayDto, List<StudentDto>> resultAssignments = groupingAlgorithm.groupStudents();
 
-        List<StudentDto> studentsForMondaySlot1 = getStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Monday,
+        List<StudentDto> studentsForMondaySlot1 = getStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))));
-        List<StudentDto> studentsForMondaySlot2 = getStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Monday,
+        List<StudentDto> studentsForMondaySlot2 = getStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Monday,
                 List.of(new TimeslotDto(LocalTime.of(9, 45), LocalTime.of(11, 15), true))));
-        List<StudentDto> studentsForTuesdaySlot = getStudentsAssignedToSlot(resultAssignments, new TimetableDto(Weekday.Tuesday,
+        List<StudentDto> studentsForTuesdaySlot = getStudentsAssignedToSlot(resultAssignments, new TimetableDayDto(Weekday.Tuesday,
                 List.of(new TimeslotDto(LocalTime.of(8, 0), LocalTime.of(9, 30), true))));
 
 

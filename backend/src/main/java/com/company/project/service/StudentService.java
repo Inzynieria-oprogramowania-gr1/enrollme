@@ -1,16 +1,21 @@
 package com.company.project.service;
 
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.SinglePreference;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimeslotDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
+import com.company.project.entity.StudentPreference;
 import com.company.project.entity.Timeslot;
 import com.company.project.entity.users.Student;
+import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.StudentMapper;
 import com.company.project.mapper.TimeslotMapper;
+import com.company.project.repository.StudentPreferenceRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +23,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 @Primary
@@ -33,6 +35,7 @@ public class StudentService {
     private final TimeslotRepository timeslotRepository;
     private final StudentMapper studentMapper;
     private final TimeslotMapper timeslotMapper;
+//    private final StudentPreferenceRepository sortedStudentPreferenceRepository;
 
     public List<StudentDto> getAllStudents() {
         return studentRepository.findAll().stream()
@@ -64,42 +67,90 @@ public class StudentService {
                 .toList();
     }
 
-    public StudentPreferencesDto addPreferences(Long id, List<TimetableDto> timetable) throws RuntimeException {
 
-        Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+    public StudentPreferencesDto updatePreferences(Long id, StudentPreferencesDto updatedPreferences) throws RuntimeException {
+        // TODO extract methods
 
-        List<Timeslot> timeslots = timetable.stream().flatMap(singleTimetable ->
-                singleTimetable
-                        .timeslots()
-                        .stream()
-                        .filter(TimeslotDto::isSelected)
-                        .map(
-                                (ts) ->
-                                        timeslotRepository.findByWeekdayAndStartTimeAndEndTime(singleTimetable.weekday(), ts.startTime(), ts.endTime())
-                                                .orElseThrow(() -> new ResourceNotFoundException("Slot " + singleTimetable.weekday() + " " + ts.startTime() + " " + ts.endTime() + " not found"))
-                        )
-        ).toList();
-        timeslots.forEach((bSlot) -> {
-            bSlot.getPreferences().add(student);
-            student.getPreferences().add(bSlot);
-            timeslotRepository.save(bSlot);
-            studentRepository.save(student);
+        // Check if updatedPreferences contain only legal timeslots (selected by a teacher and from timetable)
+        List<Timeslot> timeslots = timeslotRepository.findAllByIsSelected(true);
+
+        List<PreferredTimeslot> preferredTimeslots = timeslots
+                .stream()
+                .map(timeslot -> new PreferredTimeslot(
+                        timeslot.getWeekday(),
+                        timeslot.getStartTime(),
+                        timeslot.getEndTime())
+                ).toList();
+
+        List<PreferredTimeslot> updatedTimeslots = updatedPreferences.preferences()
+                .stream()
+                .map(SinglePreference::timeslot)
+                .toList();
+
+        updatedTimeslots.forEach(preferredTimeslot -> {
+            if (!preferredTimeslots.contains(preferredTimeslot))
+                throw new ForbiddenActionException("Slot " + preferredTimeslot + " has not been selected by teacher");
         });
 
-        return studentMapper.mapToStudentPreferencesDto(student);
+        // update preferences of the student
+        Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        student.removeAllPreferences();
+
+        updatedPreferences.preferences().forEach(preference ->
+                {
+                    PreferredTimeslot preferredTimeslot = preference.timeslot();
+                    for (Timeslot timeslot : timeslots) {
+                        if (preferredTimeslot.weekday() == timeslot.getWeekday()
+                                && preferredTimeslot.startTime().equals(timeslot.getStartTime())
+                        ) {
+
+                            StudentPreference studentPreference = new StudentPreference(timeslot, preference.selected(), preference.note());
+                            student.addPreference(studentPreference);
+                        }
+                    }
+                }
+        );
+
+        studentRepository.save(student);
+
+
+        return updatedPreferences;
     }
 
 
     public StudentPreferencesDto getPreferences(Long id) throws RuntimeException {
+        // TODO introduce mapper?
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-        return studentMapper.mapToStudentPreferencesDto(student);
+        List<SinglePreference> preferences = student.getPreferences()
+                .stream()
+                .map(
+                        preference -> {
+                            Timeslot timeslot = preference.getTimeslot();
+
+                            PreferredTimeslot preferredTimeslot = new PreferredTimeslot(
+                                    timeslot.getWeekday(),
+                                    timeslot.getStartTime(),
+                                    timeslot.getEndTime()
+                            );
+
+
+                            String note = preference.getNote();
+                            boolean selected = preference.isSelected();
+
+                            return new SinglePreference(preferredTimeslot, selected, note);
+                        }
+                ).toList();
+
+        return new StudentPreferencesDto(id, student.getEmail(), preferences);
     }
 
-    public void setResults(Map<TimetableDto, List<StudentDto>> results) {
-        for (Entry<TimetableDto, List<StudentDto>> entry : results.entrySet()) {
-            TimetableDto timetableDto = entry.getKey();
-            TimeslotDto timeSLotDto = timetableDto.timeslots().get(0);
-            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDto.weekday(), timeSLotDto.startTime(), timeSLotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
+
+    public void setResults(Map<TimetableDayDto, List<StudentDto>> results) {
+        for (Entry<TimetableDayDto, List<StudentDto>> entry : results.entrySet()) {
+            TimetableDayDto timetableDayDto = entry.getKey();
+            TimeslotDto timeSLotDto = timetableDayDto.timeslots().get(0);
+            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDayDto.weekday(), timeSLotDto.startTime(), timeSLotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
             for (StudentDto s : entry.getValue()) {
                 Student student = studentRepository.findById(s.id()).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
                 student.setResult(timeslot);
@@ -108,6 +159,7 @@ public class StudentService {
             timeslotRepository.save(timeslot);
         }
     }
+
 
     public List<EnrollmentResultsDto> getResults() {
         List<EnrollmentResultsDto> resultsDtos = new LinkedList<>();

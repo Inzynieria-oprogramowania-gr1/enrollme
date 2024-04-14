@@ -1,8 +1,8 @@
 package com.company.project.controllers;
 
 import com.company.project.dto.StudentDto;
-import com.company.project.dto.StudentPreferencesDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.preferences.StudentPreferencesDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.StudentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,9 +46,9 @@ public class StudentsController {
     }
 
 
-    @PostMapping(path = "/{id}/preferences")
-    public StudentPreferencesDto addStudentPreferences(@PathVariable("id") Long id, @RequestBody List<TimetableDto> timetable) {
-        return studentService.addPreferences(id, timetable);
+    @PutMapping(path = "/{id}/preferences")
+    public StudentPreferencesDto addStudentPreferences(@PathVariable("id") Long id, @RequestBody StudentPreferencesDto updatedPreferences) {
+        return studentService.updatePreferences(id, updatedPreferences);
     }
 
     @GetMapping(path = "/{id}/preferences")
@@ -56,10 +56,9 @@ public class StudentsController {
         return studentService.getPreferences(id);
     }
 
-
     @GetMapping(path = "/timetable")
     @ResponseBody
-    public List<TimetableDto> getTimeslots() {
+    public List<TimetableDayDto> getTimeslots() {
         return enrollmentService.getTimetable();
     }
 }
