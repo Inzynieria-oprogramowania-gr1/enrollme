@@ -28,7 +28,10 @@ export interface Day {
   timeslots: TimeSlot[];
   weekday: string;
 }
-
+export interface EnrollmentResultsDto {
+  specifiedTimeSlot: SpecifiedTimeSlot;
+  studentDto: Student[];
+}
 export interface TimeSlot {
   endTime: string;
   isSelected: boolean;

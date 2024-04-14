@@ -6,4 +6,33 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: white;
+}
+.button-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.weekday-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.student-ul {
+    list-style: none;
+}
+
+.email {
+    margin-right: 20px;
+    width: 20vw;
+}
+
+.student-select {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: small;
+    color: gray;
 }
