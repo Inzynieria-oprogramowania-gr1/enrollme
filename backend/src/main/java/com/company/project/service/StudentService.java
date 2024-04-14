@@ -158,6 +158,21 @@ public class StudentService {
         }
     }
 
+    public List<EnrollmentResultsDto> setResults(List<EnrollmentResultsDto> resultsDtos){
+        for(EnrollmentResultsDto result: resultsDtos){
+            SpecifiedTimeslotDto timeslotDto = result.timeslotDto();
+            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(
+                timeslotDto.weekday(),
+                timeslotDto.startTime(),
+                timeslotDto.endTime()
+                ).orElseThrow(()-> new ResourceNotFoundException("Timeslot not found"));
+            for(StudentDto student: result.studentDto()){
+                studentRepository.findById(student.id()).orElseThrow(() -> new ResourceNotFoundException("Student not found"))
+                .setResult(timeslot);
+            }
+        }
+        return resultsDtos;
+    }
 
     public List<EnrollmentResultsDto> getResults() {
         List<EnrollmentResultsDto> resultsDtos = new LinkedList<>();

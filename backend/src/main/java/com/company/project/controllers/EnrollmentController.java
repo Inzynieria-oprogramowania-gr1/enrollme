@@ -147,7 +147,7 @@ public class EnrollmentController {
     @PatchMapping("/results")
     @ResponseBody
     public List<EnrollmentResultsDto> updateResults(@RequestBody List<EnrollmentResultsDto> updatedResults) {
-        return updatedResults;
+        return studentService.setResults(updatedResults);
     }
 
 
