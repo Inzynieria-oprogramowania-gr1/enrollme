@@ -95,6 +95,38 @@ Removing network react-java-mysql-default
 
 [Swagger UI config](https://www.baeldung.com/spring-rest-openapi-documentation) - short tutorial on how to add description of endpoints and other stuff to the Swagger UI docs
 
+# Client application
+After the aplication starts, you can open the client web application under `http://localhost:3000`.
+### Home Page
+![page](./readme_resources/homepage.png)
+From here, you can navigate to Enroll Configuration Page and Results Page
+
+### Enroll Configuration Page
+![page](./readme_resources/teacher_login.png)
+The teacher pages are secured with Spring Security basic auth. You need the correct email and password to access those pages.
+![page](./readme_resources/enroll_config.png)
+Here, the teacher can configure the whole enrollment for students
+- Choose the timeslots that he is available at
+- Configure enrollment details:
+  - The desired number of groups that algorithm is supposed to generate
+  - The planned deadline, which also includes sending enroll remainders to students about closing enrollment soon
+  - He can choose not to set a deadline, and close the enrollment manually
+- Student access
+  - The teacher can insert student email for them to be able to fill their preferences
+  - Get the link with access for students preferences page
+- He can also reset the application to initial state at any moment
+
+### Student Preferences Page
+![page](./readme_resources/student_login.png)
+The page for students is secured with an email access. Only the students who were added to the system can enter.
+The page is also blocked when the enrollment is not active.
+
+![page](./readme_resources/preferences.png)
+Here, a student can fill his preferences with possibility to leave a note next to any timeslot.
+If a student wants to change his preferences later, he's going to get the existing preferences from the server when returning to this page.
+
+### Results Page
+todo: results
 
 # Changelog
 ## SCRUM-85 (31.03.2024)

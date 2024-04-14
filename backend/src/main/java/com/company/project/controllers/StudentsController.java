@@ -48,7 +48,6 @@ public class StudentsController {
 
     @PutMapping(path = "/{id}/preferences")
     public StudentPreferencesDto addStudentPreferences(@PathVariable("id") Long id, @RequestBody StudentPreferencesDto updatedPreferences) {
-        System.out.println("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         return studentService.updatePreferences(id, updatedPreferences);
     }
 
@@ -56,7 +55,6 @@ public class StudentsController {
     public StudentPreferencesDto getStudentPreferences(@PathVariable("id") Long id) {
         return studentService.getPreferences(id);
     }
-
 
     @GetMapping(path = "/timetable")
     @ResponseBody

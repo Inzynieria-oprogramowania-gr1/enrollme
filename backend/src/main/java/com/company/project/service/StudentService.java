@@ -35,7 +35,7 @@ public class StudentService {
     private final TimeslotRepository timeslotRepository;
     private final StudentMapper studentMapper;
     private final TimeslotMapper timeslotMapper;
-    private final StudentPreferenceRepository sortedStudentPreferenceRepository;
+//    private final StudentPreferenceRepository sortedStudentPreferenceRepository;
 
     public List<StudentDto> getAllStudents() {
         return studentRepository.findAll().stream()
@@ -94,12 +94,9 @@ public class StudentService {
 
         // update preferences of the student
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-        for(var s:sortedStudentPreferenceRepository.findAll()){
-            if(s.getStudent().getId().equals(id)){
-                sortedStudentPreferenceRepository.delete(s);
-            }
-        }
-        Set<StudentPreference> preferences = new HashSet<>();
+
+        student.removeAllPreferences();
+
         updatedPreferences.preferences().forEach(preference ->
                 {
                     PreferredTimeslot preferredTimeslot = preference.timeslot();
@@ -107,17 +104,15 @@ public class StudentService {
                         if (preferredTimeslot.weekday() == timeslot.getWeekday()
                                 && preferredTimeslot.startTime().equals(timeslot.getStartTime())
                         ) {
-                            StudentPreference studentPreference = new StudentPreference(student, timeslot, preference.selected(), preference.note());
-                            sortedStudentPreferenceRepository.save(studentPreference);
-                            preferences.add(studentPreference);
+                            StudentPreference studentPreference = new StudentPreference(timeslot, preference.selected(), preference.note());
+                            student.addPreference(studentPreference);
                         }
                     }
                 }
         );
 
-//        preferences.forEach(p -> System.out.println(p.getNote()));
-        student.setPreferences(preferences);
         studentRepository.save(student);
+
 
         return updatedPreferences;
     }

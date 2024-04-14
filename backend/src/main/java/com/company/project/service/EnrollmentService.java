@@ -2,15 +2,20 @@ package com.company.project.service;
 
 import com.company.project.dto.enrollment.EnrollmentConfigDto;
 import com.company.project.dto.enrollment.EnrollmentDto;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.Enrollment;
 import com.company.project.entity.EnrolmentState;
+import com.company.project.entity.StudentPreference;
 import com.company.project.entity.Timeslot;
+import com.company.project.entity.users.Student;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
+import com.company.project.mapper.StudentPreferencesMapper;
 import com.company.project.mapper.TimeslotMapper;
 import com.company.project.repository.ActiveLinkRepository;
 import com.company.project.repository.EnrollmentRepository;
+import com.company.project.repository.StudentPreferenceRepository;
 import com.company.project.repository.StudentRepository;
 import com.company.project.repository.TimeslotRepository;
 import com.company.project.schedulers.ScheduledTasks;
@@ -35,7 +40,8 @@ public class EnrollmentService {
     private final StudentRepository studentRepository;
     private final ScheduledTasks scheduledTasks;
     private final ActiveLinkRepository shareLinkRepository;
-
+    private final StudentPreferenceRepository studentPreferenceRepository;
+    private final StudentPreferencesMapper studentPreferencesMapper;
 
     public EnrollmentDto getEnrollment() {
         Enrollment enrollment = enrollmentRepository
@@ -130,6 +136,12 @@ public class EnrollmentService {
         return timeslotMapper.mapToTimetableList(updatedTimeslots);
     }
 
+    public List<StudentPreferencesDto> getAllPreferences(){
+        List<StudentPreference> preferencesDto = this.studentPreferenceRepository.findAll();
+        List<StudentPreferencesDto> preferencesDtos = studentPreferencesMapper.mapToStudentPreferencesDto(preferencesDto);
+        return preferencesDtos;
+    }
+
     public void resetEnrollment(Long id) {
         scheduledTasks.removeAll();
         Optional<Enrollment> byId = enrollmentRepository.findById(id);
@@ -145,6 +157,8 @@ public class EnrollmentService {
                 timeslot.getResult().clear();
                 timeslot.getPreferences().clear();
             });
+
+            studentRepository.findAll().forEach(Student::removeAllPreferences);
 
             enrollment.setState(EnrolmentState.ACTIVE);
             enrollmentRepository.save(enrollment);
@@ -184,4 +198,7 @@ public class EnrollmentService {
         if (isSelectedAny && configDto.groupAmount() == 0)
             throw new ForbiddenActionException("GroupAmount must be greater than zero");
     }
+
+    
+
 }

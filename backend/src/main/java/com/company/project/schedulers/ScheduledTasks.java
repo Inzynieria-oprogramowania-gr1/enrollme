@@ -1,5 +1,6 @@
 package com.company.project.schedulers;
 
+import com.company.project.controllers.EnrollmentController;
 import com.company.project.service.ShareLinkService;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -17,14 +18,20 @@ public class ScheduledTasks {
     }
 
 
-    public void put(TaskType type, Instant triggerDate, ShareLinkService shareLinkService) {
+    public void put(TaskType type, Instant triggerDate, Object obj) {
 
         // sth like a factory
         if(type == TaskType.CLOSE_ENROLLMENT)
         {
-            CloseEnrollmentTask task = new CloseEnrollmentTask(this, shareLinkService);
+            CloseEnrollmentTask task = new CloseEnrollmentTask(this, (ShareLinkService)obj);
             ScheduledFuture<?> scheduledTask = oneTimeTaskScheduler.schedule(task, triggerDate);
             tasks.put(TaskType.CLOSE_ENROLLMENT, scheduledTask);
+        }
+        else if(type == TaskType.SEND_EMAIL)
+        {
+            DeadlineHandler task = new DeadlineHandler((EnrollmentController)obj);
+            ScheduledFuture<?> scheduledTask = oneTimeTaskScheduler.schedule(task, triggerDate);
+            tasks.put(TaskType.SEND_EMAIL, scheduledTask);
         }
 
     }
