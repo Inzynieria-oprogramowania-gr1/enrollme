@@ -158,6 +158,8 @@ public class EnrollmentService {
                 timeslot.getPreferences().clear();
             });
 
+            studentRepository.findAll().forEach(Student::removeAllPreferences);
+
             enrollment.setState(EnrolmentState.ACTIVE);
             enrollmentRepository.save(enrollment);
         });

@@ -16,8 +16,8 @@ public class StudentPreference {
     private Long id;
 
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     @ManyToOne
@@ -31,8 +31,7 @@ public class StudentPreference {
     private String note;
 
 
-    public StudentPreference(Student student, Timeslot timeslot, boolean isSelected, String note) {
-        this.student = student;
+    public StudentPreference(Timeslot timeslot, boolean isSelected, String note) {
         this.timeslot = timeslot;
         this.isSelected = isSelected;
         this.note = note;
