@@ -5,6 +5,7 @@ import com.company.project.dto.StudentDto;
 import com.company.project.dto.enrollment.EnrollmentConfigDto;
 import com.company.project.dto.enrollment.EnrollmentDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
+import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
 import com.company.project.dto.timetable.TimetableDayDto;
@@ -194,4 +195,8 @@ public class EnrollmentController {
         enrollmentService.resetEnrollment(id);
     }
 
+    @GetMapping("/preferences")
+    public List<StudentPreferencesDto> getAllPreferences(){
+        return this.enrollmentService.getAllPreferences();
+    }
 }

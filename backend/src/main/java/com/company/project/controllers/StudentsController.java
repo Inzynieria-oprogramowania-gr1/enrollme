@@ -56,7 +56,6 @@ public class StudentsController {
         return studentService.getPreferences(id);
     }
 
-
     @GetMapping(path = "/timetable")
     @ResponseBody
     public List<TimetableDayDto> getTimeslots() {
