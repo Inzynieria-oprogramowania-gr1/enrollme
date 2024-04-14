@@ -1,7 +1,7 @@
 import React, {FC, useContext} from "react";
 import {ShareLinkData} from "../common/types";
 import {AuthContext} from "../common/AuthContext";
-import {BASE_URL} from "../common/Constants";
+import {BASE_URL, FRONT_URL} from "../common/Constants";
 
 const URL = BASE_URL + "/enrollment/share";
 
@@ -37,8 +37,7 @@ const ShareLink: FC<ShareLinkProps> = ({linkStatus, setLinkStatus}) => {
         alert('The link is currently inactive');
         return;
       }
-      await navigator.clipboard.writeText("http://localhost:3000" + data.link);
-      alert('Link has been saved to clipboard');
+      alert('The link is: ' + FRONT_URL + data.link);
       setLinkStatus('ACTIVE');
     } catch (error) {
       alert('Failed to save link to clipboard');
