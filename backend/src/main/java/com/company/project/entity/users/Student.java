@@ -27,9 +27,25 @@ public class Student {
     @JoinColumn(name = "slot_id")
     private Timeslot result;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     private Set<StudentPreference> preferences = new HashSet<>();
+
+
+    public void addPreference(StudentPreference preference) {
+        preferences.add(preference);
+        preference.setStudent(this);
+    }
+
+    public void removePreference(StudentPreference preference) {
+        preferences.remove(preference);
+        preference.setStudent(null);
+    }
+
+    public void removeAllPreferences() {
+        preferences.forEach(preference -> preference.setStudent(null));
+        preferences.clear();
+    }
 
 
     public Student(String email) {

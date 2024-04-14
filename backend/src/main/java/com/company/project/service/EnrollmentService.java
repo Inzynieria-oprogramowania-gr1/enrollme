@@ -6,6 +6,7 @@ import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.Enrollment;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.Timeslot;
+import com.company.project.entity.users.Student;
 import com.company.project.exception.implementations.ForbiddenActionException;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mapper.TimeslotMapper;
@@ -145,6 +146,8 @@ public class EnrollmentService {
                 timeslot.getResult().clear();
                 timeslot.getPreferences().clear();
             });
+
+            studentRepository.findAll().forEach(Student::removeAllPreferences);
 
             enrollment.setState(EnrolmentState.ACTIVE);
             enrollmentRepository.save(enrollment);
