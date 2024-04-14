@@ -95,7 +95,7 @@ public class StudentService {
         // update preferences of the student
         Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         for(var s:sortedStudentPreferenceRepository.findAll()){
-            if(s.getStudent().getId() == id){
+            if(s.getStudent().getId().equals(id)){
                 sortedStudentPreferenceRepository.delete(s);
             }
         }
