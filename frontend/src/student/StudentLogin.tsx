@@ -31,11 +31,10 @@ const StudentLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
         fetch(BASE_URL + '/enrollment/share')
           .then(response => response.json())
           .then(shareData => {
-            // todo: trzeba to cofnąć gdy pojawi się link status dla studentów
-            // if (shareData.state !== 'ACTIVE') {
-            //   alert('Enrollment has not started or has already ended');
-            //   return;
-            // }
+            if (shareData.state !== 'ACTIVE') {
+              alert('Enrollment has not started or has already ended');
+              return;
+            }
             setUser({id: data.id, email: email, password: null, isAuthenticated: true});
           });
       })
