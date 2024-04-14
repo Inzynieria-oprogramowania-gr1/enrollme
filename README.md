@@ -126,7 +126,14 @@ Here, the student can fill his preferences with possibility to leave a note next
 If a student wants to change his preferences later, he's going to get the existing preferences from the server when returning to this page.
 
 ### Results Page
-todo: results
+![page](./readme_resources/results.png)
+Here, after the enrollment is closed, the teacher can:
+- View the results
+- Export results to xlsx file
+- Manually move students between groups and update the results accordingly
+
+![page](./readme_resources/results_preferences.png)
+When the teacher clicks on one of the students emails, this student's preferences are going to be shown.
 
 # Changelog
 ## SCRUM-85 (31.03.2024)
