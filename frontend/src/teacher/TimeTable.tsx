@@ -2,8 +2,9 @@ import React, {useState, useEffect, FC, useContext} from "react";
 import "./TimeTable.css";
 import {EnrollConfiguration} from "../common/types";
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
-const ENDPOINT = "http://localhost:8080/enrollment";
+const URL = BASE_URL + "/enrollment";
 
 interface TimeTableProps {
   linkStatus: string | null;
@@ -17,7 +18,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   const [deadline, setDeadline] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(ENDPOINT, {
+    fetch(URL, {
       headers: {
         'Authorization': auth
       }
@@ -67,7 +68,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       groupAmount: groupAmount,
       deadline: deadline ? formatDate(deadline) : null
     };
-    const response = await fetch(ENDPOINT + "/config", {
+    const response = await fetch(URL + "/config", {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +103,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
   }
 
   const handleCloseEnrollment = async () => {
-    const response = await fetch(ENDPOINT + "/share", {
+    const response = await fetch(URL + "/share", {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -124,7 +125,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       return;
     }
     const id = enrollConfiguration?.id;
-    const response = await fetch(ENDPOINT + `/reset/${id}`, {
+    const response = await fetch(URL + `/reset/${id}`, {
       method: 'GET',
       headers: {
         'Authorization': auth
@@ -181,7 +182,7 @@ const TimeTable: FC<TimeTableProps> = ({linkStatus, setLinkStatus}) => {
       alert('Please select at least as many time slots as the group amount');
       return;
     }
-    fetch(ENDPOINT + "/timetable", {
+    fetch(URL + "/timetable", {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

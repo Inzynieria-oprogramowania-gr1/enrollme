@@ -2,6 +2,7 @@ import React, {useState, FC} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './StudentLogin.css';
 import {User} from "../common/types";
+import {BASE_URL} from "../common/Constants";
 
 interface LoginProps {
   onLogin: (email: string, role: string) => void;
@@ -19,7 +20,7 @@ const StudentLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetch(`http://localhost:8080/students?email=${email}`)
+    fetch(BASE_URL + `/students?email=${email}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('The provided mail was not found. Check it and try again');
@@ -27,13 +28,14 @@ const StudentLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
         return response.json();
       })
       .then(data => {
-        fetch('http://localhost:8080/enrollment/share')
+        fetch(BASE_URL + '/enrollment/share')
           .then(response => response.json())
           .then(shareData => {
-            if (shareData.state !== 'ACTIVE') {
-              alert('Enrollment has not started or has already ended');
-              return;
-            }
+            // todo: trzeba to cofnąć gdy pojawi się link status dla studentów
+            // if (shareData.state !== 'ACTIVE') {
+            //   alert('Enrollment has not started or has already ended');
+            //   return;
+            // }
             setUser({id: data.id, email: email, password: null, isAuthenticated: true});
           });
       })

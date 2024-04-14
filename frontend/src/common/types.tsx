@@ -6,6 +6,24 @@ export interface EnrollConfiguration {
   timeslots: Day[];
 }
 
+export interface StudentPreference {
+  id: number | null;
+  email: string;
+  preferences: StudentPreferenceSlot[]
+}
+
+export interface StudentPreferenceSlot {
+  timeslot: StudentTimeSlot;
+  selected: boolean;
+  note: string | null;
+}
+
+export interface StudentTimeSlot {
+  weekday: string;
+  startTime: string;
+  endTime: string
+}
+
 export interface Day {
   timeslots: TimeSlot[];
   weekday: string;
