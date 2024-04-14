@@ -3,7 +3,7 @@ package com.company.project.service;
 import com.company.project.algorithm.GroupingAlgorithm;
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.timetable.ShareLinkDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.ShareLink;
 import com.company.project.exception.implementations.ConflictException;
@@ -42,7 +42,6 @@ public class ShareLinkService {
     }
 
     public ShareLinkDto updateShareLink(EnrolmentState state) {
-
         if (state == EnrolmentState.RESULTS_READY) {
             throw new ForbiddenActionException("Cannot change state to - " + state);
         }
@@ -60,7 +59,7 @@ public class ShareLinkService {
         link.setState(state);
         if (state.equals(EnrolmentState.CALCULATING)) {
             GroupingAlgorithm algorithm = new GroupingAlgorithm(studentService, enrollmentService);
-            Map<TimetableDto, List<StudentDto>> tmp = algorithm.groupStudents();
+            Map<TimetableDayDto, List<StudentDto>> tmp = algorithm.groupStudents();
             studentService.setResults(tmp);
             link.setState(EnrolmentState.RESULTS_READY);
         }

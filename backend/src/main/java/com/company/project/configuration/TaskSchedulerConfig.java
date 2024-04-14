@@ -2,6 +2,7 @@ package com.company.project.configuration;
 
 
 import com.company.project.schedulers.ScheduledTasks;
+import com.company.project.service.ShareLinkService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;

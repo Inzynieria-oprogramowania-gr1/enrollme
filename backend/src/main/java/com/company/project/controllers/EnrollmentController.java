@@ -7,7 +7,7 @@ import com.company.project.dto.enrollment.EnrollmentDto;
 import com.company.project.dto.enrollment.EnrollmentResultsDto;
 import com.company.project.dto.timetable.ShareLinkDto;
 import com.company.project.dto.timetable.ShareLinkPutDto;
-import com.company.project.dto.timetable.TimetableDto;
+import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mailService.EmailServiceImpl;
 import com.company.project.service.EnrollmentService;
@@ -35,13 +35,12 @@ import java.util.List;
 @SecurityRequirement(name = "basicAuth")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
-    // TODO maybe move some of share link methods to enrollment
     private final ShareLinkService shareLinkService;
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
 
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
-                                EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
+        EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
         this.studentService = studentService;
         this.emailService = emailService;
         this.enrollmentService = enrollmentService;
@@ -98,8 +97,8 @@ public class EnrollmentController {
 
     @PutMapping("/timetable")
     @ResponseBody
-    public List<TimetableDto> saveSelectedTimeSlots(@RequestBody List<TimetableDto> timetableDto) {
-        return enrollmentService.updateTimetable(timetableDto);
+    public List<TimetableDayDto> saveSelectedTimeSlots(@RequestBody List<TimetableDayDto> timetableDayDto) {
+        return enrollmentService.updateTimetable(timetableDayDto);
     }
 
     @PutMapping("/config")

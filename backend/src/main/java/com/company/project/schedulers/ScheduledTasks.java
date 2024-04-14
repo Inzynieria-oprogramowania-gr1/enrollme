@@ -17,49 +17,26 @@ public class ScheduledTasks {
     }
 
 
-    // TODO nie da się przez jebany shareLinkService który musi mieć EnrollmentService
     public void put(TaskType type, Instant triggerDate, ShareLinkService shareLinkService) {
 
-        try {
-
-
-            // sth like a factory
-            if (type == TaskType.CLOSE_ENROLLMENT) {
-                CloseEnrollmentTask task = new CloseEnrollmentTask(this, shareLinkService);
-                ScheduledFuture<?> scheduledTask = oneTimeTaskScheduler.schedule(task, triggerDate);
-                tasks.put(TaskType.CLOSE_ENROLLMENT, scheduledTask);
-            }
-
+        // sth like a factory
+        if(type == TaskType.CLOSE_ENROLLMENT)
+        {
+            CloseEnrollmentTask task = new CloseEnrollmentTask(this, shareLinkService);
+            ScheduledFuture<?> scheduledTask = oneTimeTaskScheduler.schedule(task, triggerDate);
+            tasks.put(TaskType.CLOSE_ENROLLMENT, scheduledTask);
         }
-        catch (Exception e) {
-            System.out.println("Put");
-        }
+
     }
 
     public void cancelCurrent(TaskType type) {
-        try {
-
-
-            if (isScheduled(type)) {
-                tasks.get(type).cancel(false);
-                tasks.remove(type);
-            }
-        }
-        catch (Exception e) {
-            System.out.println("cancelCurrent");
-        }
-
+        tasks.get(type).cancel(false);
+        tasks.remove(type);
     }
 
 
     public void remove(TaskType type) {
-        try {
-            if (isScheduled(type))
-                tasks.remove(type);
-        }
-        catch (Exception e) {
-            System.out.println("Remove");
-        }
+        tasks.remove(type);
     }
 
     public void removeAll() {
@@ -70,22 +47,14 @@ public class ScheduledTasks {
                 v.cancel(true);
             });
             tasks.clear();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("removeAll");
         }
     }
 
+
     public boolean isScheduled(TaskType type) {
-        boolean ret = false;
-        try {
-            ret = tasks.containsKey(type);
-            return tasks.containsKey(type);
-        }
-        catch (Exception e) {
-            System.out.println("isScheduled");
-        }
-        return ret;
+        return tasks.containsKey(type);
     }
 
 

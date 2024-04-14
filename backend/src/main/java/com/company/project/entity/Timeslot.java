@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,13 +30,9 @@ public class Timeslot {
     @Temporal(TemporalType.TIME)
     private LocalTime endTime;
 
+    @Column(name = "is_selected")
     private boolean isSelected;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "slot_preference", joinColumns = @JoinColumn(name = "students_id"), inverseJoinColumns = @JoinColumn(name = "timetable_id"))
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Set<Student> preferences = new HashSet<>();
 
     @OneToMany(mappedBy = "result")
     @ToString.Exclude
@@ -45,6 +43,10 @@ public class Timeslot {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enrollment_id", nullable = false)
     private Enrollment enrollment;
+
+    @OneToMany(mappedBy = "timeslot")
+    @EqualsAndHashCode.Exclude
+    private List<StudentPreference> preferences = new ArrayList<>();
 
     public Timeslot(Weekday weekday, LocalTime startTime, LocalTime endTime, boolean isSelected) {
         this.weekday = weekday;
