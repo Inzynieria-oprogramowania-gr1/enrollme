@@ -10,6 +10,8 @@ import com.company.project.dto.timetable.ShareLinkPutDto;
 import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.exception.implementations.ResourceNotFoundException;
 import com.company.project.mailService.EmailServiceImpl;
+import com.company.project.schedulers.ScheduledTasks;
+import com.company.project.schedulers.TaskType;
 import com.company.project.service.EnrollmentService;
 import com.company.project.service.ShareLinkService;
 import com.company.project.service.StudentService;
@@ -26,7 +28,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -39,38 +47,15 @@ public class EnrollmentController {
     private final StudentService studentService;
     private final EmailServiceImpl emailService;
 
+    private final ScheduledTasks taskHandler;
+
     public EnrollmentController(StudentService studentService, EmailServiceImpl emailService,
-        EnrollmentService enrollmentService, ShareLinkService shareLinkService) {
+        EnrollmentService enrollmentService, ShareLinkService shareLinkService, ScheduledTasks taskHandler) {
         this.studentService = studentService;
         this.emailService = emailService;
         this.enrollmentService = enrollmentService;
         this.shareLinkService = shareLinkService;
-    }
-
-    private static class DeadlineHandler extends Thread {
-        EnrollmentController controller;
-        LocalDateTime deadline;
-
-        public DeadlineHandler(LocalDateTime deadline, EnrollmentController controller) {
-            this.deadline = deadline.minusDays(1);
-            this.controller = controller;
-        }
-
-        public void run() {
-            LocalDateTime localDateTime;
-            while (true) {
-                try {
-                    localDateTime = (LocalDateTime.now()).plusHours(2);
-                    if (localDateTime.isAfter(deadline)) {
-                        controller.emailSending();
-                        break;
-                    }
-                    sleep(3600000);
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-        }
+        this.taskHandler = taskHandler;
     }
 
     @GetMapping(path = "/send")
@@ -104,18 +89,25 @@ public class EnrollmentController {
     @PutMapping("/config")
     @ResponseBody
     public EnrollmentConfigDto configureEnrollment(@RequestBody EnrollmentConfigDto configDto) {
-        // TODO simplify to just one call to service!
+        try{
+            if (enrollmentService.getEnrollment().deadline() != null) {
+                taskHandler.cancelCurrent(TaskType.SEND_EMAIL);
+            }
+        } catch (Exception e) {
+            System.out.println("Can't cansel previous deadline handler. Exception: " + e.getMessage());
+        }
 
+        EnrollmentConfigDto config = enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
 
-//        if (enrollmentService.getEnrollment().deadline() != null) {
-//            try {
-//                DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
-//                deadlineHandler.start();
-//            } catch (Exception e) {
-//                System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
-//            }
-//        }
-        return enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
+       if (enrollmentService.getEnrollment().deadline() != null) {
+           try {
+                Instant instant = enrollmentService.getEnrollment().deadline().atZone(ZoneId.of("Europe/Warsaw")).toInstant().minus(1, ChronoUnit.DAYS);
+                taskHandler.put(TaskType.SEND_EMAIL, instant, this);
+           } catch (Exception e) {
+               System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
+           }
+       }
+       return config;
     }
 
 
