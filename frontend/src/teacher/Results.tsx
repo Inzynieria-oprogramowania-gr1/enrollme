@@ -69,11 +69,43 @@ const Results = () => {
     )
   }
 
+  const downloadFile = async () => {
+    const response = await fetch(URL + "/results/xlsx", {
+      headers: {
+        'Authorization': auth
+      },
+    });
+
+    if (!response.ok) {
+      alert('Failed to download the file');
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob); // Use window.URL.createObjectURL() here
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'results.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  const exportResults = async () => {
+    try {
+      await downloadFile();
+      alert('Success: The file has been downloaded');
+    } catch (error) {
+      alert('Failed to export the results to xlsx');
+    }
+  }
+
 
   return (
     <div className="container">
       <h5>Results</h5>
       {renderResults()}
+      <button className="btn btn-secondary mt-3" onClick={exportResults}>Export to xlsx</button>
     </div>
   )
 }
