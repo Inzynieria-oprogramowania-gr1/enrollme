@@ -155,6 +155,8 @@ public class EnrollmentController {
     @ResponseBody
     public List<EnrollmentResultsDto> updateResults(@RequestBody List<EnrollmentResultsDto> updatedResults) {
         return updatedResults;
+    }
+
 
     @GetMapping("/results/xlsx")
     public ResponseEntity<byte[]> generateExcel() throws IOException {
