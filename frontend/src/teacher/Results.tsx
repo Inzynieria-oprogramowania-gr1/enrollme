@@ -6,6 +6,7 @@ import {BASE_URL} from "../common/Constants";
 
 const URL = BASE_URL + "/enrollment"
 
+
 const Results = () => {
   const { auth } = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
@@ -33,6 +34,7 @@ const Results = () => {
       .then(res => res.json())
       .then((data) => {
         setResults(data);
+        console.log(data);
         const newMap = new Map();
         data.forEach((result: any) => {
           const studentDto: Student[] = result['studentDto'];
@@ -40,15 +42,13 @@ const Results = () => {
           newMap.set(timeslotDto, studentDto);
         });
         setResultsMap(newMap);
+        console.log(newMap);
       })
       .catch(console.error);
   }, [setResults, auth]);
 
   const renderResults = () => {
-    console.log(linkStatus)
-    if (linkStatus !== 'RESULTS_READY' && linkStatus !== 'CALCULATING') {
-      return ( <p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p> );
-    }
+    console.log(linkStatus);
     return (
       <div>
         {
@@ -91,6 +91,20 @@ const Results = () => {
     document.body.removeChild(link);
   }
 
+  const updateGroups = async () => {
+    try {
+      await fetch(URL + '/update', {
+        method: 'PUT',
+        headers: {
+          'Authorization': auth
+        }
+      });
+      alert('Success: The groups have been updated');
+    } catch (error) {
+      alert('Failed to update the groups');
+    }
+  }
+
   const exportResults = async () => {
     try {
       await downloadFile();
@@ -100,14 +114,20 @@ const Results = () => {
     }
   }
 
-
-  return (
-    <div className="container">
-      <h5>Results</h5>
-      {renderResults()}
-      <button className="btn btn-secondary mt-3" onClick={exportResults}>Export to xlsx</button>
-    </div>
-  )
+  if (linkStatus !== 'RESULTS_READY' && linkStatus !== 'CALCULATING') {
+    return ( <p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p> );
+  } else {
+    return (
+      <div className="container">
+        <h5>Results</h5>
+        {renderResults()}
+        <div className="button-div">
+          <button className="btn btn-secondary mt-3" onClick={exportResults}>Export to xlsx</button>
+          <button className="btn btn-secondary mt-3" onClick={updateGroups}>Update Groups</button>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default Results;
