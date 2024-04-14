@@ -91,12 +91,12 @@ const Results = () => {
                 <p>To: {timeslot.endTime}</p>
                 <p>Amount of people: {students.length}</p>
               </div>
-              <div>
-                <ul>
+              <div className="student">
+                <ul className="student-ul">
                   {students.map((student, index) => (
-                    <div key={index}>
-                      <li>{student.email}</li>
-                      <select onChange={(event) => handleTimeslotChange(event, student)}>
+                    <div key={index} className="d-flex justify-content-between align-content-centert">
+                      <li className="mt-2 email">{student.email}</li>
+                      <select className="student-select" onChange={(event) => handleTimeslotChange(event, student)}>
                         {
                           Array.from(resultsMap.keys()).map((optionTimeslot, optionIndex) => {
                             const isCurrentTimeslot = resultsMap.get(optionTimeslot)?.includes(student);
