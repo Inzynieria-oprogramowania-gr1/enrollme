@@ -82,8 +82,6 @@ public class EnrollmentController {
         try {
             emailService.sendEmail("info.enrollme@gmail.com", "Enroll deadline warning has been sent", "");
             for (StudentDto student : studentService.getAllStudents()) {
-                // TODO commented to prevent email spam
-                // emailService.sendEmail(student.email(), "Enroll is closing in 1 day. Test message", "Please fill your preferences in enroll. Test message");
             }
             return "E-mails have been sent";
         } catch (Exception e) {
@@ -110,14 +108,6 @@ public class EnrollmentController {
         // TODO simplify to just one call to service!
 
 
-//        if (enrollmentService.getEnrollment().deadline() != null) {
-//            try {
-//                DeadlineHandler deadlineHandler = new DeadlineHandler(enrollmentService.getEnrollment().deadline(), this);
-//                deadlineHandler.start();
-//            } catch (Exception e) {
-//                System.out.println("Deadline handler hasn't been started. Exception: " + e.getMessage());
-//            }
-//        }
         return enrollmentService.configureEnrollment(configDto.id(), configDto, shareLinkService);
     }
 
