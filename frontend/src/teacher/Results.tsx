@@ -8,7 +8,7 @@ const URL = BASE_URL + "/enrollment"
 
 
 const Results = () => {
-  const { auth } = useContext(AuthContext);
+  const {auth} = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -142,18 +142,23 @@ const Results = () => {
   }
 
   const updateGroups = async () => {
-    try {
-      console.log(resultsMap);
-      await fetch(URL + '/results', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': auth
-        }
-      });
-      alert('Success: The groups have been updated');
-    } catch (error) {
+    const resultsArray = Array.from(resultsMap.entries()).map(([timeslot, students]) => ({
+      timeslotDto: timeslot,
+      studentDto: students,
+    }));
+    const response = await fetch(URL + '/results', {
+      method: 'PATCH',
+      headers: {
+        'Authorization': auth,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(resultsArray)
+    });
+    if (!response.ok) {
       alert('Failed to update the groups');
+      return;
     }
+    alert('Success: The groups have been updated');
   }
 
   const exportResults = async () => {
@@ -166,7 +171,7 @@ const Results = () => {
   }
 
   if (linkStatus !== 'RESULTS_READY' && linkStatus !== 'CALCULATING') {
-    return ( <p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p> );
+    return (<p>Enrollment is not over yet. Please wait until it's closed to view the timetable.</p>);
   } else {
     return (
       <div className="container">
