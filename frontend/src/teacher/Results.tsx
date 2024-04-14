@@ -2,15 +2,16 @@ import React, {useContext, useEffect, useState} from "react";
 import {SpecifiedTimeSlot, Student} from "../common/types";
 import './Results.css';
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
-const ENDPOINT = "http://localhost:8080/enrollment"
+const URL = BASE_URL + "/enrollment"
 
 const Results = () => {
   const { auth } = useContext(AuthContext);
   const [linkStatus, setLinkStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(ENDPOINT + '/share', {
+    fetch(URL + '/share', {
       headers: {
         'Authorization': auth
       }
@@ -24,7 +25,7 @@ const Results = () => {
   const [resultsMap, setResultsMap] = useState(new Map<SpecifiedTimeSlot, Student[]>());
 
   useEffect(() => {
-    fetch(ENDPOINT + "/results", {
+    fetch(URL + "/results", {
       headers: {
         'Authorization': auth
       }

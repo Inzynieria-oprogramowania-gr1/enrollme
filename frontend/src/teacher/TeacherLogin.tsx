@@ -1,6 +1,7 @@
 import React, {FC, useContext, useState} from "react";
 import {User} from "../common/types";
 import {AuthContext} from "../common/AuthContext";
+import {BASE_URL} from "../common/Constants";
 
 interface LoginProps {
   onLogin: (email: string, role: string) => void;
@@ -29,7 +30,7 @@ const TeacherLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
     const basicAuth = 'Basic ' + btoa(email + ':' + password);
     setAuth(basicAuth);
 
-    fetch(`http://localhost:8080/auth/login`, {
+    fetch(BASE_URL + `/auth/login`, {
       method: 'POST',
       headers: {
         'Authorization': basicAuth

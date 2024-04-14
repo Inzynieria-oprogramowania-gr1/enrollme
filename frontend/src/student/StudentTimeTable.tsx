@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import './StudentTimeTable.css'
 import {Day, User} from "../common/types";
+import {BASE_URL} from "../common/Constants";
 
-const ENDPOINT = "http://localhost:8080/students";
+const URL = BASE_URL + "/students";
 
 interface StudentTimeTableProps {
   user: User;
@@ -30,7 +31,7 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   const [availableTimeTableData, setAvailableTimeTableData] = useState<Day[]>([]);
 
   useEffect(() => {
-    fetch(ENDPOINT + "/timetable")
+    fetch(URL + "/timetable")
       .then(response => response.json())
       .then(setTimeTableData)
       .catch(err => console.error(err));
@@ -63,7 +64,7 @@ const StudentTimeTable: React.FC<StudentTimeTableProps> = ({ user }) => {
   const savePreferences = () => {
     const dataToSend = getDataToSend();
     console.log(dataToSend)
-    fetch(ENDPOINT + `/${user.id}/preferences`, {
+    fetch(URL + `/${user.id}/preferences`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
