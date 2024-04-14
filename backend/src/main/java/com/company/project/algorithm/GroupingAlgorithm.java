@@ -22,6 +22,7 @@ package com.company.project.algorithm;
 
 import com.company.project.dto.StudentDto;
 import com.company.project.dto.preferences.PreferredTimeslot;
+import com.company.project.dto.preferences.SinglePreference;
 import com.company.project.dto.preferences.StudentPreferencesDto;
 import com.company.project.dto.timetable.TimeslotDto;
 import com.company.project.dto.timetable.TimetableDayDto;
@@ -34,23 +35,18 @@ import java.util.*;
 public class GroupingAlgorithm {
     private final StudentService studentService;
     private final List<StudentDto> studentsList;
-    private final List<TimetableDto> timetableList;
+    private final List<TimetableDayDto> timetableList;
     private final int groupAmount;
     private final int maxStudentsPerGroup;
   
     @Getter
-    Map<TimetableDayDto, List<StudentDto>> slotAssignments = new HashMap<>();
+    Map<PreferredTimeslot, List<StudentDto>> slotAssignments = new HashMap<>();
 
 
     public GroupingAlgorithm(StudentService studentService, EnrollmentService enrollmentService) {
         this.studentService = studentService;
         this.studentsList = studentService.getAllStudents();
-        this.timetableList = enrollmentService.getTimetable()
-                .stream()
-                .map(e -> {
-                    List<TimeslotDto> dto = e.timeslots().stream().filter(TimeslotDto::isSelected).toList();
-                    return new TimetableDayDto(e.weekday(), dto);
-                }).toList();
+        this.timetableList = enrollmentService.getSelectedTimetable();
         this.groupAmount = Math.min(enrollmentService.getGroupAmount(), timetableList.size());
         if (groupAmount == 0) {
             this.maxStudentsPerGroup = 0;
@@ -60,27 +56,28 @@ public class GroupingAlgorithm {
     }
 
 
-    public Map<TimetableDto, List<StudentDto>> groupStudents() {
-        Map<TimetableDto, Integer> slotsFrequency = getSlotsFrequency();
+    public Map<PreferredTimeslot, List<StudentDto>> groupStudents() {
+        Map<PreferredTimeslot, Integer> slotsFrequency = getSlotsFrequency();
         List<StudentDto> withoutPreferences = new ArrayList<>();
         List<StudentDto> withPreferences = new ArrayList<>();
         for (StudentDto student : studentsList) {
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
-            if (preferences.timetables().isEmpty()) {
+            if (preferences.preferences().isEmpty()) {
                 withoutPreferences.add(student);
             } else {
                 withPreferences.add(student);
             }
         }
 
-        Map<TimetableDto, Integer> slotsFrequencyCopy = new HashMap<>(slotsFrequency);
+        Map<PreferredTimeslot, Integer> slotsFrequencyCopy = new HashMap<>(slotsFrequency);
 
         while (!withPreferences.isEmpty()) {
             if (slotAssignments.size() == groupAmount) {
                 break;
             }
 
-            TimetableDto bestSlot = getBestSlot(slotsFrequency);
+            PreferredTimeslot bestSlot = getBestSlot(slotsFrequency);
+
             if (bestSlot == null) {
                 break;
             }
@@ -89,12 +86,14 @@ public class GroupingAlgorithm {
 
             // assign students to the best slot
             for (StudentDto student : studentsCopy) {
-                if (studentService.getPreferences(student.id()).timetables().contains(bestSlot) && slotsFrequency.containsKey(bestSlot)) {
+                List<PreferredTimeslot> studentSlots = studentService.getPreferences(student.id()).preferences().stream().map(SinglePreference::timeslot).toList();
+                if (studentSlots.contains(bestSlot) && slotsFrequency.containsKey(bestSlot)) {
                     students.add(student);
                     withPreferences.remove(student);
-                    for (TimetableDto slot : studentService.getPreferences(student.id()).timetables()) {
-                        if (slotsFrequency.containsKey(slot)) {
-                            slotsFrequency.put(slot, slotsFrequency.get(slot) - 1);
+                    for (SinglePreference slot : studentService.getPreferences(student.id()).preferences()) {
+                        PreferredTimeslot timeslot = new PreferredTimeslot(slot.timeslot().weekday(), slot.timeslot().startTime(), slot.timeslot().endTime());
+                        if (slotsFrequency.containsKey(timeslot)) {
+                            slotsFrequency.put(timeslot, slotsFrequency.get(timeslot) - 1);
                         }
                     }
                     if (students.size() >= maxStudentsPerGroup) {
@@ -105,7 +104,7 @@ public class GroupingAlgorithm {
             }
 
             // remove slots with 0 or less frequency
-            for (TimetableDto slot : new ArrayList<>(slotsFrequency.keySet())) {
+            for (PreferredTimeslot slot : new ArrayList<>(slotsFrequency.keySet())) {
                 if (slotsFrequency.get(slot) <= 0 || (slotAssignments.containsKey(slot) && slotAssignments.get(slot).size() >= maxStudentsPerGroup)) {
                     slotsFrequency.remove(slot);
                 }
@@ -119,7 +118,7 @@ public class GroupingAlgorithm {
       
         int restGroups = groupAmount - slotAssignments.size();
 
-        for (TimetableDto slot : slotsFrequencyCopy.keySet()) {
+        for (PreferredTimeslot slot : slotsFrequencyCopy.keySet()) {
             if (!slotAssignments.containsKey(slot)) {
                 slotAssignments.put(slot, new ArrayList<>());
                 restGroups--;
@@ -135,7 +134,7 @@ public class GroupingAlgorithm {
         // assign rest of the students with preferences
         if (!withPreferences.isEmpty()) {
             for (StudentDto student : withPreferences) {
-                TimetableDto assignedSlot = assignRestStudents();
+                PreferredTimeslot assignedSlot = assignRestStudents();
                 slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
                 slotAssignments.get(assignedSlot).add(student);
             }
@@ -143,7 +142,7 @@ public class GroupingAlgorithm {
 
         // assign students without preferences
         for (StudentDto student : withoutPreferences) {
-            TimetableDayDto assignedSlot = assignRestStudents();
+            PreferredTimeslot assignedSlot = assignRestStudents();
             slotAssignments.putIfAbsent(assignedSlot, new ArrayList<>());
             slotAssignments.get(assignedSlot).add(student);
         }
@@ -153,36 +152,42 @@ public class GroupingAlgorithm {
         return getSlotAssignments();
     }
 
-    public Map<TimetableDto, Integer> getSlotsFrequency() {
-        Map<TimetableDto, Integer> slotsFrequency = new HashMap<>();
-        for (TimetableDto slot : timetableList) {
-            slotsFrequency.put(slot, 0);
-        }
+    public Map<PreferredTimeslot, Integer> getSlotsFrequency() {
+        Map<PreferredTimeslot, Integer> slotsFrequency = new HashMap<>();
+        timetableList.forEach(timetableDayDto -> {
+            List<TimeslotDto> timeslots = timetableDayDto.timeslots();
+            timeslots.forEach(timeslot -> {
+                PreferredTimeslot preferredTimeslot = new PreferredTimeslot(timetableDayDto.weekday(), timeslot.startTime(), timeslot.endTime());
+                slotsFrequency.put(preferredTimeslot, 0);
+            });
+        });
+
         for (StudentDto student : studentsList) {
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
-            for (TimetableDto slot : preferences.timetables()) {
-                slotsFrequency.put(slot, slotsFrequency.get(slot) + 1);
-            }
+            preferences.preferences().forEach(preference -> {
+                slotsFrequency.put(preference.timeslot(), slotsFrequency.get(preference.timeslot()) + 1);
+            });
+
         }
         return slotsFrequency;
     }
 
-    public TimetableDto getBestSlot(Map<TimetableDto, Integer> slotsFrequency) {
-        TimetableDto bestSlot = null;
+    public PreferredTimeslot getBestSlot(Map<PreferredTimeslot, Integer> slotsFrequency) {
+        PreferredTimeslot bestSlot = null;
         int maxFrequency = Integer.MIN_VALUE;
-        for (TimetableDto slot : slotsFrequency.keySet()) {
+        for (PreferredTimeslot slot : slotsFrequency.keySet()) {
             if (slotsFrequency.get(slot) > maxFrequency && slotsFrequency.get(slot) > 0) {
                 maxFrequency = slotsFrequency.get(slot);
-                bestSlot = slot;
+                bestSlot = new PreferredTimeslot(slot.weekday(), slot.startTime(), slot.endTime());
             }
         }
         return bestSlot;
     }
 
-    public TimetableDayDto assignRestStudents() {
-        TimetableDayDto minSlot = null;
+    public PreferredTimeslot assignRestStudents() {
+        PreferredTimeslot minSlot = null;
         int minStudents = Integer.MAX_VALUE;
-        for (TimetableDayDto slot : slotAssignments.keySet()) {
+        for (PreferredTimeslot slot : slotAssignments.keySet()) {
             if (slotAssignments.get(slot).size() < minStudents) {
                 minStudents = slotAssignments.get(slot).size();
                 minSlot = slot;
@@ -192,10 +197,11 @@ public class GroupingAlgorithm {
     }
 
     public void repairAssignments() {
-        Map<StudentDto, TimetableDto> wrongAssigned = new HashMap<>();
-        for (TimetableDto slot : slotAssignments.keySet()) {
+        Map<StudentDto, PreferredTimeslot> wrongAssigned = new HashMap<>();
+        for (PreferredTimeslot slot : slotAssignments.keySet()) {
             for (StudentDto student : slotAssignments.get(slot)) {
-                if (!studentService.getPreferences(student.id()).timetables().contains(slot)) {
+                List<PreferredTimeslot> studentSlots = studentService.getPreferences(student.id()).preferences().stream().map(SinglePreference::timeslot).toList();
+                if (!studentSlots.contains(slot)) {
                     wrongAssigned.put(student, slot);
                 }
             }
@@ -204,23 +210,24 @@ public class GroupingAlgorithm {
         outerLoop:
         for (StudentDto student : wrongAssigned.keySet()) {
             StudentPreferencesDto preferences = studentService.getPreferences(student.id());
-            TimetableDto wrongSlot = wrongAssigned.get(student);
-            for (TimetableDto slot : preferences.timetables()) {
-                if (slotAssignments.containsKey(slot)) {
-                    Iterator<StudentDto> iterator = slotAssignments.get(slot).iterator();
+            PreferredTimeslot wrongSlot = wrongAssigned.get(student);
+            for (SinglePreference slot : preferences.preferences()) {
+                PreferredTimeslot timeslot = new PreferredTimeslot(slot.timeslot().weekday(), slot.timeslot().startTime(), slot.timeslot().endTime());
+                if (slotAssignments.containsKey(timeslot)) {
+                    Iterator<StudentDto> iterator = slotAssignments.get(timeslot).iterator();
                     while (iterator.hasNext()) {
                         StudentDto studentToChange = iterator.next();
-                        if (studentService.getPreferences(studentToChange.id()).timetables().isEmpty() ||
-                                studentService.getPreferences(studentToChange.id()).timetables().contains(wrongSlot)) {
-                            TimetableDto slotToChange = null;
-                            for (TimetableDto s : slotAssignments.keySet()) {
+                        List<PreferredTimeslot> studentSlots = studentService.getPreferences(studentToChange.id()).preferences().stream().map(SinglePreference::timeslot).toList();
+                        if (studentSlots.isEmpty() || studentSlots.contains(wrongSlot)) {
+                            PreferredTimeslot slotToChange = null;
+                            for (PreferredTimeslot s : slotAssignments.keySet()) {
                                 if (slotAssignments.get(s).contains(student)) {
                                     slotToChange = s;
                                     break;
                                 }
                             }
                             iterator.remove();
-                            slotAssignments.get(slot).add(student);
+                            slotAssignments.get(timeslot).add(student);
                             slotAssignments.get(slotToChange).remove(student);
                             slotAssignments.get(slotToChange).add(studentToChange);
                             continue outerLoop;

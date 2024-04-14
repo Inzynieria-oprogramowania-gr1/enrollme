@@ -2,7 +2,9 @@ package com.company.project.service;
 
 import com.company.project.algorithm.GroupingAlgorithm;
 import com.company.project.dto.StudentDto;
+import com.company.project.dto.preferences.PreferredTimeslot;
 import com.company.project.dto.timetable.ShareLinkDto;
+import com.company.project.dto.timetable.SpecifiedTimeslotDto;
 import com.company.project.dto.timetable.TimetableDayDto;
 import com.company.project.entity.EnrolmentState;
 import com.company.project.entity.ShareLink;
@@ -59,7 +61,7 @@ public class ShareLinkService {
         link.setState(state);
         if (state.equals(EnrolmentState.CALCULATING)) {
             GroupingAlgorithm algorithm = new GroupingAlgorithm(studentService, enrollmentService);
-            Map<TimetableDayDto, List<StudentDto>> tmp = algorithm.groupStudents();
+            Map<PreferredTimeslot, List<StudentDto>> tmp = algorithm.groupStudents();
             studentService.setResults(tmp);
             link.setState(EnrolmentState.RESULTS_READY);
         }

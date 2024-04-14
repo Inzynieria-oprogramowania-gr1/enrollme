@@ -145,11 +145,10 @@ public class StudentService {
     }
 
 
-    public void setResults(Map<TimetableDayDto, List<StudentDto>> results) {
-        for (Entry<TimetableDayDto, List<StudentDto>> entry : results.entrySet()) {
-            TimetableDayDto timetableDayDto = entry.getKey();
-            TimeslotDto timeSLotDto = timetableDayDto.timeslots().get(0);
-            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(timetableDayDto.weekday(), timeSLotDto.startTime(), timeSLotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
+    public void setResults(Map<PreferredTimeslot, List<StudentDto>> results) {
+        for (Entry<PreferredTimeslot, List<StudentDto>> entry : results.entrySet()) {
+            PreferredTimeslot specifiedTimeslotDto = entry.getKey();
+            Timeslot timeslot = timeslotRepository.findByWeekdayAndStartTimeAndEndTime(specifiedTimeslotDto.weekday(), specifiedTimeslotDto.startTime(), specifiedTimeslotDto.endTime()).orElseThrow(() -> new ResourceNotFoundException("Timeslot not found"));
             for (StudentDto s : entry.getValue()) {
                 Student student = studentRepository.findById(s.id()).orElseThrow(() -> new ResourceNotFoundException("Student not found"));
                 student.setResult(timeslot);
