@@ -33,10 +33,8 @@ const TeacherLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
     fetch(BASE_URL + `/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': basicAuth
       },
-      body: null
     })
       .then(response => {
         if (!response.ok) {
