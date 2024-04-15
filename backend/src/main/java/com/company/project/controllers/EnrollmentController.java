@@ -41,7 +41,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/enrollment")
-@CrossOrigin(origins = "http://81.28.6.141:3000")
+@CrossOrigin
 @SecurityRequirement(name = "basicAuth")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
