@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin
+@CrossOrigin(origins="http://localhost:9000")
 @SecurityRequirement(name = "basicAuth")
 public class AuthenticationController {
 
