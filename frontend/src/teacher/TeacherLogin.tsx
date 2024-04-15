@@ -34,7 +34,8 @@ const TeacherLogin: FC<LoginProps> = ({onLogin, user, setUser}) => {
       method: 'POST',
       headers: {
         'Authorization': basicAuth
-      }
+      },
+      body: null
     })
       .then(response => {
         if (!response.ok) {
