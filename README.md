@@ -135,6 +135,29 @@ Here, after the enrollment is closed, the teacher can:
 ![page](./readme_resources/results_preferences.png)
 When the teacher clicks on one of the students emails, this student's preferences are going to be shown.
 
+# Algorithm
+Based on the number of students and the number of groups, the maximum number of students per group is calculated.
+
+First, for each time slot, its frequency in the students' preferences is calculated.
+
+Then, students are divided into those with preferences and those without preferences.
+
+Until there are students with preferences:
+* The slot with highest frequency is selected.
+* Students are assigned to this slot if they have it in their preferences and if number of students is less then the maximum.
+* If a student was assigned, their preferences are remoced from the frequency count.
+* The selected slot is removed along with slots whose frequency in preferences has decreased to 0.
+
+If we still have too few groups, those that have not yet appeared are added so that the number matches the required number of groups.
+
+If there are still students with preferences, they are added to the slot with the fewest assigned students. Similarly, students without preferences are assigned.
+
+Finally, an attempt is made to fix the results:
+* All students who were assigned to the wrong group are found.
+* It is checked if there is a slot in student's preferences that has been selected.
+* If so, iterate through the students assigned to that slot.
+* Exchange occurs if a student without preferences is found, or if a student has the slot in their preferences.
+
 # Changelog
 ## SCRUM-85 (31.03.2024)
 ### Nowy entity `Enrollment`
